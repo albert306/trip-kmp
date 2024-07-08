@@ -31,6 +31,7 @@ kotlin {
         }
         commonMain.dependencies { // multiplatform dependencies
             implementation(libs.bundles.ktor)
+            implementation(libs.kotlinx.datetime)
         }
         iosMain.dependencies { // iOS dependencies
             implementation(libs.ktor.client.darwin)
