@@ -26,8 +26,14 @@ kotlin {
     }
     
     sourceSets {
-        commonMain.dependencies {
-            // put your Multiplatform dependencies here
+        androidMain.dependencies { // android dependencies
+            implementation(libs.ktor.client.okhttp)
+        }
+        commonMain.dependencies { // multiplatform dependencies
+            implementation(libs.bundles.ktor)
+        }
+        iosMain.dependencies { // iOS dependencies
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
