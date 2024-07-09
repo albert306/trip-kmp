@@ -10,7 +10,9 @@ import kotlinx.datetime.Instant
 fun dateStringToInstant(s: String?): Instant {
     if (s == null) return Instant.DISTANT_FUTURE
 
-    val epochTime = s.substringAfter('(').substringBefore('+').toLong()
+    val regex = "[(](.*)([+]|-)".toRegex() //regex to capture everything between "(" and "+" or "-"
+
+    val epochTime = regex.find(s)?.groups?.get(1)?.value?.toLong() ?: 0L
     return Instant.fromEpochMilliseconds(epochTime)
 }
 
