@@ -1,4 +1,4 @@
-package networking
+package data.networking
 
 object HttpRoutes {
     private const val BASE_URL = "https://webapi.vvo-online.de"
