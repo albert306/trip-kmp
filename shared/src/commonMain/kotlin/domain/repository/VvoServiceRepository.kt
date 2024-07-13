@@ -6,7 +6,7 @@ import domain.models.StopMonitorInfo
 import domain.models.StopScheduleItem
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import util.NetworkError
+import util.error.NetworkError
 import util.Result
 
 interface VvoServiceRepository {

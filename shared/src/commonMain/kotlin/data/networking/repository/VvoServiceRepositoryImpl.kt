@@ -27,7 +27,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import util.NetworkError
+import util.error.NetworkError
 import util.Result
 
 class VvoServiceRepositoryImpl(

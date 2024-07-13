@@ -2,7 +2,7 @@ package domain.use_case
 
 import domain.models.Stop
 import domain.repository.VvoServiceRepository
-import util.Error
+import util.error.Error
 import util.Result
 
 class GetRecommendedStopsUseCase(

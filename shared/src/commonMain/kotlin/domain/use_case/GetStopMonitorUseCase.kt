@@ -4,7 +4,7 @@ import domain.models.Stop
 import domain.models.StopMonitorInfo
 import domain.repository.VvoServiceRepository
 import kotlinx.datetime.Instant
-import util.Error
+import util.error.Error
 import util.Result
 
 class GetStopMonitorUseCase(
