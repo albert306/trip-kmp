@@ -30,6 +30,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies { // android dependencies
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.viewmodel)
         }
         commonMain.dependencies { // multiplatform dependencies
             implementation(libs.bundles.ktor)
