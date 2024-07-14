@@ -1,25 +1,16 @@
 package viewmodel
 
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import de.awolf.trip_compose.domain.models.Departure
-import de.awolf.trip_compose.domain.models.Stop
-import de.awolf.trip_compose.domain.use_case.UseCases
-import de.awolf.trip_compose.domain.util.Resource
 import domain.models.Departure
 import domain.models.Stop
+import domain.use_case.UseCases
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import util.CoroutineViewModel
 import util.Result
-import java.time.LocalDateTime
 
 @Suppress("UNUSED")
 class StopMonitorViewModel(
