@@ -31,9 +31,11 @@ kotlin {
         androidMain.dependencies { // android dependencies
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.viewmodel)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies { // multiplatform dependencies
             implementation(libs.bundles.ktor)
+            api(libs.koin.core)
             implementation(libs.kotlinx.datetime)
         }
         iosMain.dependencies { // iOS dependencies

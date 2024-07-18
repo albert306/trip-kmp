@@ -17,7 +17,6 @@ class StopMonitorViewModel(
     val stop: Stop,
     private val queriedTime: Long,
     private val useCases: UseCases,
-    private val navController: NavController
 ) : CoroutineViewModel() {
 
     private val _isStopInfoCardExpanded = MutableStateFlow(false)

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
+import org.koin.compose.KoinContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -11,7 +12,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-
+                KoinContext {
+                    Navigation()
+                }
             }
         }
     }

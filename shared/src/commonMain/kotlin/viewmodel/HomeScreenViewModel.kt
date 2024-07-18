@@ -19,7 +19,6 @@ import util.Result
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
     private val useCases: UseCases,
-    private val navController: NavController
 ) : CoroutineViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -79,7 +78,7 @@ class HomeScreenViewModel(
                 _recommendedStops.update { emptyList() }
             }
             is Result.Success -> {
-                _recommendedStops.update { recommendedStopsResult.data!! }
+                _recommendedStops.update { recommendedStopsResult.data }
             }
         }
     }
