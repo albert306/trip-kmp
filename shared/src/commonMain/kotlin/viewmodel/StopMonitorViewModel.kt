@@ -8,16 +8,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import util.CoroutineViewModel
 import util.Result
 
-@Suppress("UNUSED")
 class StopMonitorViewModel(
-    val stop: Stop,
-    private val queriedTime: Long,
-    private val useCases: UseCases,
-) : CoroutineViewModel() {
+    private val stop: Stop,
+    private val queriedTime: Instant,
+    private val onCloseClicked: () -> Unit,
+) : CoroutineViewModel(), KoinComponent {
+
+    private val useCases: UseCases by inject()
 
     private val _isStopInfoCardExpanded = MutableStateFlow(false)
     val isStopInfoCardExpanded = _isStopInfoCardExpanded.asStateFlow()
@@ -40,7 +43,7 @@ class StopMonitorViewModel(
     }
 
     fun close() {
-        navController.navigateUp()
+        onCloseClicked()
     }
 
     fun updateDepartures() {
@@ -49,16 +52,16 @@ class StopMonitorViewModel(
             _departures.update {
                 val stopMonitorInfoResource = useCases.getStopMonitorUseCase(
                     stop = stop,
-                    time = Clock.System.now(),
+                    time = queriedTime,
                     limit = departureCount.value,
                 )
                 when (stopMonitorInfoResource) {
                     is Result.Error -> {
-                        println("TOAST: " + stopMonitorInfoResource.message)
+                        // TODO: display error
                         emptyList()
                     }
                     is Result.Success -> {
-                        stopMonitorInfoResource.data!!.departures
+                        stopMonitorInfoResource.data.departures
                     }
                 }
             }
@@ -73,16 +76,16 @@ class StopMonitorViewModel(
             _departures.update {
                 val stopMonitorInfoResource = useCases.getStopMonitorUseCase(
                     stop = stop,
-                    time = Clock.System.now(),
+                    time = queriedTime,
                     limit = departureCount.value,
                 )
                 when (stopMonitorInfoResource) {
                     is Result.Error -> {
-                        println("TOAST: " + stopMonitorInfoResource.message)
+                        // TODO: display error
                         emptyList()
                     }
                     is Result.Success -> {
-                        stopMonitorInfoResource.data!!.departures
+                        stopMonitorInfoResource.data.departures
                     }
                 }
             }

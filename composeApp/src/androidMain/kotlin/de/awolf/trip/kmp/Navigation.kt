@@ -15,6 +15,9 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import viewmodel.HomeScreenViewModel
 import viewmodel.StopMonitorViewModel
+import kotlinx.datetime.Instant
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
 
 
 @Composable
@@ -40,7 +43,19 @@ fun Navigation() {
                 )
             }
         ) {
-            val homeScreenViewModel = koinViewModel<HomeScreenViewModel>()
+            val homeScreenViewModel = koinViewModel<HomeScreenViewModel> {
+                parametersOf(
+                    { stop: Stop, queriedTime: Instant ->
+                        navController.navigate(Screen.StopMonitorScreen.withArgs(
+                            stop.id,
+                            stop.name,
+                            stop.region,
+                            stop.isFavourite.toString(),
+                            queriedTime.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+                        ))
+                    }
+                )
+            }
 
             HomeScreen(
                 viewModel = homeScreenViewModel
@@ -87,6 +102,7 @@ fun Navigation() {
                         region = entry.arguments?.getString("stopRegion") ?: "Dresden",
                     ),
                     entry.arguments?.getLong("queriedTime") ?: 0L,
+                    { navController.navigateUp() }
                 )
             }
 

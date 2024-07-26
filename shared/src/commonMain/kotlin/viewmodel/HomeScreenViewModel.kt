@@ -11,15 +11,18 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
-import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.Instant
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import util.CoroutineViewModel
 import util.Result
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
-    private val useCases: UseCases,
-) : CoroutineViewModel() {
+    val onStopClicked: (Stop, Instant) -> Unit,
+) : CoroutineViewModel(), KoinComponent {
+
+    private val useCases: UseCases by inject()
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -55,13 +58,7 @@ class HomeScreenViewModel(
     fun startStopMonitor(stop: Stop?) {
         if (stop == null) { return } //TODO(give user feedback that no such stop was found)
 
-        navController.navigate(Screen.StopMonitorScreen.withArgs(
-            stop.id,
-            stop.name,
-            stop.region,
-            stop.isFavourite.toString(),
-            Clock.System.now().format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
-        ))
+        onStopClicked(stop, selectedTime.value)
     }
 
 //    fun toggleFavouriteStop(stop: Stop) {
@@ -74,7 +71,7 @@ class HomeScreenViewModel(
     private suspend fun setRecommendedStops(query: String) {
         when (val recommendedStopsResult = useCases.getRecommendedStopsUseCase(query)) {
             is Result.Error -> {
-                println("TOAST: " + recommendedStopsResult.message)
+                // TODO: display error
                 _recommendedStops.update { emptyList() }
             }
             is Result.Success -> {
