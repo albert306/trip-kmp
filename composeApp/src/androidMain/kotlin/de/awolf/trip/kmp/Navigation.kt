@@ -3,21 +3,19 @@ package de.awolf.trip.kmp
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import de.awolf.trip.kmp.presentation.helper.viewModelFactory
 import de.awolf.trip.kmp.presentation.home_screen.HomeScreen
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.StopMonitorScreen
 import domain.models.Stop
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import viewmodel.HomeScreenViewModel
 import viewmodel.StopMonitorViewModel
 import kotlinx.datetime.Instant
-import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeComponents
 
 
 @Composable
@@ -43,19 +41,21 @@ fun Navigation() {
                 )
             }
         ) {
-            val homeScreenViewModel = koinViewModel<HomeScreenViewModel> {
-                parametersOf(
-                    { stop: Stop, queriedTime: Instant ->
-                        navController.navigate(Screen.StopMonitorScreen.withArgs(
-                            stop.id,
-                            stop.name,
-                            stop.region,
-                            stop.isFavourite.toString(),
-                            queriedTime.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
-                        ))
-                    }
-                )
-            }
+            val homeScreenViewModel = viewModel<HomeScreenViewModel>(
+                factory = viewModelFactory {
+                    HomeScreenViewModel(
+                        onStopClicked = { stop: Stop, queriedTime: Instant ->
+                            navController.navigate(Screen.StopMonitorScreen.withArgs(
+                                stop.id,
+                                stop.name,
+                                stop.region,
+                                stop.isFavourite.toString(),
+                                queriedTime.toEpochMilliseconds().toString()
+                            ))
+                        }
+                    )
+                }
+            )
 
             HomeScreen(
                 viewModel = homeScreenViewModel
@@ -94,17 +94,19 @@ fun Navigation() {
                 )
             }
         ) { entry ->
-            val stopMonitorViewModel = koinViewModel<StopMonitorViewModel> {
-                parametersOf(
-                    Stop(
-                        id = entry.arguments?.getString("stopId") ?: "0000000",
-                        name = entry.arguments?.getString("stopName") ?: "unknown",
-                        region = entry.arguments?.getString("stopRegion") ?: "Dresden",
-                    ),
-                    entry.arguments?.getLong("queriedTime") ?: 0L,
-                    { navController.navigateUp() }
-                )
-            }
+            val stopMonitorViewModel = viewModel<StopMonitorViewModel>(
+                factory = viewModelFactory {
+                    StopMonitorViewModel(
+                        stop = Stop(
+                            id = entry.arguments?.getString("stopId") ?: "0000000",
+                            name = entry.arguments?.getString("stopName") ?: "unknown",
+                            region = entry.arguments?.getString("stopRegion") ?: "Dresden",
+                        ),
+                        queriedTime = Instant.fromEpochMilliseconds(entry.arguments?.getLong("queriedTime") ?: 0L),
+                        onCloseClicked = navController::navigateUp
+                    )
+                }
+            )
 
             StopMonitorScreen(
                 viewModel = stopMonitorViewModel
