@@ -15,8 +15,8 @@ import util.CoroutineViewModel
 import util.Result
 
 class StopMonitorViewModel(
-    private val stop: Stop,
-    private val queriedTime: Instant,
+    val stop: Stop,
+    val queriedTime: Instant,
     private val onCloseClicked: () -> Unit,
 ) : CoroutineViewModel(), KoinComponent {
 
