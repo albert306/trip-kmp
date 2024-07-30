@@ -1,30 +1,34 @@
 package de.awolf.trip.kmp.presentation.stop_monitor_screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.presentation.helper.isFinalItemVisible
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureView
-import de.awolf.trip_compose.presentation.stop_monitor_screen.components.ShimmerDepartureItem
+import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
+import kotlinx.datetime.Clock
 import viewmodel.StopMonitorViewModel
-import java.time.LocalDateTime
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StopMonitorScreen(
     viewModel: StopMonitorViewModel,
@@ -42,14 +46,14 @@ fun StopMonitorScreen(
     ) {
         StopInfoCard(
             stop = stop,
-            queriedTime = LocalDateTime.now(), //TODO(pass actual queried time)
+            queriedTime = Clock.System.now(), //TODO(pass actual queried time)
             isStopInfoCardExpanded = isStopInfoCardExpanded,
             expandStopInfo = viewModel::expandStopInfo,
             onCloseButtonClick = viewModel::close,
             modifier = Modifier.zIndex(1f)
         )
 
-        val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+        val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = viewModel::updateDepartures)
         val lazyListState = rememberLazyListState()
         val isAtBottom = lazyListState.isFinalItemVisible(tolerance = 0)
         LaunchedEffect(isAtBottom) {
@@ -58,18 +62,12 @@ fun StopMonitorScreen(
             }
         }
 
-        SwipeRefresh(
-            state = swipeRefreshState,
-            onRefresh = viewModel::updateDepartures,
-            indicator = { state, refreshTrigger ->
-                SwipeRefreshIndicator(
-                    state = state,
-                    refreshTriggerDistance = refreshTrigger,
-                    backgroundColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.Black,
-                )
-            }
+        Box(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
         ) {
+            PullRefreshIndicator(isRefreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
+
             LazyColumn(
                 state = lazyListState,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -80,13 +78,12 @@ fun StopMonitorScreen(
                 item {
                     Spacer(modifier = Modifier.height(6.dp))
                 }
-                itemsIndexed(departures, key = { _, departure -> departure.id + "||" + departure.lineDirection + "||" + departure.sheduledTime.toString() + "||"}) { index, departure ->
+                items(items = departures) { departure ->
                     DepartureView(
                         departure = departure,
                         onClick = {
-                            viewModel.toggleVisibilityDetailedStopSchedule(index)
+//                            viewModel.toggleVisibilityDetailedStopSchedule(index)
                         },
-                        modifier = Modifier.animateItemPlacement()
                     )
                 }
                 if (!isRefreshing) {

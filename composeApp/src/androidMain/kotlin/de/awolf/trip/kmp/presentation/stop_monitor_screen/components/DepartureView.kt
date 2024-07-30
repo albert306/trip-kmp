@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,9 +28,14 @@ import domain.models.Departure
 import domain.models.Mode
 import domain.models.Platform
 import domain.models.StopScheduleItem
-import java.time.Clock
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.char
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import kotlin.math.absoluteValue
 
 @Preview()
@@ -57,10 +62,10 @@ fun DepartureViewPreview() {
                     diva = null,
                     isShowingDetailedStopSchedule = true,
                     detailedStopSchedule = listOf(
-                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), LocalDateTime.now().plusMinutes(2)),
-                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), LocalDateTime.now().plusMinutes(2)),
-                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), LocalDateTime.now().plusMinutes(2)),
-                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), LocalDateTime.now().plusMinutes(2)),
+                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                     )
                 ),
                 onClick = {})
@@ -103,7 +108,7 @@ fun DepartureView(
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 0.dp)
                         .background(
-                            color = departure.mode.getColor(),
+                            color = Color(departure.mode.getColorHex()),
                             shape = RoundedCornerShape(2.dp)
                         )
                         .padding(horizontal = 4.dp, vertical = 0.dp)
@@ -146,7 +151,12 @@ fun DepartureView(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = departure.sheduledTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        text = departure.scheduledTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
+                            LocalDateTime.Format {
+                            hour()
+                            char(':')
+                            minute()
+                        }),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight(300),
@@ -183,7 +193,12 @@ fun DepartureView(
                         //                    modifier = Modifier.padding(horizontal = 8.dp),
                     )
                     Text(
-                        text = departure.realTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        text = departure.realTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
+                            LocalDateTime.Format {
+                                hour()
+                                char(':')
+                                minute()
+                            }),
                         textAlign = TextAlign.End,
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onBackground,
@@ -194,7 +209,7 @@ fun DepartureView(
                 AnimatedVisibility(visible = departure.isShowingDetailedStopSchedule && departure.platform != null) {
                     if (departure.platform == null) return@AnimatedVisibility
                     Text(
-                        text = departure.platform.type + " " +  departure.platform.name,
+                        text = departure.platform!!.type + " " +  departure.platform!!.name,
 //                                textAlign = TextAlign.End,
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onBackground,

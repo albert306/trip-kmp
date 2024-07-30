@@ -1,8 +1,9 @@
 package de.awolf.trip.kmp.presentation.home_screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import domain.models.Stop
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,7 +12,6 @@ import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import viewmodel.HomeScreenViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
@@ -44,12 +44,12 @@ fun HomeScreen(
             item {
                 Spacer(modifier = Modifier.height(6.dp))
             }
-            items(recommendedStops, key = { it.id }) { stop ->
+            items(items = recommendedStops, key = { stop: Stop -> stop.id }) { stop ->
                 StopView(
                     stop = stop,
                     onFavouriteStarClick = {},
                     onNameClick = { viewModel.startStopMonitor(stop) },
-                    modifier = Modifier.animateItemPlacement()
+                    modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                 )
             }
         }

@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +25,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import domain.models.Platform
 import domain.models.StopScheduleItem
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.char
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 
 @Preview(showBackground = true)
 @Composable
@@ -37,8 +43,8 @@ private fun StopScheduleItemViewPreview() {
 //            modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), LocalDateTime.now().plusMinutes(2)))
-            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), LocalDateTime.now().plusMinutes(2)))
+            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
+            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
         }
     }
 }
@@ -59,7 +65,12 @@ fun StopScheduleItemView(
 //        Spacer(Modifier.width(58.dp))
 
         Text(
-            text = stopScheduleItem.arrivalTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+            text = stopScheduleItem.arrivalTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
+                kotlinx.datetime.LocalDateTime.Format {
+                    hour()
+                    char(':')
+                    minute()
+                }),
             textAlign = TextAlign.Center,
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground,
@@ -73,7 +84,7 @@ fun StopScheduleItemView(
                 .fillMaxHeight()
                 .padding(start = 6.dp, end = 8.dp)
         ) {
-            Divider(
+            VerticalDivider(
                 color = Color.Gray,
                 modifier = Modifier
                     .fillMaxHeight()

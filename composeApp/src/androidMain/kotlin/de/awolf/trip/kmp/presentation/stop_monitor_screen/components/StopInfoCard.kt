@@ -11,12 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -25,13 +25,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
 import domain.models.Stop
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun StopInfoCard(
     stop: Stop,
-    queriedTime: LocalDateTime,
+    queriedTime: Instant,
     isStopInfoCardExpanded: Boolean,
     expandStopInfo: () -> Unit,
     onCloseButtonClick: () -> Unit,
@@ -95,7 +99,15 @@ fun StopInfoCard(
                     modifier = Modifier.padding(horizontal = 8.dp),
                 )
                 Text(
-                    text = queriedTime.format(DateTimeFormatter.ofPattern("dd.MM. // HH:mm")),
+                    text = queriedTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(LocalDateTime.Format {
+                        hour()
+                        char(':')
+                        minute()
+                        char(' ')
+                        dayOfMonth()
+                        char('.')
+                        monthNumber()
+                    }),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight(200),
