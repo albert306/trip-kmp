@@ -39,17 +39,17 @@ enum class Mode(val rawValue: String) {
         return "https://www.dvb.de/assets/img/trans-icon/transport-" + identifier + ".svg"
     }
 
-    fun getColorHex(): String {
+    fun getColorHex(): Long {
         return when (rawValue) {
-            "Tram" -> "0xDB0031" //tram red
-            "CityBus" -> "0x005D75" //bus blue
-            "IntercityBus" -> "0x005D75" //bus blue
-            "PlusBus" -> "0xA3177E" //plusbus magenta
-            "SuburbanRailway" -> "0x00914D" //sbahn green
-            "Train" -> "0x00914D" //train green
-            "Ferry" -> "0x00A5DA" //ferry lightblue
-            "HailedSharedTaxi" -> "0xEC01" //alita taxi yellow
-            else -> "0x888888" //gray
-        }
+            "Tram" -> "FFDB0031" //tram red
+            "CityBus" -> "FF005D75" //bus blue
+            "IntercityBus" -> "FF005D75" //bus blue
+            "PlusBus" -> "FFA3177E" //plusbus magenta
+            "SuburbanRailway" -> "FF00914D" //sbahn green
+            "Train" -> "FF00914D" //train green
+            "Ferry" -> "FF00A5DA" //ferry lightblue
+            "HailedSharedTaxi" -> "FFFFEC01" //alita taxi yellow
+            else -> "FF888888" //gray
+        }.toLong(radix = 16)
     }
 }
