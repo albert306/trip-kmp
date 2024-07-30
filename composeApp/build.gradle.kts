@@ -34,6 +34,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(projects.shared)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.material3)
         }
     }
 }
