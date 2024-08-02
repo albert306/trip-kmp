@@ -20,15 +20,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.R
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
+import de.awolf.trip.kmp.theme.AppTheme
 import domain.models.Stop
 
 @Preview(showBackground = true)
 @Composable
 private fun Preview() {
-    MaterialTheme {
+    AppTheme {
         Surface(
 //            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.surface
         ) {
             StopView(stop = Stop("33000028", "Haupbahnhof", "Dresden"), {}, {})
         }
@@ -84,14 +85,14 @@ fun StopView(
             Text(
                 text = stop.name,
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 fontWeight = FontWeight(400),
             )
             Text(
                 text = stop.region,
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 fontWeight = FontWeight(200)
             )
