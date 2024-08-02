@@ -27,21 +27,21 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.awolf.trip.kmp.theme.AppTheme
 
 @Preview(showBackground = true)
 @Composable
 private fun SearchCardPreview() {
-    MaterialTheme {
+    AppTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.surface
         ) {
             Column() {
                 SearchCard(
@@ -70,7 +70,7 @@ fun SearchCard(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp)
             )
             .padding(top = 8.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
@@ -93,7 +93,7 @@ fun SearchCard(
                         if (searchText.isBlank()) {
                             Text(
                                 text = "Enter stop name",
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6F),
                                 fontSize = 22.sp
                             )
                         }
@@ -107,7 +107,7 @@ fun SearchCard(
                     imeAction = ImeAction.Done
                 ),
                 textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontSize = 22.sp,
                 ),
                 modifier = Modifier
@@ -122,7 +122,7 @@ fun SearchCard(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "delete text",
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(26.dp)
                 )
             }
@@ -145,7 +145,7 @@ fun SearchCard(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "start search",
-                    tint = Color.Black,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(20.dp)
                 )
             }
