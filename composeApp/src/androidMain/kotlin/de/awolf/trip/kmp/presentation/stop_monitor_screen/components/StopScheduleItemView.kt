@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.awolf.trip.kmp.theme.AppTheme
 import domain.models.Platform
 import domain.models.StopScheduleItem
 import kotlinx.datetime.Clock
@@ -38,10 +39,10 @@ import kotlinx.datetime.toLocalDateTime
 @Preview(showBackground = true)
 @Composable
 private fun StopScheduleItemViewPreview() {
-    MaterialTheme {
+    AppTheme {
         Surface(
 //            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.surface
         ) {
             StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
             StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
@@ -73,7 +74,7 @@ fun StopScheduleItemView(
                 }),
             textAlign = TextAlign.Center,
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             fontWeight = FontWeight(200),
             modifier = Modifier.width(42.dp)

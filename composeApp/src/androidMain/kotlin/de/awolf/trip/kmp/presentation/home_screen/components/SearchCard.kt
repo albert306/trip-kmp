@@ -70,7 +70,7 @@ fun SearchCard(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
             .background(
-                color = MaterialTheme.colorScheme.secondaryContainer,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp)
             )
             .padding(top = 8.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
@@ -93,7 +93,7 @@ fun SearchCard(
                         if (searchText.isBlank()) {
                             Text(
                                 text = "Enter stop name",
-                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6F),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6F),
                                 fontSize = 22.sp
                             )
                         }
@@ -107,7 +107,7 @@ fun SearchCard(
                     imeAction = ImeAction.Done
                 ),
                 textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 22.sp,
                 ),
                 modifier = Modifier
@@ -122,7 +122,7 @@ fun SearchCard(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "delete text",
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(26.dp)
                 )
             }

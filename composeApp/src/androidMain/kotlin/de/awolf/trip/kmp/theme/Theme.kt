@@ -57,7 +57,7 @@ fun AppTheme(
             val activity  = view.context as Activity
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 activity.window.navigationBarColor = colorScheme.surface.toArgb()
-                activity.window.statusBarColor = colorScheme.secondaryContainer.toArgb()
+                activity.window.statusBarColor = colorScheme.surfaceContainerHigh.toArgb()
                 WindowCompat.getInsetsController(activity.window, view).isAppearanceLightStatusBars = !darkTheme
                 WindowCompat.getInsetsController(activity.window, view).isAppearanceLightNavigationBars = !darkTheme
             }
