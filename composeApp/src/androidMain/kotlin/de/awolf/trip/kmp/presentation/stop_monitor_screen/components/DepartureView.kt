@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
+import de.awolf.trip.kmp.theme.AppTheme
 import domain.models.Departure
 import domain.models.Mode
 import domain.models.Platform
@@ -41,11 +42,11 @@ import kotlin.math.absoluteValue
 @Preview()
 @Composable
 fun DepartureViewPreview() {
-    MaterialTheme {
+    AppTheme {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.surface
         ) {
             DepartureView(
                 departure = Departure(
@@ -102,7 +103,7 @@ fun DepartureView(
                 Text(
                     text = departure.lineNumber,
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     fontWeight = FontWeight(500),
                     modifier = Modifier
@@ -125,7 +126,7 @@ fun DepartureView(
                     Text(
                         text = departure.lineDirection,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight(400),
@@ -139,7 +140,7 @@ fun DepartureView(
                         text = etaText,
                         textAlign = TextAlign.End,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         fontWeight = FontWeight(400),
                         modifier = Modifier.width(90.dp),
@@ -158,13 +159,13 @@ fun DepartureView(
                             minute()
                         }),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight(300),
                     )
                     Text(
                         text = "•",
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight(300),
                         modifier = Modifier.padding(horizontal = 8.dp),
                     )
@@ -201,7 +202,7 @@ fun DepartureView(
                             }),
                         textAlign = TextAlign.End,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight(300),
                         modifier = Modifier.weight(1f),
                     )
@@ -212,7 +213,7 @@ fun DepartureView(
                         text = departure.platform!!.type + " " +  departure.platform!!.name,
 //                                textAlign = TextAlign.End,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         fontWeight = FontWeight(300),
                         modifier = Modifier.fillMaxWidth(),
@@ -226,13 +227,13 @@ fun DepartureView(
                 modifier = Modifier
                     .padding(start = 4.dp)
 //                    .background(
-//                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
+//                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
 //                    )
             ){
                 Text(
                     text = "Upcoming Stops:",
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     fontWeight = FontWeight(400),
                     modifier = Modifier.fillMaxWidth(),

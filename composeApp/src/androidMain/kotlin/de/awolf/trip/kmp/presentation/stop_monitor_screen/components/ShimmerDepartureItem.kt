@@ -19,14 +19,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.awolf.trip.kmp.presentation.helper.shimmerEffect
+import de.awolf.trip.kmp.theme.AppTheme
 
 @Preview
 @Composable
 fun Prev() {
-    MaterialTheme {
+    AppTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.surface
         ) {
             Column {
                 ShimmerDepartureItem()
@@ -92,7 +93,7 @@ fun ShimmerDepartureItem() {
                     .height(18.dp)
             ) {
                 Box(
-                    // sheduled time + departure state
+                    // scheduled time + departure state
                     modifier = Modifier
                         .size(width = 90.dp, height = 10.dp)
                         .clip(RoundedCornerShape(1.dp))
