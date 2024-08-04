@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +39,8 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 
 @Preview()
 @Composable
@@ -100,10 +103,26 @@ fun DepartureView(
                     )
                     .align(Alignment.CenterVertically)
             ) {
+                val lightTextColor: Color
+                val darkTextColor: Color
+
+                if (MaterialTheme.colorScheme.onSurface.luminance() > 0.5f) {
+                    lightTextColor = MaterialTheme.colorScheme.onSurface
+                    darkTextColor = MaterialTheme.colorScheme.surface
+                } else {
+                    lightTextColor = MaterialTheme.colorScheme.surface
+                    darkTextColor = MaterialTheme.colorScheme.onSurface
+                }
+
+                val lineNumberTextColor = if (Color(departure.mode.getColorHex()).luminance() < 0.5f) {
+                    lightTextColor
+                } else {
+                    darkTextColor
+                }
                 Text(
                     text = departure.lineNumber,
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = lineNumberTextColor,
                     maxLines = 1,
                     fontWeight = FontWeight(500),
                     modifier = Modifier
@@ -189,7 +208,7 @@ fun DepartureView(
                     Text(
                         text = departureStateDescription,
                         fontSize = 14.sp,
-                        color = departureStateDescriptionColor,
+                        color = adjustColorForContrast(departureStateDescriptionColor, MaterialTheme.colorScheme.surface),
                         fontWeight = FontWeight(300),
                         //                    modifier = Modifier.padding(horizontal = 8.dp),
                     )
@@ -247,4 +266,25 @@ fun DepartureView(
             }
         }
     }
+}
+
+fun contrastRatio(color1: Color, color2: Color): Float {
+    val lum1 = color1.luminance() + 0.05f
+    val lum2 = color2.luminance() + 0.05f
+    return max(lum1, lum2) / min(lum1, lum2)
+}
+
+fun adjustColorForContrast(desired: Color, background: Color): Color {
+    var adjusted = desired
+    var i = 0
+    while (contrastRatio(adjusted, background) < 4.5 && i < 25) {
+        val step = (adjusted.luminance() - background.luminance()) * 0.25f
+        adjusted = adjusted.copy(
+            red = adjusted.red.plus(step).coerceIn(0f, 1f),
+            green = adjusted.green.plus(step).coerceIn(0f, 1f),
+            blue = adjusted.blue.plus(step).coerceIn(0f, 1f)
+        )
+        i++
+    }
+    return adjusted
 }
