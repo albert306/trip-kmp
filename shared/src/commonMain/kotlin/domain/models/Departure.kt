@@ -2,6 +2,7 @@ package domain.models
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
 
 data class Departure(
     val id: String,
@@ -34,11 +35,11 @@ data class Departure(
 
     fun getETA(): Long {
         val diff = realTime.minus(Clock.System.now())
-        return diff.inWholeMinutes
+        return diff.inWholeSeconds.plus(60).div(60)
     }
 
     fun getDelay(): Long {
-        val diff = scheduledTime.minus(realTime)
+        val diff = realTime.minus(scheduledTime)
         return diff.inWholeMinutes
     }
 
