@@ -205,7 +205,6 @@ fun DepartureView(
                     val delay = departure.getDelay()
                     var departureStateDescription = "pünktlich"
                     var departureStateDescriptionColor = green
-
                     if (delay > 0) {
                         departureStateDescription = "+ " + delay.toString()
                         departureStateDescriptionColor = red
