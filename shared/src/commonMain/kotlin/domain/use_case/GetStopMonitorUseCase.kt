@@ -21,7 +21,8 @@ class GetStopMonitorUseCase(
                 response
             }
             is Result.Success -> {
-                Result.Success(response.data)
+                val sortedDepartures = response.data.departures.sorted()
+                Result.Success(response.data.copy(departures = sortedDepartures))
             }
         }
     }
