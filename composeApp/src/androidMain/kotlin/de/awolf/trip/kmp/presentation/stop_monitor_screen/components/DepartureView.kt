@@ -2,6 +2,7 @@ package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,8 +40,6 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.absoluteValue
-import kotlin.math.max
-import kotlin.math.min
 
 @Preview()
 @Composable
@@ -189,26 +188,41 @@ fun DepartureView(
                         modifier = Modifier.padding(horizontal = 8.dp),
                     )
 
+                    val red: Color
+                    val green: Color
+                    val blue: Color
+
+                    if (isSystemInDarkTheme()) {
+                        red = Color(0xFFFF6666)
+                        green = Color(0xFF00DD00)
+                        blue = Color(0xFF60A0FF)
+                    } else {
+                        red = Color(0xFF990000)
+                        green = Color(0xFF005500)
+                        blue = Color(0xFF0000BB)
+                    }
+
                     val delay = departure.getDelay()
                     var departureStateDescription = "pünktlich"
-                    var departureStateDescriptionColor = Color.Green
+                    var departureStateDescriptionColor = green
+
                     if (delay > 0) {
                         departureStateDescription = "+ " + delay.toString()
-                        departureStateDescriptionColor = Color.Red
+                        departureStateDescriptionColor = red
                     }
                     if (delay < 0) {
                         departureStateDescription = "- " + delay.absoluteValue.toString()
-                        departureStateDescriptionColor = Color.Blue
+                        departureStateDescriptionColor = blue
                     }
                     if (departure.departureState == Departure.DepartureState.CANCELLED) {
                         departureStateDescription = "ausgefallen"
-                        departureStateDescriptionColor = Color.Red
+                        departureStateDescriptionColor = red
                     }
 
                     Text(
                         text = departureStateDescription,
                         fontSize = 14.sp,
-                        color = adjustColorForContrast(departureStateDescriptionColor, MaterialTheme.colorScheme.surface),
+                        color = departureStateDescriptionColor,
                         fontWeight = FontWeight(300),
                         //                    modifier = Modifier.padding(horizontal = 8.dp),
                     )
@@ -266,25 +280,4 @@ fun DepartureView(
             }
         }
     }
-}
-
-fun contrastRatio(color1: Color, color2: Color): Float {
-    val lum1 = color1.luminance() + 0.05f
-    val lum2 = color2.luminance() + 0.05f
-    return max(lum1, lum2) / min(lum1, lum2)
-}
-
-fun adjustColorForContrast(desired: Color, background: Color): Color {
-    var adjusted = desired
-    var i = 0
-    while (contrastRatio(adjusted, background) < 4.5 && i < 25) {
-        val step = (adjusted.luminance() - background.luminance()) * 0.25f
-        adjusted = adjusted.copy(
-            red = adjusted.red.plus(step).coerceIn(0f, 1f),
-            green = adjusted.green.plus(step).coerceIn(0f, 1f),
-            blue = adjusted.blue.plus(step).coerceIn(0f, 1f)
-        )
-        i++
-    }
-    return adjusted
 }
