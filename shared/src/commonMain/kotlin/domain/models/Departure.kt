@@ -46,4 +46,19 @@ data class Departure(
     override fun compareTo(other: Departure): Int {
         return realTime.compareTo(other.realTime)
     }
+
+    fun complexId(): String {
+        return "$id,${scheduledTime.toEpochMilliseconds()},$lineDirection"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Departure) return false
+
+        return complexId() == other.complexId()
+    }
+
+    override fun hashCode(): Int {
+        return complexId().hashCode()
+    }
 }
