@@ -7,7 +7,7 @@ data class StopScheduleItem(
     val dlId: String,
     val stopRegion: String,
     val stopName: String,
-    val shedulePosition: String,
+    val schedulePosition: String,
     val platform: Platform?,
     val arrivalTime: Instant
 )
