@@ -16,27 +16,22 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColors = lightColorScheme(
-    primary = Yellow,
-    secondary = Yellow,
-    tertiary = Yellow,
-    background = Black,
-    onBackground = White,
-    surface = LightGrey
+    primary = primary,
+    secondary = secondary,
+    tertiary = tertiary,
+    surface = lightSurface,
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Yellow,
-    secondary = Yellow,
-    tertiary = Yellow,
-    background = White,
-    onBackground = Black,
-    surface = LightGrey
+    primary = primary,
+    secondary = secondary,
+    tertiary = tertiary,
+    surface = darkSurface,
 )
 
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
