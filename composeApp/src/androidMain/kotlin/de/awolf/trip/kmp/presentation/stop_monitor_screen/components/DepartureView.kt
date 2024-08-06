@@ -2,6 +2,7 @@ package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
+import de.awolf.trip.kmp.theme.AppTheme
 import domain.models.Departure
 import domain.models.Mode
 import domain.models.Platform
@@ -41,11 +44,11 @@ import kotlin.math.absoluteValue
 @Preview()
 @Composable
 fun DepartureViewPreview() {
-    MaterialTheme {
+    AppTheme {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.surface
         ) {
             DepartureView(
                 departure = Departure(
@@ -99,10 +102,26 @@ fun DepartureView(
                     )
                     .align(Alignment.CenterVertically)
             ) {
+                val lightTextColor: Color
+                val darkTextColor: Color
+
+                if (MaterialTheme.colorScheme.onSurface.luminance() > 0.5f) {
+                    lightTextColor = MaterialTheme.colorScheme.onSurface
+                    darkTextColor = MaterialTheme.colorScheme.surface
+                } else {
+                    lightTextColor = MaterialTheme.colorScheme.surface
+                    darkTextColor = MaterialTheme.colorScheme.onSurface
+                }
+
+                val lineNumberTextColor = if (Color(departure.mode.getColorHex()).luminance() < 0.5f) {
+                    lightTextColor
+                } else {
+                    darkTextColor
+                }
                 Text(
                     text = departure.lineNumber,
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = lineNumberTextColor,
                     maxLines = 1,
                     fontWeight = FontWeight(500),
                     modifier = Modifier
@@ -125,7 +144,7 @@ fun DepartureView(
                     Text(
                         text = departure.lineDirection,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight(400),
@@ -139,7 +158,7 @@ fun DepartureView(
                         text = etaText,
                         textAlign = TextAlign.End,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         fontWeight = FontWeight(400),
                         modifier = Modifier.width(90.dp),
@@ -158,31 +177,45 @@ fun DepartureView(
                             minute()
                         }),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight(300),
                     )
                     Text(
                         text = "•",
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight(300),
                         modifier = Modifier.padding(horizontal = 8.dp),
                     )
 
+                    val red: Color
+                    val green: Color
+                    val blue: Color
+
+                    if (isSystemInDarkTheme()) {
+                        red = Color(0xFFFF6666)
+                        green = Color(0xFF00DD00)
+                        blue = Color(0xFF60A0FF)
+                    } else {
+                        red = Color(0xFF990000)
+                        green = Color(0xFF005500)
+                        blue = Color(0xFF0000BB)
+                    }
+
                     val delay = departure.getDelay()
                     var departureStateDescription = "pünktlich"
-                    var departureStateDescriptionColor = Color.Green
+                    var departureStateDescriptionColor = green
                     if (delay > 0) {
                         departureStateDescription = "+ " + delay.toString()
-                        departureStateDescriptionColor = Color.Red
+                        departureStateDescriptionColor = red
                     }
                     if (delay < 0) {
                         departureStateDescription = "- " + delay.absoluteValue.toString()
-                        departureStateDescriptionColor = Color.Blue
+                        departureStateDescriptionColor = blue
                     }
                     if (departure.departureState == Departure.DepartureState.CANCELLED) {
                         departureStateDescription = "ausgefallen"
-                        departureStateDescriptionColor = Color.Red
+                        departureStateDescriptionColor = red
                     }
 
                     Text(
@@ -201,7 +234,7 @@ fun DepartureView(
                             }),
                         textAlign = TextAlign.End,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight(300),
                         modifier = Modifier.weight(1f),
                     )
@@ -212,7 +245,7 @@ fun DepartureView(
                         text = departure.platform!!.type + " " +  departure.platform!!.name,
 //                                textAlign = TextAlign.End,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         fontWeight = FontWeight(300),
                         modifier = Modifier.fillMaxWidth(),
@@ -226,13 +259,13 @@ fun DepartureView(
                 modifier = Modifier
                     .padding(start = 4.dp)
 //                    .background(
-//                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
+//                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
 //                    )
             ){
                 Text(
                     text = "Upcoming Stops:",
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     fontWeight = FontWeight(400),
                     modifier = Modifier.fillMaxWidth(),

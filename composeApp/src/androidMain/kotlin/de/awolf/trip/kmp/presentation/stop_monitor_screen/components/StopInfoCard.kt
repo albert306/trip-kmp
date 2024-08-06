@@ -47,7 +47,7 @@ fun StopInfoCard(
             .fillMaxWidth()
             .clickableWithoutRipple { expandStopInfo() }
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(0.dp, 0.dp, 24.dp, 24.dp)
             )
             .padding(12.dp)
@@ -57,7 +57,7 @@ fun StopInfoCard(
             Text(
                 text = stop.name,
                 fontSize = 22.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight(400),
@@ -73,7 +73,7 @@ fun StopInfoCard(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "close StopMonitor",
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(26.dp)
                 )
             }
@@ -88,13 +88,13 @@ fun StopInfoCard(
                 Text(
                     text = stop.region,
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight(200),
                 )
                 Text(
                     text = "•",
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight(200),
                     modifier = Modifier.padding(horizontal = 8.dp),
                 )
@@ -109,7 +109,7 @@ fun StopInfoCard(
                         monthNumber()
                     }),
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight(200),
                 )
             }
