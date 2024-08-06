@@ -44,7 +44,10 @@ fun HomeScreen(
             item {
                 Spacer(modifier = Modifier.height(6.dp))
             }
-            items(items = recommendedStops, key = { stop: Stop -> stop.id }) { stop ->
+            items(
+                items = recommendedStops,
+                key = { it.id })
+            { stop ->
                 StopView(
                     stop = stop,
                     onFavouriteStarClick = {},
