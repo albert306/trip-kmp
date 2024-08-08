@@ -1,20 +1,22 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
 
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqlDelight)
+}
+
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
 }
 
 kotlin {
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
+    androidTarget()
     
     listOf(
         iosX64(),
@@ -32,14 +34,25 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.viewmodel)
             implementation(libs.koin.android)
+            implementation(libs.sqldelight.android)
         }
         commonMain.dependencies { // multiplatform dependencies
             implementation(libs.bundles.ktor)
             api(libs.koin.core)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.sqldelight.coroutines)
         }
         iosMain.dependencies { // iOS dependencies
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native)
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("StopDatabase") {
+            packageName = "de.awolf.trip.kmp.shared.database"
         }
     }
 }

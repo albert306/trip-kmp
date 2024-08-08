@@ -61,9 +61,9 @@ class HomeScreenViewModel(
         onStopClicked(stop, selectedTime.value)
     }
 
-//    fun toggleFavouriteStop(stop: Stop) {
+//    fun toggleFavoriteStop(stop: Stop) {
 //        coroutineScope.launch {
-//            useCases.toggleAndReturnFavouriteStopStatusUseCase(stop)
+//            useCases.toggleAndReturnFavoriteStopStatusUseCase(stop)
 //            setRecommendedStops(searchText.value)
 //        }
 //    }

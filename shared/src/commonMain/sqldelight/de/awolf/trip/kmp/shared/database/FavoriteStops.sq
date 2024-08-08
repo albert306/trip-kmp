@@ -1,0 +1,5 @@
+CREATE TABLE favorite_stops (
+    stop_id INTEGER NOT NULL,
+    rank REAL,
+    FOREIGN KEY (stop_id) REFERENCES stops(id)
+);

@@ -12,7 +12,7 @@ class GetRecommendedStopsUseCase(
     suspend operator fun invoke(query: String): Result<List<Stop>, Error> {
 
         return if (query.length < 3) {
-            Result.Success(getFavouriteStops())
+            Result.Success(getFavoriteStops())
         } else {
             when (val response = vvoServiceRepository.getStopByName(
                 query = query, // add optional query parameters
@@ -21,9 +21,9 @@ class GetRecommendedStopsUseCase(
                     response
                 }
                 is Result.Success -> {
-                    // merge two with favourite stop information to show favourites in api response stoplist
-//                    val stopListMarkedFavourites = response.data!!.stops.map { stop ->
-//                        stop.isFavourite = stopDatabaseRepository.isStopFavourite(stop.id)
+                    // merge two with favorite stop information to show favorites in api response stoplist
+//                    val stopListMarkedFavorites = response.data!!.stops.map { stop ->
+//                        stop.isFavorite = stopDatabaseRepository.isStopFavorite(stop.id)
 //                        stop
 //                    }
 
@@ -32,7 +32,7 @@ class GetRecommendedStopsUseCase(
             }
         }
     }
-    private fun getFavouriteStops(): List<Stop> {
+    private fun getFavoriteStops(): List<Stop> {
         return emptyList()
     }
 }
