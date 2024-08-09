@@ -1,5 +1,5 @@
 CREATE TABLE stops (
-    id INTEGER NOT NULL PRIMARY KEY,
-    name Text NOT NULL,
-    region Text NOT NULL
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    region TEXT NOT NULL
 );
