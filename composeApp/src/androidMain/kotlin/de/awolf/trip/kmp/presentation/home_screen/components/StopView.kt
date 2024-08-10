@@ -39,16 +39,16 @@ private fun Preview() {
 @Composable
 fun StopView(
     stop: Stop,
-    onFavouriteStarClick: () -> Unit,
+    onFavoriteStarClick: () -> Unit,
     onNameClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Default: no favourite
+    // Default: no favorite
     var icon = painterResource(id = R.drawable.baseline_star_outline_24)
     var description = "outlined star"
 
-    if (stop.isFavourite) {
-        // if favourite
+    if (stop.isFavorite) {
+        // if favorite
         icon = painterResource(id = R.drawable.baseline_star_24)
         description = "filled star"
     }
@@ -71,7 +71,7 @@ fun StopView(
                 modifier = Modifier
                     .size(26.dp)
                     .clickableWithoutRipple {
-                        onFavouriteStarClick()
+                        onFavoriteStarClick()
                     }
             )
         }

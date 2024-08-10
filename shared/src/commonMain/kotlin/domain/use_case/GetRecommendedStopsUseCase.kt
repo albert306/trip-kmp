@@ -1,18 +1,20 @@
 package domain.use_case
 
 import domain.models.Stop
+import domain.repository.StopDatabaseRepository
 import domain.repository.VvoServiceRepository
 import util.error.Error
 import util.Result
 
 class GetRecommendedStopsUseCase(
     private val vvoServiceRepository: VvoServiceRepository,
+    private val stopDatabaseRepository: StopDatabaseRepository
 ) {
 
     suspend operator fun invoke(query: String): Result<List<Stop>, Error> {
 
         return if (query.length < 3) {
-            Result.Success(getFavouriteStops())
+            Result.Success(getFavoriteStops())
         } else {
             when (val response = vvoServiceRepository.getStopByName(
                 query = query, // add optional query parameters
@@ -21,18 +23,17 @@ class GetRecommendedStopsUseCase(
                     response
                 }
                 is Result.Success -> {
-                    // merge two with favourite stop information to show favourites in api response stoplist
-//                    val stopListMarkedFavourites = response.data!!.stops.map { stop ->
-//                        stop.isFavourite = stopDatabaseRepository.isStopFavourite(stop.id)
-//                        stop
-//                    }
 
-                    Result.Success(response.data.stops)
+                    val stopListMarkedFavorites = response.data.stops.map {
+                        it.copy(isFavorite = stopDatabaseRepository.isStopFavorite(it.id))
+                    }
+
+                    Result.Success(stopListMarkedFavorites)
                 }
             }
         }
     }
-    private fun getFavouriteStops(): List<Stop> {
-        return emptyList()
+    private suspend fun getFavoriteStops(): List<Stop> {
+        return stopDatabaseRepository.getAllFavoriteStops()
     }
 }

@@ -47,7 +47,7 @@ fun HomeScreen(
             items(items = recommendedStops, key = { stop: Stop -> stop.id }) { stop ->
                 StopView(
                     stop = stop,
-                    onFavouriteStarClick = {},
+                    onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
                     onNameClick = { viewModel.startStopMonitor(stop) },
                     modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                 )
