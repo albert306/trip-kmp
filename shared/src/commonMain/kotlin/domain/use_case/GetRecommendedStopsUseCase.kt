@@ -24,9 +24,8 @@ class GetRecommendedStopsUseCase(
                 }
                 is Result.Success -> {
 
-                    val stopListMarkedFavorites = response.data.stops.map { stop ->
-                        stop.isFavorite = stopDatabaseRepository.isStopFavorite(stop.id)
-                        stop
+                    val stopListMarkedFavorites = response.data.stops.map {
+                        it.copy(isFavorite = stopDatabaseRepository.isStopFavorite(it.id))
                     }
 
                     Result.Success(stopListMarkedFavorites)
