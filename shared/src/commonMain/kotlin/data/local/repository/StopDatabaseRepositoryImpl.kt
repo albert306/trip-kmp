@@ -11,10 +11,14 @@ class StopDatabaseRepositoryImpl(
     private val queries = db.favoriteStopsQueries
 
     override suspend fun getAllFavoriteStops(): List<Stop> {
-        return queries.getFavoriteStops().executeAsList().map {
+        val favorites = queries.getFavoriteStops().executeAsList()
+
+        if (favorites.isEmpty()) return emptyList()
+        return favorites.map {
             Stop(
                 id = it.id,
                 name = it.name,
+                region = it.region,
                 isFavorite = true
             )
         }
@@ -34,7 +38,8 @@ class StopDatabaseRepositoryImpl(
         queries.makeStopFavorite(
             id = stopId,
             name = name,
-            region = region
+            region = region,
+            rank = null
         )
     }
 

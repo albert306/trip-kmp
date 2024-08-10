@@ -24,9 +24,10 @@ SELECT 1
 FROM favorite_stops
 WHERE stop_id = :id;
 
-makeStopFavorite:
-INSERT OR REPLACE INTO stops (id, name, region) VALUES (:id, :name, :region);
-INSERT OR REPLACE INTO favorite_stops (stop_id, rank) VALUES (:id, :rank);
+makeStopFavorite {
+    INSERT OR REPLACE INTO stops (id, name, region) VALUES (:id, :name, :region);
+    INSERT OR REPLACE INTO favorite_stops (stop_id, rank) VALUES (:id, :rank);
+}
 
 makeStopNotFavorite:
 DELETE FROM favorite_stops
