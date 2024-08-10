@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.koin.core.component.KoinComponent
@@ -61,12 +62,20 @@ class HomeScreenViewModel(
         onStopClicked(stop, selectedTime.value)
     }
 
-//    fun toggleFavoriteStop(stop: Stop) {
-//        coroutineScope.launch {
-//            useCases.toggleAndReturnFavoriteStopStatusUseCase(stop)
-//            setRecommendedStops(searchText.value)
-//        }
-//    }
+    fun toggleFavoriteStop(stop: Stop) {
+        coroutineScope.launch {
+            useCases.toggleFavoriteStopUseCase(stop)
+            _recommendedStops.update { recommendedStops ->
+                recommendedStops.map {
+                    if (it.id == stop.id) {
+                        it.copy(isFavorite = !it.isFavorite)
+                    } else {
+                        it
+                    }
+                }
+            }
+        }
+    }
 
     private suspend fun setRecommendedStops(query: String) {
         when (val recommendedStopsResult = useCases.getRecommendedStopsUseCase(query)) {
