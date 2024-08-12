@@ -6,6 +6,7 @@ import domain.repository.StopDatabaseRepository
 import domain.repository.VvoServiceRepository
 import domain.use_case.GetRecommendedStopsUseCase
 import domain.use_case.GetStopMonitorUseCase
+import domain.use_case.ReorderFavoriteStopsUseCase
 import domain.use_case.ToggleFavoriteStopUseCase
 import domain.use_case.UseCases
 import org.koin.core.module.Module
@@ -28,7 +29,8 @@ val sharedModule = module {
         UseCases(
             GetRecommendedStopsUseCase(get(), get()),
             GetStopMonitorUseCase(get()),
-            ToggleFavoriteStopUseCase(get())
+            ToggleFavoriteStopUseCase(get()),
+            ReorderFavoriteStopsUseCase(get())
         )
     }.bind<UseCases>()
 }

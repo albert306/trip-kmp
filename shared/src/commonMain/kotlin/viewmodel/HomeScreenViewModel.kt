@@ -5,7 +5,6 @@ import domain.use_case.UseCases
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -42,7 +41,8 @@ class HomeScreenViewModel(
         _searchText
             .debounce(100L)
             .onEach { _isSearching.update { true } }
-            .combine(_recommendedStops, ) { text, _ ->
+            .onEach { text ->
+                println("call setRecommendedStops with query $text")
                 setRecommendedStops(text)
             }
             .onEach { _isSearching.update { false } }
@@ -65,14 +65,35 @@ class HomeScreenViewModel(
     fun toggleFavoriteStop(stop: Stop) {
         coroutineScope.launch {
             useCases.toggleFavoriteStopUseCase(stop)
+
             _recommendedStops.update { recommendedStops ->
-                recommendedStops.map {
-                    if (it.id == stop.id) {
-                        it.copy(isFavorite = !it.isFavorite)
-                    } else {
-                        it
+
+                if (stop.isFavorite) {
+                    recommendedStops.filter { it.id != stop.id }
+                } else {
+                    recommendedStops.map {
+                        if (it.id == stop.id) {
+                            it.copy(isFavorite = !it.isFavorite)
+                        } else {
+                            it
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    fun reorderFavoriteStop(stopId: String, from: Int, to: Int) {
+        println("reorderFavoriteStop $stopId from $from to $to")
+        coroutineScope.launch {
+            useCases.reorderFavoriteStops(stopId, from.toLong(), to.toLong())
+
+            _recommendedStops.update { list ->
+                val mutList = list.toMutableList()
+                mutList.apply {
+                    add(to, removeAt(from))
+                }
+                mutList
             }
         }
     }
