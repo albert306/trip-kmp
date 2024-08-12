@@ -1,5 +1,8 @@
 package de.awolf.trip.kmp.presentation.home_screen
 
+import android.os.Build
+import android.view.HapticFeedbackConstants
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
@@ -21,6 +25,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import viewmodel.HomeScreenViewModel
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
@@ -30,13 +35,16 @@ fun HomeScreen(
     val searchText by viewModel.searchText.collectAsState()
 //    val isSearching by viewModel.isSearching.collectAsState() not currently in use
     val recommendedStops by viewModel.recommendedStops.collectAsState()
+    val view = LocalView.current
 
     val lazyListState = rememberLazyListState()
+
     val reorderableLazyListState = rememberReorderableLazyListState(
         lazyListState = lazyListState,
         scrollThresholdPadding = PaddingValues(top = 100.dp)
     ) { from, to ->
         viewModel.reorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
+        view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_TICK)
     }
 
     Column(
@@ -80,8 +88,8 @@ fun HomeScreen(
                         IconButton(
                             onClick = {},
                             modifier = Modifier
-                                .draggableHandle()
                                 .align(Alignment.CenterEnd)
+                                .draggableHandle()
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Menu,
