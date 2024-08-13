@@ -12,18 +12,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import util.CoroutineViewModel
 import util.Result
+import viewmodel.helper.PickableDateTime
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
@@ -38,7 +34,7 @@ class HomeScreenViewModel(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private val _selectedDateTime = MutableStateFlow(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()))
+    private val _selectedDateTime: MutableStateFlow<PickableDateTime> = MutableStateFlow(PickableDateTime())
     val selectedDateTime = _selectedDateTime.asStateFlow()
 
     private val _stopList = MutableStateFlow(listOf<Stop>())
@@ -75,7 +71,7 @@ class HomeScreenViewModel(
     fun startStopMonitor(stop: Stop?) {
         if (stop == null) { return } //TODO(give user feedback that no such stop was found)
 
-        onStopClicked(stop, selectedDateTime.value.toInstant(TimeZone.currentSystemDefault()))
+        onStopClicked(stop, selectedDateTime.value.toInstant())
     }
 
     fun toggleFavoriteStop(stop: Stop) {
@@ -100,16 +96,17 @@ class HomeScreenViewModel(
     }
 
     fun changeSelectedDate(date: LocalDate) {
-        _selectedDateTime.update { selectedTime ->
-            LocalDateTime(date, selectedTime.time)
-        }
+        _selectedDateTime.update { it.copy(date = date) }
     }
 
     fun changeSelectedTime(time: LocalTime) {
-        _selectedDateTime.update { selectedTime ->
-            LocalDateTime(selectedTime.date, time)
-        }
+        _selectedDateTime.update { it.copy(time = time) }
     }
+
+    fun resetDateTime() {
+        _selectedDateTime.update { PickableDateTime() }
+    }
+
 
     fun reorderFavoriteStop(stopId: String, from: Int, to: Int) {
         coroutineScope.launch {

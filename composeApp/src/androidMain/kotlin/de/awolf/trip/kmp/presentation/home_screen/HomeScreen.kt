@@ -36,6 +36,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import viewmodel.HomeScreenViewModel
 import domain.models.StopListSource
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -55,12 +56,15 @@ fun HomeScreen(
     val stopList by viewModel.stopList.collectAsState()
     val stopListSource by viewModel.stopListSource.collectAsState()
 
-
     val view = LocalView.current
+    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     val datePickerState = rememberDatePickerState()
     val showDatePicker = remember { mutableStateOf(false) }
-    val timePickerState = rememberTimePickerState()
+    val timePickerState = rememberTimePickerState(
+        initialHour = now.hour,
+        initialMinute = now.minute
+    )
     val showTimePicker = remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()

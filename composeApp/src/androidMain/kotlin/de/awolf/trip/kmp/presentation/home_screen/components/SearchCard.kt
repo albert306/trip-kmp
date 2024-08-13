@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -34,12 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import kotlinx.datetime.toLocalDateTime
+import viewmodel.helper.PickableDateTime
 
 @Preview(showBackground = true)
 @Composable
@@ -53,9 +53,7 @@ private fun SearchCardPreview() {
                 SearchCard(
                     searchText = "",
                     onSearchTextChange = {},
-                    selectedDateTime = LocalDateTime(2024, 1, 1, 12, 0),
-                    onShowDatePicker = {},
-                    onShowTimePicker = {},
+                    selectedDateTime = PickableDateTime(),
                     onSearchButtonClick = {},
                     modifier = Modifier
                         .fillMaxWidth()
@@ -70,13 +68,14 @@ private fun SearchCardPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchCard(
+    modifier: Modifier = Modifier,
     searchText: String,
     onSearchTextChange: (newText: String) -> Unit,
-    selectedDateTime: LocalDateTime,
-    onShowDatePicker: () -> Unit,
-    onShowTimePicker: () -> Unit,
+    selectedDateTime: PickableDateTime,
+    onShowDatePicker: () -> Unit = {},
+    onShowTimePicker: () -> Unit = {},
+    onResetDateTime: () -> Unit = {},
     onSearchButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -85,7 +84,7 @@ fun SearchCard(
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp)
             )
-            .padding(top = 8.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
+            .padding(top = 4.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
     ) {
         OutlinedTextField(
             value = searchText,
@@ -100,7 +99,7 @@ fun SearchCard(
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "delete text",
+                    contentDescription = "Delete origin text",
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .size(26.dp)
@@ -126,24 +125,30 @@ fun SearchCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
         ) {
-            val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
-            val dateString = if (selectedDateTime.date == today.date) {
+            val dateString: String = if (!selectedDateTime.hasDate()) {
                 "Today"
             } else {
-                selectedDateTime.format(LocalDateTime.Format {
+                selectedDateTime.date!!.format(LocalDate.Format {
                     dayOfMonth()
                     char('.')
                     monthNumber()
                     char('.')
                 })
             }
-            Text(
-                text = selectedDateTime.format(LocalDateTime.Format {
+
+            val timeString: String = if (!selectedDateTime.hasTime()) {
+                "Now"
+            } else {
+                selectedDateTime.time!!.format(LocalTime.Format {
                     hour()
                     char(':')
                     minute()
-                }),
+                })
+            }
+
+            Text(
+                text = timeString,
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight(400),
@@ -153,7 +158,13 @@ fun SearchCard(
                     }
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "•",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight(300),
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
 
             Text(
                 text = dateString,
@@ -166,6 +177,27 @@ fun SearchCard(
                     }
             )
 
+            if (selectedDateTime.hasDate() || selectedDateTime.hasTime()) {
+                Button(
+                    onClick = { onResetDateTime() },
+                    contentPadding = PaddingValues(0.dp),
+                    shape = RoundedCornerShape(4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    ),
+                    modifier = Modifier
+                        .height(24.dp)
+                        .padding(start = 8.dp)
+                ) {
+                    Text(
+                        text = "Reset",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight(400),
+                    )
+                }
+            }
+
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -173,6 +205,10 @@ fun SearchCard(
                 onClick = { onSearchButtonClick() },
                 contentPadding = PaddingValues(0.dp),
                 shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 modifier = Modifier
                     .size(width = 110.dp, height = 30.dp)
             ) {
