@@ -1,11 +1,11 @@
 package viewmodel
 
 import domain.models.Stop
+import domain.models.StopListSource
 import domain.use_case.UseCases
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -34,15 +34,19 @@ class HomeScreenViewModel(
     private val _selectedTime = MutableStateFlow(Clock.System.now())
     val selectedTime = _selectedTime.asStateFlow()
 
-    private val _recommendedStops = MutableStateFlow(listOf<Stop>())
-    val recommendedStops = _recommendedStops.asStateFlow()
+    private val _stopList = MutableStateFlow(listOf<Stop>())
+    val stopList = _stopList.asStateFlow()
+
+    private val _stopListSource = MutableStateFlow(StopListSource.FAVORITES)
+    val stopListSource = _stopListSource.asStateFlow()
 
 
     init {
         _searchText
             .debounce(100L)
             .onEach { _isSearching.update { true } }
-            .combine(_recommendedStops, ) { text, _ ->
+            .onEach { text ->
+                println("call setRecommendedStops with query $text")
                 setRecommendedStops(text)
             }
             .onEach { _isSearching.update { false } }
@@ -65,14 +69,34 @@ class HomeScreenViewModel(
     fun toggleFavoriteStop(stop: Stop) {
         coroutineScope.launch {
             useCases.toggleFavoriteStopUseCase(stop)
-            _recommendedStops.update { recommendedStops ->
-                recommendedStops.map {
-                    if (it.id == stop.id) {
-                        it.copy(isFavorite = !it.isFavorite)
-                    } else {
-                        it
+
+            _stopList.update { recommendedStops ->
+
+                if (stop.isFavorite) {
+                    recommendedStops.filter { it.id != stop.id }
+                } else {
+                    recommendedStops.map {
+                        if (it.id == stop.id) {
+                            it.copy(isFavorite = !it.isFavorite)
+                        } else {
+                            it
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    fun reorderFavoriteStop(stopId: String, from: Int, to: Int) {
+        coroutineScope.launch {
+            useCases.reorderFavoriteStops(stopId, from.toLong(), to.toLong())
+
+            _stopList.update { list ->
+                val mutList = list.toMutableList()
+                mutList.apply {
+                    add(to, removeAt(from))
+                }
+                mutList
             }
         }
     }
@@ -81,11 +105,17 @@ class HomeScreenViewModel(
         when (val recommendedStopsResult = useCases.getRecommendedStopsUseCase(query)) {
             is Result.Error -> {
                 // TODO: display error
-                _recommendedStops.update { emptyList() }
+                _stopList.update { emptyList() }
             }
             is Result.Success -> {
-                _recommendedStops.update { recommendedStopsResult.data }
+                _stopList.update { recommendedStopsResult.data }
             }
+        }
+
+        if (query.length < 3) {
+            _stopListSource.update { StopListSource.FAVORITES }
+        } else {
+            _stopListSource.update { StopListSource.SEARCH }
         }
     }
 }

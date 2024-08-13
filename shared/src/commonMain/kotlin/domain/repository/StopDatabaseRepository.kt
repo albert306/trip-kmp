@@ -18,4 +18,10 @@ interface StopDatabaseRepository {
     suspend fun makeStopNotFavorite(
         stopId: String
     )
+
+    suspend fun reorderFavoriteStop(
+        stopId: String,
+        oldRank: Long,
+        newRank: Long
+    )
 }

@@ -4,4 +4,5 @@ data class UseCases(
     val getRecommendedStopsUseCase: GetRecommendedStopsUseCase,
     val getStopMonitorUseCase: GetStopMonitorUseCase,
     val toggleFavoriteStopUseCase: ToggleFavoriteStopUseCase,
+    val reorderFavoriteStops: ReorderFavoriteStopsUseCase,
 )

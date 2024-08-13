@@ -1,6 +1,6 @@
 CREATE TABLE favorite_stops (
     stop_id TEXT NOT NULL,
-    rank REAL,
+    rank INTEGER NOT NULL,
     FOREIGN KEY (stop_id) REFERENCES stops(id)
 );
 
@@ -26,10 +26,27 @@ WHERE stop_id = :id;
 
 makeStopFavorite {
     INSERT OR REPLACE INTO stops (id, name, region) VALUES (:id, :name, :region);
-    INSERT OR REPLACE INTO favorite_stops (stop_id, rank) VALUES (:id, :rank);
+    INSERT OR REPLACE INTO favorite_stops (stop_id, rank) VALUES (
+        :id,
+        (SELECT COALESCE(MAX(rank), -1) + 1 FROM favorite_stops)
+    );
 }
 
 makeStopNotFavorite:
 DELETE FROM favorite_stops
 WHERE stop_id = :id;
+
+reorderFavoriteStop {
+    UPDATE favorite_stops
+    SET rank = rank - 1
+    WHERE rank > :oldRank AND rank <= :newRank;
+
+    UPDATE favorite_stops
+    SET rank = rank + 1
+    WHERE rank >= :newRank AND rank < :oldRank;
+
+    UPDATE favorite_stops
+    SET rank = :newRank
+    WHERE stop_id = :id;
+}
 

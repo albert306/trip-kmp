@@ -39,7 +39,6 @@ class StopDatabaseRepositoryImpl(
             id = stopId,
             name = name,
             region = region,
-            rank = null
         )
     }
 
@@ -47,5 +46,17 @@ class StopDatabaseRepositoryImpl(
         stopId: String
     ) {
         queries.makeStopNotFavorite(stopId)
+    }
+
+    override suspend fun reorderFavoriteStop(
+        stopId: String,
+        oldRank: Long,
+        newRank: Long
+    ) {
+        queries.reorderFavoriteStop(
+            id = stopId,
+            oldRank = oldRank,
+            newRank = newRank
+        )
     }
 }
