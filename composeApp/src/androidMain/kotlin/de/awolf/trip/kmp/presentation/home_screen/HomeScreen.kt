@@ -24,6 +24,7 @@ import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import viewmodel.HomeScreenViewModel
+import domain.models.StopListSource
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalFoundationApi::class)
@@ -34,7 +35,10 @@ fun HomeScreen(
 
     val searchText by viewModel.searchText.collectAsState()
 //    val isSearching by viewModel.isSearching.collectAsState() not currently in use
-    val recommendedStops by viewModel.recommendedStops.collectAsState()
+    val stopList by viewModel.stopList.collectAsState()
+    val stopListSource by viewModel.stopListSource.collectAsState()
+
+
     val view = LocalView.current
 
     val lazyListState = rememberLazyListState()
@@ -55,7 +59,7 @@ fun HomeScreen(
         SearchCard(
             searchText = searchText,
             onSearchTextChange = viewModel::onSearchTextChange,
-            onSearchButtonClick = { viewModel.startStopMonitor(recommendedStops.firstOrNull()) },
+            onSearchButtonClick = { viewModel.startStopMonitor(stopList.firstOrNull()) },
             modifier = Modifier
                 .height(100.dp)
                 .zIndex(2f)
@@ -71,35 +75,49 @@ fun HomeScreen(
             item {
                 Spacer(modifier = Modifier.height(6.dp))
             }
-            items(items = recommendedStops, key = { it.id }) { stop ->
-                ReorderableItem(
-                    state = reorderableLazyListState,
-                    key = stop.id
-                ) {
-                    Box {
-                        StopView(
-                            stop = stop,
-                            onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
-                            onNameClick = { viewModel.startStopMonitor(stop) },
+            items(items = stopList, key = { it.id }) { stop ->
+                if (stopListSource == StopListSource.FAVORITES) {
+                    ReorderableItem(
+                        state = reorderableLazyListState,
+                        key = stop.id
+                    ) {
+                        Box(
                             modifier = Modifier
-                                .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                 .fillMaxWidth()
-                        )
-                        IconButton(
-                            onClick = {},
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .draggableHandle()
                         ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Menu,
-                                contentDescription = "Reorder",
-                                tint = MaterialTheme.colorScheme.onSurface
+                            StopView(
+                                stop = stop,
+                                onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
+                                onNameClick = { viewModel.startStopMonitor(stop) },
+                                modifier = Modifier
+                                    .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                                    .fillMaxWidth(fraction = 0.9f)
                             )
+                            IconButton(
+                                onClick = {},
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .draggableHandle()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Menu,
+                                    contentDescription = "Reorder",
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
                     }
-
+                } else {
+                    StopView(
+                        stop = stop,
+                        onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
+                        onNameClick = { viewModel.startStopMonitor(stop) },
+                        modifier = Modifier
+                            .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                            .fillMaxWidth()
+                    )
                 }
+
             }
         }
     }

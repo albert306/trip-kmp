@@ -1,6 +1,7 @@
 package viewmodel
 
 import domain.models.Stop
+import domain.models.StopListSource
 import domain.use_case.UseCases
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +34,11 @@ class HomeScreenViewModel(
     private val _selectedTime = MutableStateFlow(Clock.System.now())
     val selectedTime = _selectedTime.asStateFlow()
 
-    private val _recommendedStops = MutableStateFlow(listOf<Stop>())
-    val recommendedStops = _recommendedStops.asStateFlow()
+    private val _stopList = MutableStateFlow(listOf<Stop>())
+    val stopList = _stopList.asStateFlow()
+
+    private val _stopListSource = MutableStateFlow(StopListSource.FAVORITES)
+    val stopListSource = _stopListSource.asStateFlow()
 
 
     init {
@@ -66,7 +70,7 @@ class HomeScreenViewModel(
         coroutineScope.launch {
             useCases.toggleFavoriteStopUseCase(stop)
 
-            _recommendedStops.update { recommendedStops ->
+            _stopList.update { recommendedStops ->
 
                 if (stop.isFavorite) {
                     recommendedStops.filter { it.id != stop.id }
@@ -84,11 +88,10 @@ class HomeScreenViewModel(
     }
 
     fun reorderFavoriteStop(stopId: String, from: Int, to: Int) {
-        println("reorderFavoriteStop $stopId from $from to $to")
         coroutineScope.launch {
             useCases.reorderFavoriteStops(stopId, from.toLong(), to.toLong())
 
-            _recommendedStops.update { list ->
+            _stopList.update { list ->
                 val mutList = list.toMutableList()
                 mutList.apply {
                     add(to, removeAt(from))
@@ -102,11 +105,17 @@ class HomeScreenViewModel(
         when (val recommendedStopsResult = useCases.getRecommendedStopsUseCase(query)) {
             is Result.Error -> {
                 // TODO: display error
-                _recommendedStops.update { emptyList() }
+                _stopList.update { emptyList() }
             }
             is Result.Success -> {
-                _recommendedStops.update { recommendedStopsResult.data }
+                _stopList.update { recommendedStopsResult.data }
             }
+        }
+
+        if (query.length < 3) {
+            _stopListSource.update { StopListSource.FAVORITES }
+        } else {
+            _stopListSource.update { StopListSource.SEARCH }
         }
     }
 }
