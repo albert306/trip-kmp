@@ -1,5 +1,6 @@
 package de.awolf.trip.kmp.presentation.home_screen
 
+import android.app.TimePickerDialog
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import androidx.annotation.RequiresApi
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,15 +66,26 @@ fun HomeScreen(
 
 
     if (showDatePicker.value) {
-        DatePicker(
-            state = datePickerState,
-        )
+        DatePickerDialog(
+            onDismissRequest = { /*TODO*/ },
+            confirmButton = { /*TODO*/ }
+        ) {
+            DatePicker(
+                state = datePickerState,
+            )
+        }
+
     }
 
     if (showTimePicker.value) {
-        TimePicker(
-            state = timePickerState
-        )
+        TimePickerDialog(
+            onDismissRequest = { /*TODO*/ },
+            confirmButton = { /*TODO*/ }
+        ) {
+            TimePicker(
+                state = timePickerState
+            )
+        }
     }
 
 
@@ -89,15 +102,14 @@ fun HomeScreen(
             onShowTimePicker = { showTimePicker.value = true },
             onSearchButtonClick = { viewModel.startStopMonitor(stopList.firstOrNull()) },
             modifier = Modifier
-                .height(100.dp)
-                .zIndex(2f)
+                .zIndex(1f)
                 .fillMaxWidth()
         )
         LazyColumn(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
-                .zIndex(1f)
+                .zIndex(0f)
                 .fillMaxSize(),
         ) {
             item {
