@@ -14,6 +14,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import util.CoroutineViewModel
@@ -32,8 +38,8 @@ class HomeScreenViewModel(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private val _selectedTime = MutableStateFlow(Clock.System.now())
-    val selectedTime = _selectedTime.asStateFlow()
+    private val _selectedDateTime = MutableStateFlow(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()))
+    val selectedDateTime = _selectedDateTime.asStateFlow()
 
     private val _stopList = MutableStateFlow(listOf<Stop>())
     val stopList = _stopList.asStateFlow()
@@ -69,7 +75,7 @@ class HomeScreenViewModel(
     fun startStopMonitor(stop: Stop?) {
         if (stop == null) { return } //TODO(give user feedback that no such stop was found)
 
-        onStopClicked(stop, selectedTime.value)
+        onStopClicked(stop, selectedDateTime.value.toInstant(TimeZone.currentSystemDefault()))
     }
 
     fun toggleFavoriteStop(stop: Stop) {
@@ -90,6 +96,18 @@ class HomeScreenViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun changeSelectedDate(date: LocalDate) {
+        _selectedDateTime.update { selectedTime ->
+            LocalDateTime(date, selectedTime.time)
+        }
+    }
+
+    fun changeSelectedTime(time: LocalTime) {
+        _selectedDateTime.update { selectedTime ->
+            LocalDateTime(selectedTime.date, time)
         }
     }
 

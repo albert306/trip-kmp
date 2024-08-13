@@ -1,6 +1,5 @@
 package de.awolf.trip.kmp.presentation.home_screen
 
-import android.app.TimePickerDialog
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import androidx.annotation.RequiresApi
@@ -13,11 +12,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
@@ -28,10 +31,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
+import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import viewmodel.HomeScreenViewModel
 import domain.models.StopListSource
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -41,7 +50,7 @@ fun HomeScreen(
 ) {
 
     val searchText by viewModel.searchText.collectAsState()
-    val selectedTime by viewModel.selectedTime.collectAsState()
+    val selectedDateTime by viewModel.selectedDateTime.collectAsState()
 //    val isSearching by viewModel.isSearching.collectAsState() not currently in use
     val stopList by viewModel.stopList.collectAsState()
     val stopListSource by viewModel.stopListSource.collectAsState()
@@ -65,29 +74,18 @@ fun HomeScreen(
     }
 
 
-    if (showDatePicker.value) {
-        DatePickerDialog(
-            onDismissRequest = { /*TODO*/ },
-            confirmButton = { /*TODO*/ }
-        ) {
-            DatePicker(
-                state = datePickerState,
-            )
+    DateAndTimePickers(
+        showDatePicker = showDatePicker,
+        datePickerState = datePickerState,
+        showTimePicker = showTimePicker,
+        timePickerState = timePickerState,
+        onDateConfirm = { date ->
+            viewModel.changeSelectedDate(date)
+        },
+        onTimeConfirm = { time ->
+            viewModel.changeSelectedTime(time)
         }
-
-    }
-
-    if (showTimePicker.value) {
-        TimePickerDialog(
-            onDismissRequest = { /*TODO*/ },
-            confirmButton = { /*TODO*/ }
-        ) {
-            TimePicker(
-                state = timePickerState
-            )
-        }
-    }
-
+    )
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-10).dp),
@@ -97,7 +95,7 @@ fun HomeScreen(
         SearchCard(
             searchText = searchText,
             onSearchTextChange = viewModel::onSearchTextChange,
-            selectedTime = selectedTime,
+            selectedDateTime = selectedDateTime,
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
             onSearchButtonClick = { viewModel.startStopMonitor(stopList.firstOrNull()) },
@@ -159,6 +157,79 @@ fun HomeScreen(
                 }
 
             }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun DateAndTimePickers(
+    showDatePicker: MutableState<Boolean>,
+    datePickerState: DatePickerState,
+    onDateConfirm: (date: LocalDate) -> Unit,
+    showTimePicker: MutableState<Boolean>,
+    timePickerState: TimePickerState,
+    onTimeConfirm: (time: LocalTime) -> Unit
+) {
+    if (showDatePicker.value) {
+        DatePickerDialog(
+            onDismissRequest = {
+                showDatePicker.value = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker.value = false
+//                        if (datePickerState.selectedDateMillis == null) return@TextButton
+                        onDateConfirm(
+                            Instant.fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .date
+                        )
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker.value = false
+                    }
+                ) { Text("Cancel") }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+            )
+        }
+
+    }
+
+    if (showTimePicker.value) {
+        TimePickerDialog(
+            onDismissRequest = {
+                showDatePicker.value = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showTimePicker.value = false
+                        onTimeConfirm(
+                            LocalTime(timePickerState.hour, timePickerState.minute)
+                        )
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showTimePicker.value = false
+                    }
+                ) { Text("Cancel") }
+            }
+        ) {
+            TimePicker(
+                state = timePickerState
+            )
         }
     }
 }

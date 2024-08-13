@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
@@ -54,7 +53,7 @@ private fun SearchCardPreview() {
                 SearchCard(
                     searchText = "",
                     onSearchTextChange = {},
-                    selectedTime = Instant.DISTANT_PAST,
+                    selectedDateTime = LocalDateTime(2024, 1, 1, 12, 0),
                     onShowDatePicker = {},
                     onShowTimePicker = {},
                     onSearchButtonClick = {},
@@ -73,7 +72,7 @@ private fun SearchCardPreview() {
 fun SearchCard(
     searchText: String,
     onSearchTextChange: (newText: String) -> Unit,
-    selectedTime: Instant,
+    selectedDateTime: LocalDateTime,
     onShowDatePicker: () -> Unit,
     onShowTimePicker: () -> Unit,
     onSearchButtonClick: () -> Unit,
@@ -127,27 +126,24 @@ fun SearchCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
         ) {
-            val selectedDateTime = selectedTime.toLocalDateTime(TimeZone.currentSystemDefault())
             val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
             val dateString = if (selectedDateTime.date == today.date) {
                 "Today"
             } else {
-                selectedTime.toLocalDateTime(TimeZone.currentSystemDefault())
-                    .format(LocalDateTime.Format {
-                        dayOfMonth()
-                        char('.')
-                        monthNumber()
-                        char('.')
-                    })
+                selectedDateTime.format(LocalDateTime.Format {
+                    dayOfMonth()
+                    char('.')
+                    monthNumber()
+                    char('.')
+                })
             }
             Text(
-                text = selectedTime.toLocalDateTime(TimeZone.currentSystemDefault())
-                    .format(LocalDateTime.Format {
-                        hour()
-                        char(':')
-                        minute()
-                    }),
+                text = selectedDateTime.format(LocalDateTime.Format {
+                    hour()
+                    char(':')
+                    minute()
+                }),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight(400),
