@@ -38,7 +38,7 @@ class HomeScreenViewModel(
     private val _stopList = MutableStateFlow(listOf<Stop>())
     val stopList = _stopList.asStateFlow()
 
-    private val _stopListSource = MutableStateFlow(StopListSource.FAVORITES)
+    private val _stopListSource = MutableStateFlow(StopListSource.NONE)
     val stopListSource = _stopListSource.asStateFlow()
 
 
@@ -46,7 +46,7 @@ class HomeScreenViewModel(
         _searchText
             .debounce(100L)
             .onEach { text ->
-                if (text.length < 3) {
+                if (text.length < 3 && stopListSource.value != StopListSource.FAVORITES) {
                     setFavoriteStops()
                 }
             }
@@ -121,6 +121,7 @@ class HomeScreenViewModel(
     }
 
     private suspend fun setFavoriteStops() {
+        println("setFavoriteStops")
         when (val favoriteStopsResult = useCases.getFavoriteStopsUseCase()) {
             is Result.Error -> {
                 // TODO: display error
