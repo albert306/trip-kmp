@@ -4,7 +4,8 @@ import data.local.repository.StopDatabaseRepositoryImpl
 import data.networking.repository.VvoServiceRepositoryImpl
 import domain.repository.StopDatabaseRepository
 import domain.repository.VvoServiceRepository
-import domain.use_case.GetRecommendedStopsUseCase
+import domain.use_case.FindStopByQueryUseCase
+import domain.use_case.GetFavoriteStopsUseCase
 import domain.use_case.GetStopMonitorUseCase
 import domain.use_case.ReorderFavoriteStopsUseCase
 import domain.use_case.ToggleFavoriteStopUseCase
@@ -27,7 +28,8 @@ val sharedModule = module {
 
     single {
         UseCases(
-            GetRecommendedStopsUseCase(get(), get()),
+            FindStopByQueryUseCase(get(), get()),
+            GetFavoriteStopsUseCase(get()),
             GetStopMonitorUseCase(get()),
             ToggleFavoriteStopUseCase(get()),
             ReorderFavoriteStopsUseCase(get())

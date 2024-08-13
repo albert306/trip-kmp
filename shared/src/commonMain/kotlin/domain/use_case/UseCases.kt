@@ -1,7 +1,8 @@
 package domain.use_case
 
 data class UseCases(
-    val getRecommendedStopsUseCase: GetRecommendedStopsUseCase,
+    val findStopByQueryUseCase: FindStopByQueryUseCase,
+    val getFavoriteStopsUseCase: GetFavoriteStopsUseCase,
     val getStopMonitorUseCase: GetStopMonitorUseCase,
     val toggleFavoriteStopUseCase: ToggleFavoriteStopUseCase,
     val reorderFavoriteStops: ReorderFavoriteStopsUseCase,

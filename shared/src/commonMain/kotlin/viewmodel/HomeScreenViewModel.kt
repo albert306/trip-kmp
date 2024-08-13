@@ -7,6 +7,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -44,12 +45,17 @@ class HomeScreenViewModel(
     init {
         _searchText
             .debounce(100L)
-            .onEach { _isSearching.update { true } }
             .onEach { text ->
-                println("call setRecommendedStops with query $text")
-                setRecommendedStops(text)
+                if (text.length < 3) {
+                    setFavoriteStops()
+                }
             }
-            .onEach { _isSearching.update { false } }
+            .filter { it.length >= 3 } // Vvo api only returns results for 3 or more characters
+            .onEach { text ->
+                _isSearching.update { true }
+                setStopsByQuery(text)
+                _isSearching.update { false }
+            }
             .launchIn(
                 coroutineScope
             )
@@ -101,21 +107,30 @@ class HomeScreenViewModel(
         }
     }
 
-    private suspend fun setRecommendedStops(query: String) {
-        when (val recommendedStopsResult = useCases.getRecommendedStopsUseCase(query)) {
+    private suspend fun setStopsByQuery(query: String) {
+        when (val recommendedStopsResult = useCases.findStopByQueryUseCase(query)) {
             is Result.Error -> {
                 // TODO: display error
                 _stopList.update { emptyList() }
             }
             is Result.Success -> {
-                _stopList.update { recommendedStopsResult.data }
+                _stopList.update { recommendedStopsResult.data.stops }
             }
         }
+        _stopListSource.update { StopListSource.SEARCH }
+    }
 
-        if (query.length < 3) {
-            _stopListSource.update { StopListSource.FAVORITES }
-        } else {
-            _stopListSource.update { StopListSource.SEARCH }
+    private suspend fun setFavoriteStops() {
+        when (val favoriteStopsResult = useCases.getFavoriteStopsUseCase()) {
+            is Result.Error -> {
+                // TODO: display error
+                _stopList.update { emptyList() }
+            }
+
+            is Result.Success -> {
+                _stopList.update { favoriteStopsResult.data }
+            }
         }
+        _stopListSource.update { StopListSource.FAVORITES }
     }
 }
