@@ -63,7 +63,8 @@ fun HomeScreen(
     val showDatePicker = remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState(
         initialHour = now.hour,
-        initialMinute = now.minute
+        initialMinute = now.minute,
+        is24Hour = true,
     )
     val showTimePicker = remember { mutableStateOf(false) }
 
@@ -102,6 +103,7 @@ fun HomeScreen(
             selectedDateTime = selectedDateTime,
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
+            onResetDateTime = { viewModel.resetDateTime() },
             onSearchButtonClick = { viewModel.startStopMonitor(stopList.firstOrNull()) },
             modifier = Modifier
                 .zIndex(1f)
