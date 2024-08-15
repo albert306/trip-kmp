@@ -2,6 +2,7 @@ package de.awolf.trip.kmp.presentation.home_screen
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -84,12 +85,9 @@ fun HomeScreen(
         datePickerState = datePickerState,
         showTimePicker = showTimePicker,
         timePickerState = timePickerState,
-        onDateConfirm = { date ->
-            viewModel.changeSelectedDate(date)
-        },
-        onTimeConfirm = { time ->
-            viewModel.changeSelectedTime(time)
-        }
+        onDateConfirm = viewModel::changeSelectedDate,
+        dateTimeIsValid = viewModel::dateTimeIsValid,
+        onTimeConfirm = viewModel::changeSelectedTime
     )
 
     Column(
@@ -175,8 +173,11 @@ private fun DateAndTimePickers(
     onDateConfirm: (date: LocalDate) -> Unit,
     showTimePicker: MutableState<Boolean>,
     timePickerState: TimePickerState,
+    dateTimeIsValid: (date: LocalDate?, time: LocalTime?) -> Boolean,
     onTimeConfirm: (time: LocalTime) -> Unit
 ) {
+    val context = LocalView.current.context
+
     if (showDatePicker.value) {
         DatePickerDialog(
             onDismissRequest = {
@@ -185,12 +186,22 @@ private fun DateAndTimePickers(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        val selected = Instant.fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                            .date
+
+                        if (!dateTimeIsValid(selected, null)) {
+                            Toast.makeText(
+                                context,
+                                "Please select a date in the future",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@TextButton
+                        }
+
                         showDatePicker.value = false
-//                        if (datePickerState.selectedDateMillis == null) return@TextButton
                         onDateConfirm(
-                            Instant.fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
-                                .toLocalDateTime(TimeZone.currentSystemDefault())
-                                .date
+                            selected
                         )
                     }
                 ) { Text("OK") }
@@ -218,9 +229,21 @@ private fun DateAndTimePickers(
             confirmButton = {
                 TextButton(
                     onClick = {
+
+                        val selected = LocalTime(timePickerState.hour, timePickerState.minute)
+
+                        if (!dateTimeIsValid(null, selected)) {
+                            Toast.makeText(
+                                context,
+                                "Please select a time in the future",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@TextButton
+                        }
+
                         showTimePicker.value = false
                         onTimeConfirm(
-                            LocalTime(timePickerState.hour, timePickerState.minute)
+                            selected
                         )
                     }
                 ) { Text("OK") }

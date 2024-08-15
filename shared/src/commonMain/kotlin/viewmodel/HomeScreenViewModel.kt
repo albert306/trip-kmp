@@ -103,15 +103,13 @@ class HomeScreenViewModel(
 
     fun changeSelectedDate(date: LocalDate) {
         _selectedDateTime.update { it.copy(date = date) }
-        validateDateTime()
     }
 
     fun changeSelectedTime(time: LocalTime) {
         _selectedDateTime.update { it.copy(time = time) }
-        validateDateTime()
     }
 
-    private fun validateDateTime() {
+    private fun dateTimeIsValid() {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateTo(DateTimeUnit.MINUTE)
         val selected = LocalDateTime(
             selectedDateTime.value.date ?: now.date,
@@ -123,6 +121,19 @@ class HomeScreenViewModel(
             _selectedDateTime.update { it.copy(time = null) }
         if (selected.date < now.date)
             _selectedDateTime.update { it.copy(date = null) }
+    }
+
+    fun dateTimeIsValid(
+        date: LocalDate?,
+        time: LocalTime?
+    ): Boolean {
+
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateTo(DateTimeUnit.MINUTE)
+        val selected = LocalDateTime(
+            (date ?: selectedDateTime.value.date) ?: now.date,
+            (time ?: selectedDateTime.value.time) ?: now.time
+        )
+        return selected >= now
     }
 
     fun resetDateTime() {
