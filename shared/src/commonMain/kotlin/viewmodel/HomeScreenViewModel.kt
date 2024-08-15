@@ -12,14 +12,20 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import util.CoroutineViewModel
 import util.Result
 import viewmodel.helper.PickableDateTime
+import viewmodel.helper.truncateTo
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
@@ -97,10 +103,26 @@ class HomeScreenViewModel(
 
     fun changeSelectedDate(date: LocalDate) {
         _selectedDateTime.update { it.copy(date = date) }
+        validateDateTime()
     }
 
     fun changeSelectedTime(time: LocalTime) {
         _selectedDateTime.update { it.copy(time = time) }
+        validateDateTime()
+    }
+
+    private fun validateDateTime() {
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateTo(DateTimeUnit.MINUTE)
+        val selected = LocalDateTime(
+            selectedDateTime.value.date ?: now.date,
+            selectedDateTime.value.time ?: now.time
+        )
+        if (selected >= now)
+            return
+        if (selected.time < now.time && selected.date <= now.date)
+            _selectedDateTime.update { it.copy(time = null) }
+        if (selected.date < now.date)
+            _selectedDateTime.update { it.copy(date = null) }
     }
 
     fun resetDateTime() {
