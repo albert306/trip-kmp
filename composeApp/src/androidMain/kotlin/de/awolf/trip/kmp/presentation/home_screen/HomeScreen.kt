@@ -186,7 +186,13 @@ private fun DateAndTimePickers(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val selected = Instant.fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
+                        if (datePickerState.selectedDateMillis == null) {
+                            showDatePicker.value = false
+                            return@TextButton
+                        }
+
+                        val selected = Instant
+                            .fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
                             .toLocalDateTime(TimeZone.currentSystemDefault())
                             .date
 
