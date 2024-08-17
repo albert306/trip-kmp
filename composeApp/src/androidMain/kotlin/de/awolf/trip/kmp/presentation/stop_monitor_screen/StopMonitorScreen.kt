@@ -85,7 +85,10 @@ fun StopMonitorScreen(
                 item {
                     Spacer(modifier = Modifier.height(6.dp))
                 }
-                items(items = departures) { departure ->
+                items(
+                    items = departures,
+                    key = { it.complexId() }
+                ) { departure ->
                     DepartureView(
                         departure = departure,
                         onClick = {
