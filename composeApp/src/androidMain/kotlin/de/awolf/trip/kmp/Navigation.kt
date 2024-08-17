@@ -49,7 +49,7 @@ fun Navigation() {
                                 stop.id,
                                 stop.name,
                                 stop.region,
-                                stop.isFavourite.toString(),
+                                stop.isFavorite.toString(),
                                 queriedTime.toEpochMilliseconds().toString()
                             ))
                         }
@@ -63,7 +63,7 @@ fun Navigation() {
         }
 
         composable(
-            route = Screen.StopMonitorScreen.route + "/{stopId}/{stopName}/{stopRegion}/{stopIsFavourite}/{queriedTime}",
+            route = Screen.StopMonitorScreen.route + "/{stopId}/{stopName}/{stopRegion}/{stopIsFavorite}/{queriedTime}",
             arguments = listOf(
                 navArgument("stopId") {
                     type = NavType.StringType
@@ -74,7 +74,7 @@ fun Navigation() {
                 navArgument("stopRegion") {
                     type = NavType.StringType
                 },
-                navArgument("stopIsFavourite") {
+                navArgument("stopIsFavorite") {
                     type = NavType.BoolType
                 },
                 navArgument("queriedTime") {
@@ -101,6 +101,7 @@ fun Navigation() {
                             id = entry.arguments?.getString("stopId") ?: "0000000",
                             name = entry.arguments?.getString("stopName") ?: "unknown",
                             region = entry.arguments?.getString("stopRegion") ?: "Dresden",
+                            isFavorite = entry.arguments?.getBoolean("stopIsFavorite") ?: false
                         ),
                         queriedTime = Instant.fromEpochMilliseconds(entry.arguments?.getLong("queriedTime") ?: 0L),
                         onCloseClicked = navController::navigateUp

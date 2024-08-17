@@ -1,9 +1,14 @@
 package di
 
+import data.local.repository.StopDatabaseRepositoryImpl
 import data.networking.repository.VvoServiceRepositoryImpl
+import domain.repository.StopDatabaseRepository
 import domain.repository.VvoServiceRepository
-import domain.use_case.GetRecommendedStopsUseCase
+import domain.use_case.FindStopByQueryUseCase
+import domain.use_case.GetFavoriteStopsUseCase
 import domain.use_case.GetStopMonitorUseCase
+import domain.use_case.ReorderFavoriteStopsUseCase
+import domain.use_case.ToggleFavoriteStopUseCase
 import domain.use_case.UseCases
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -18,9 +23,16 @@ val sharedModule = module {
     }.bind<VvoServiceRepository>()
 
     single {
+        StopDatabaseRepositoryImpl(get())
+    }.bind<StopDatabaseRepository>()
+
+    single {
         UseCases(
-            GetRecommendedStopsUseCase(get()),
-            GetStopMonitorUseCase(get())
+            FindStopByQueryUseCase(get(), get()),
+            GetFavoriteStopsUseCase(get()),
+            GetStopMonitorUseCase(get()),
+            ToggleFavoriteStopUseCase(get()),
+            ReorderFavoriteStopsUseCase(get())
         )
-    }
+    }.bind<UseCases>()
 }

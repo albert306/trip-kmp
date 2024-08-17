@@ -1,0 +1,52 @@
+CREATE TABLE favorite_stops (
+    stop_id TEXT NOT NULL,
+    rank INTEGER NOT NULL,
+    FOREIGN KEY (stop_id) REFERENCES stops(id)
+);
+
+CREATE TRIGGER remove_stops AFTER DELETE ON favorite_stops
+BEGIN
+  DELETE FROM stops
+  WHERE id = old.stop_id;
+--     AND NOT EXISTS (SELECT 1 FROM recent_stops WHERE id = OLD.id);
+END;
+
+CREATE INDEX index_favorite_stops_stop_id ON favorite_stops (stop_id);
+
+
+getFavoriteStops:
+SELECT stops.id, stops.name, stops.region
+FROM stops JOIN favorite_stops ON stops.id = favorite_stops.stop_id
+ORDER BY favorite_stops.rank;
+
+isStopFavorite:
+SELECT 1
+FROM favorite_stops
+WHERE stop_id = :id;
+
+makeStopFavorite {
+    INSERT OR REPLACE INTO stops (id, name, region) VALUES (:id, :name, :region);
+    INSERT OR REPLACE INTO favorite_stops (stop_id, rank) VALUES (
+        :id,
+        (SELECT COALESCE(MAX(rank), -1) + 1 FROM favorite_stops)
+    );
+}
+
+makeStopNotFavorite:
+DELETE FROM favorite_stops
+WHERE stop_id = :id;
+
+reorderFavoriteStop {
+    UPDATE favorite_stops
+    SET rank = rank - 1
+    WHERE rank > :oldRank AND rank <= :newRank;
+
+    UPDATE favorite_stops
+    SET rank = rank + 1
+    WHERE rank >= :newRank AND rank < :oldRank;
+
+    UPDATE favorite_stops
+    SET rank = :newRank
+    WHERE stop_id = :id;
+}
+

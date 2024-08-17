@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,16 +40,16 @@ private fun Preview() {
 @Composable
 fun StopView(
     stop: Stop,
-    onFavouriteStarClick: () -> Unit,
+    onFavoriteStarClick: () -> Unit,
     onNameClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Default: no favourite
+    // Default: no favorite
     var icon = painterResource(id = R.drawable.baseline_star_outline_24)
     var description = "outlined star"
 
-    if (stop.isFavourite) {
-        // if favourite
+    if (stop.isFavorite) {
+        // if favorite
         icon = painterResource(id = R.drawable.baseline_star_24)
         description = "filled star"
     }
@@ -71,7 +72,7 @@ fun StopView(
                 modifier = Modifier
                     .size(26.dp)
                     .clickableWithoutRipple {
-                        onFavouriteStarClick()
+                        onFavoriteStarClick()
                     }
             )
         }
@@ -87,6 +88,7 @@ fun StopView(
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight(400),
             )
             Text(

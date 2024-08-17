@@ -24,6 +24,8 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            implementation(libs.reorderable)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -33,6 +35,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(projects.shared)
+
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.material3)
         }
