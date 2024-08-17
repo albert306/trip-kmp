@@ -103,10 +103,11 @@ fun StopInfoCard(
                         hour()
                         char(':')
                         minute()
-                        char(' ')
+                        chars(" • ")
                         dayOfMonth()
                         char('.')
                         monthNumber()
+                        char('.')
                     }),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,

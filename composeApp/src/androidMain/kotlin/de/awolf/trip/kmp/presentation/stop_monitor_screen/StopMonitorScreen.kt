@@ -26,7 +26,6 @@ import de.awolf.trip.kmp.presentation.helper.isFinalItemVisible
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureView
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
-import kotlinx.datetime.Clock
 import viewmodel.StopMonitorViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -47,7 +46,7 @@ fun StopMonitorScreen(
     ) {
         StopInfoCard(
             stop = stop,
-            queriedTime = Clock.System.now(), //TODO(pass actual queried time)
+            queriedTime = viewModel.queriedTime,
             isStopInfoCardExpanded = isStopInfoCardExpanded,
             expandStopInfo = viewModel::expandStopInfo,
             onCloseButtonClick = viewModel::close,

@@ -2,6 +2,7 @@ package de.awolf.trip.kmp.presentation.home_screen
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -10,9 +11,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,25 +32,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
+import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
+import domain.models.Stop
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import viewmodel.HomeScreenViewModel
 import domain.models.StopListSource
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
 ) {
 
     val searchText by viewModel.searchText.collectAsState()
+    val selectedDateTime by viewModel.selectedDateTime.collectAsState()
 //    val isSearching by viewModel.isSearching.collectAsState() not currently in use
     val stopList by viewModel.stopList.collectAsState()
     val stopListSource by viewModel.stopListSource.collectAsState()
 
-
     val view = LocalView.current
+    val context = LocalView.current.context
+
+    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+    val datePickerState = rememberDatePickerState()
+    val showDatePicker = remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState(
+        initialHour = now.hour,
+        initialMinute = now.minute,
+        is24Hour = true,
+    )
+    val showTimePicker = remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()
 
@@ -51,6 +82,27 @@ fun HomeScreen(
         view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_TICK)
     }
 
+
+    DateAndTimePickers(
+        showDatePicker = showDatePicker,
+        datePickerState = datePickerState,
+        showTimePicker = showTimePicker,
+        timePickerState = timePickerState,
+        onDateConfirm = viewModel::changeSelectedDate,
+        onTimeConfirm = viewModel::changeSelectedTime
+    )
+
+    fun startStopMonitor(stop: Stop?) {
+        if (!viewModel.selectedDateTimeIsValid()) {
+            Toast.makeText(
+                context,
+                "Time was corrected to current time",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        viewModel.startStopMonitor(stop)
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy((-10).dp),
         modifier = Modifier
@@ -59,17 +111,22 @@ fun HomeScreen(
         SearchCard(
             searchText = searchText,
             onSearchTextChange = viewModel::onSearchTextChange,
-            onSearchButtonClick = { viewModel.startStopMonitor(stopList.firstOrNull()) },
+            selectedDateTime = selectedDateTime,
+            onShowDatePicker = { showDatePicker.value = true },
+            onShowTimePicker = { showTimePicker.value = true },
+            onResetDateTime = { viewModel.resetDateTime() },
+            onSearchButtonClick = {
+                startStopMonitor(stopList.firstOrNull())
+            },
             modifier = Modifier
-                .height(100.dp)
-                .zIndex(2f)
+                .zIndex(1f)
                 .fillMaxWidth()
         )
         LazyColumn(
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
-                .zIndex(1f)
+                .zIndex(0f)
                 .fillMaxSize(),
         ) {
             item {
@@ -88,7 +145,7 @@ fun HomeScreen(
                             StopView(
                                 stop = stop,
                                 onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
-                                onNameClick = { viewModel.startStopMonitor(stop) },
+                                onNameClick = { startStopMonitor(stop) },
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .fillMaxWidth(fraction = 0.9f)
@@ -111,7 +168,7 @@ fun HomeScreen(
                     StopView(
                         stop = stop,
                         onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
-                        onNameClick = { viewModel.startStopMonitor(stop) },
+                        onNameClick = { startStopMonitor(stop) },
                         modifier = Modifier
                             .animateItem(fadeInSpec = null, fadeOutSpec = null)
                             .fillMaxWidth()
@@ -119,6 +176,84 @@ fun HomeScreen(
                 }
 
             }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun DateAndTimePickers(
+    showDatePicker: MutableState<Boolean>,
+    datePickerState: DatePickerState,
+    onDateConfirm: (date: LocalDate) -> Unit,
+    showTimePicker: MutableState<Boolean>,
+    timePickerState: TimePickerState,
+    onTimeConfirm: (time: LocalTime) -> Unit
+) {
+    if (showDatePicker.value) {
+        DatePickerDialog(
+            onDismissRequest = {
+                showDatePicker.value = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (datePickerState.selectedDateMillis == null) {
+                            showDatePicker.value = false
+                            return@TextButton
+                        }
+
+                        showDatePicker.value = false
+                        onDateConfirm(
+                            Instant
+                                .fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .date
+                        )
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker.value = false
+                    }
+                ) { Text("Cancel") }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+            )
+        }
+
+    }
+
+    if (showTimePicker.value) {
+        TimePickerDialog(
+            onDismissRequest = {
+                showDatePicker.value = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showTimePicker.value = false
+                        onTimeConfirm(
+                            LocalTime(timePickerState.hour, timePickerState.minute)
+                        )
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showTimePicker.value = false
+                    }
+                ) { Text("Cancel") }
+            }
+        ) {
+            TimePicker(
+                state = timePickerState
+            )
         }
     }
 }
