@@ -9,7 +9,7 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import viewmodel.helper.truncateTo
+import util.truncateTo
 
 class PickableDateTime(
     val date: LocalDate? = null,

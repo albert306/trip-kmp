@@ -13,8 +13,8 @@ import de.awolf.trip.kmp.presentation.helper.viewModelFactory
 import de.awolf.trip.kmp.presentation.home_screen.HomeScreen
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.StopMonitorScreen
 import domain.models.Stop
-import viewmodel.HomeScreenViewModel
-import viewmodel.StopMonitorViewModel
+import presentation.home_screen.HomeScreenViewModel
+import presentation.stop_monitor.StopMonitorViewModel
 import kotlinx.datetime.Instant
 
 

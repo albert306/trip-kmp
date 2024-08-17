@@ -3,7 +3,6 @@ package de.awolf.trip.kmp.presentation.home_screen
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,7 +35,7 @@ import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
 import domain.models.Stop
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import viewmodel.HomeScreenViewModel
+import presentation.home_screen.HomeScreenViewModel
 import domain.models.StopListSource
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -45,18 +44,12 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
 ) {
-
-    val searchText by viewModel.searchText.collectAsState()
-    val selectedDateTime by viewModel.selectedDateTime.collectAsState()
-//    val isSearching by viewModel.isSearching.collectAsState() not currently in use
-    val stopList by viewModel.stopList.collectAsState()
-    val stopListSource by viewModel.stopListSource.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     val view = LocalView.current
     val context = LocalView.current.context
@@ -79,7 +72,9 @@ fun HomeScreen(
         scrollThresholdPadding = PaddingValues(top = 100.dp)
     ) { from, to ->
         viewModel.reorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
-        view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_TICK)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_TICK)
+        }
     }
 
 
@@ -109,14 +104,13 @@ fun HomeScreen(
             .fillMaxSize()
     ) {
         SearchCard(
-            searchText = searchText,
+            homeScreenState = state,
             onSearchTextChange = viewModel::onSearchTextChange,
-            selectedDateTime = selectedDateTime,
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
             onResetDateTime = { viewModel.resetDateTime() },
             onSearchButtonClick = {
-                startStopMonitor(stopList.firstOrNull())
+                startStopMonitor(state.stopList.firstOrNull())
             },
             modifier = Modifier
                 .zIndex(1f)
@@ -132,8 +126,8 @@ fun HomeScreen(
             item {
                 Spacer(modifier = Modifier.height(6.dp))
             }
-            items(items = stopList, key = { it.id }) { stop ->
-                if (stopListSource == StopListSource.FAVORITES) {
+            items(items = state.stopList, key = { it.id }) { stop ->
+                if (state.stopListSource == StopListSource.FAVORITES) {
                     ReorderableItem(
                         state = reorderableLazyListState,
                         key = stop.id

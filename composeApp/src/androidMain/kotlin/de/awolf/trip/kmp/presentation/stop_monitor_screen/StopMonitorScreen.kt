@@ -26,7 +26,7 @@ import de.awolf.trip.kmp.presentation.helper.isFinalItemVisible
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureView
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
-import viewmodel.StopMonitorViewModel
+import presentation.stop_monitor.StopMonitorViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

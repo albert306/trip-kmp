@@ -1,4 +1,4 @@
-package viewmodel
+package presentation.stop_monitor
 
 import domain.models.Departure
 import domain.models.Stop

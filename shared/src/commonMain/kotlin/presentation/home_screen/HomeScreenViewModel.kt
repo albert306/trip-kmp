@@ -1,4 +1,4 @@
-package viewmodel
+package presentation.home_screen
 
 import domain.models.Stop
 import domain.models.StopListSource
@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -20,6 +19,8 @@ import org.koin.core.component.inject
 import util.CoroutineViewModel
 import util.Result
 import domain.models.PickableDateTime
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
@@ -28,37 +29,23 @@ class HomeScreenViewModel(
 
     private val useCases: UseCases by inject()
 
-    private val _searchText = MutableStateFlow("")
-    val searchText = _searchText.asStateFlow()
-
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching = _isSearching.asStateFlow()
-
-    private val _selectedDateTime: MutableStateFlow<PickableDateTime> = MutableStateFlow(
-        PickableDateTime()
-    )
-    val selectedDateTime = _selectedDateTime.asStateFlow()
-
-    private val _stopList = MutableStateFlow(listOf<Stop>())
-    val stopList = _stopList.asStateFlow()
-
-    private val _stopListSource = MutableStateFlow(StopListSource.NONE)
-    val stopListSource = _stopListSource.asStateFlow()
+    private val _state = MutableStateFlow(HomeScreenState())
+    val state = _state.asStateFlow()
 
 
     init {
-        _searchText
+        state
+            .map { it.searchText }
+            .distinctUntilChanged()
             .debounce(100L)
             .onEach { text ->
-                if (text.length < 3 && stopListSource.value != StopListSource.FAVORITES) {
+                if (text.length < 3 && state.value.stopListSource != StopListSource.FAVORITES) {
                     setFavoriteStops()
                 }
             }
             .filter { it.length >= 3 } // Vvo api only returns results for 3 or more characters
             .onEach { text ->
-                _isSearching.update { true }
                 setStopsByQuery(text)
-                _isSearching.update { false }
             }
             .launchIn(
                 coroutineScope
@@ -67,46 +54,51 @@ class HomeScreenViewModel(
 
 
     fun onSearchTextChange(text: String) {
-        _searchText.value = text
+        _state.value = state.value.copy(searchText = text)
     }
 
     fun startStopMonitor(stop: Stop?) {
         if (stop == null) { return } //TODO(give user feedback that no such stop was found)
 
-        onStopClicked(stop, selectedDateTime.value.toInstant())
+        onStopClicked(stop, state.value.selectedDateTime.toInstant())
     }
 
     fun toggleFavoriteStop(stop: Stop) {
         coroutineScope.launch {
             useCases.toggleFavoriteStopUseCase(stop)
 
-            _stopList.update { recommendedStops ->
-
-                if (stop.isFavorite) {
-                    recommendedStops.filter { it.id != stop.id }
-                } else {
-                    recommendedStops.map {
-                        if (it.id == stop.id) {
-                            it.copy(isFavorite = !it.isFavorite)
-                        } else {
-                            it
-                        }
+            val updatedStopList = if (stop.isFavorite && state.value.stopListSource == StopListSource.FAVORITES) {
+                state.value.stopList.filter { it.id != stop.id }
+            } else {
+                state.value.stopList.map {
+                    if (it.id == stop.id) {
+                        it.copy(isFavorite = !it.isFavorite)
+                    } else {
+                        it
                     }
                 }
             }
+
+            _state.value = state.value.copy(
+                stopList = updatedStopList
+            )
         }
     }
 
     fun changeSelectedDate(date: LocalDate) {
-        _selectedDateTime.update { it.copy(date = date) }
+        _state.value = state.value.copy(
+            selectedDateTime = state.value.selectedDateTime.copy(date = date)
+        )
     }
 
     fun changeSelectedTime(time: LocalTime) {
-        _selectedDateTime.update { it.copy(time = time) }
+        _state.value = state.value.copy(
+            selectedDateTime = state.value.selectedDateTime.copy(time = time)
+        )
     }
 
     fun selectedDateTimeIsValid(): Boolean {
-        if (_selectedDateTime.value.dateTimeIsValid()) {
+        if (_state.value.selectedDateTime.dateTimeIsValid()) {
             return true
         } else {
             resetDateTime()
@@ -115,7 +107,9 @@ class HomeScreenViewModel(
     }
 
     fun resetDateTime() {
-        _selectedDateTime.update { PickableDateTime() }
+        _state.value = _state.value.copy(
+            selectedDateTime = PickableDateTime()
+        )
     }
 
 
@@ -123,40 +117,45 @@ class HomeScreenViewModel(
         coroutineScope.launch {
             useCases.reorderFavoriteStops(stopId, from.toLong(), to.toLong())
 
-            _stopList.update { list ->
-                val mutList = list.toMutableList()
-                mutList.apply {
-                    add(to, removeAt(from))
-                }
-                mutList
+            val mutList = state.value.stopList.toMutableList()
+            mutList.apply {
+                add(to, removeAt(from))
             }
+
+            _state.value = state.value.copy(stopList = mutList)
         }
     }
 
     private suspend fun setStopsByQuery(query: String) {
-        when (val recommendedStopsResult = useCases.findStopByQueryUseCase(query)) {
+        val resultList = when (val recommendedStopsResult = useCases.findStopByQueryUseCase(query)) {
             is Result.Error -> {
                 // TODO: display error
-                _stopList.update { emptyList() }
+                emptyList()
             }
+
             is Result.Success -> {
-                _stopList.update { recommendedStopsResult.data.stops }
+                recommendedStopsResult.data.stops
             }
         }
-        _stopListSource.update { StopListSource.SEARCH }
+        _state.value = state.value.copy(
+            stopList = resultList,
+            stopListSource = StopListSource.SEARCH
+        )
     }
 
     private suspend fun setFavoriteStops() {
-        println("setFavoriteStops")
-        when (val favoriteStopsResult = useCases.getFavoriteStopsUseCase()) {
+        val resultList = when (val favoriteStopsResult = useCases.getFavoriteStopsUseCase()) {
             is Result.Error -> {
                 // TODO: display error
-                _stopList.update { emptyList() }
+                emptyList()
             }
             is Result.Success -> {
-                _stopList.update { favoriteStopsResult.data }
+                favoriteStopsResult.data
             }
         }
-        _stopListSource.update { StopListSource.FAVORITES }
+        _state.value = state.value.copy(
+            stopList = resultList,
+            stopListSource = StopListSource.FAVORITES
+        )
     }
 }

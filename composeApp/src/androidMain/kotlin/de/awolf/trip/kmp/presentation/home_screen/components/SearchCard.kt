@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -39,7 +38,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import domain.models.PickableDateTime
+import presentation.home_screen.HomeScreenState
 
 @Preview(showBackground = true)
 @Composable
@@ -51,9 +50,8 @@ private fun SearchCardPreview() {
         ) {
             Column() {
                 SearchCard(
-                    searchText = "",
+                    homeScreenState = HomeScreenState(),
                     onSearchTextChange = {},
-                    selectedDateTime = PickableDateTime(),
                     onSearchButtonClick = {},
                     modifier = Modifier
                         .fillMaxWidth()
@@ -65,13 +63,11 @@ private fun SearchCardPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchCard(
+    homeScreenState: HomeScreenState,
     modifier: Modifier = Modifier,
-    searchText: String,
     onSearchTextChange: (newText: String) -> Unit,
-    selectedDateTime: PickableDateTime,
     onShowDatePicker: () -> Unit = {},
     onShowTimePicker: () -> Unit = {},
     onResetDateTime: () -> Unit = {},
@@ -87,7 +83,7 @@ fun SearchCard(
             .padding(top = 4.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
     ) {
         OutlinedTextField(
-            value = searchText,
+            value = homeScreenState.searchText,
             onValueChange = { newText: String -> onSearchTextChange(newText) },
             label = {
                 Text(
@@ -126,26 +122,18 @@ fun SearchCard(
             modifier = Modifier
         ) {
 
-            val dateString: String = if (!selectedDateTime.hasDate()) {
-                "Today"
-            } else {
-                selectedDateTime.date!!.format(LocalDate.Format {
+            val dateString: String = homeScreenState.selectedDateTime.date?.format(LocalDate.Format {
                     dayOfMonth()
                     char('.')
                     monthNumber()
                     char('.')
-                })
-            }
+                }) ?: "Today"
 
-            val timeString: String = if (!selectedDateTime.hasTime()) {
-                "Now"
-            } else {
-                selectedDateTime.time!!.format(LocalTime.Format {
+            val timeString: String = homeScreenState.selectedDateTime.time?.format(LocalTime.Format {
                     hour()
                     char(':')
                     minute()
-                })
-            }
+                }) ?: "Now"
 
             Text(
                 text = timeString,
@@ -177,7 +165,7 @@ fun SearchCard(
                     }
             )
 
-            if (selectedDateTime.hasDate() || selectedDateTime.hasTime()) {
+            if (homeScreenState.selectedDateTime.hasDate() || homeScreenState.selectedDateTime.hasTime()) {
                 Button(
                     onClick = { onResetDateTime() },
                     contentPadding = PaddingValues(0.dp),
