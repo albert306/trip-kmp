@@ -33,6 +33,7 @@ import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
+import domain.models.Stop
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import viewmodel.HomeScreenViewModel
@@ -58,6 +59,8 @@ fun HomeScreen(
     val stopListSource by viewModel.stopListSource.collectAsState()
 
     val view = LocalView.current
+    val context = LocalView.current.context
+
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     val datePickerState = rememberDatePickerState()
@@ -86,9 +89,19 @@ fun HomeScreen(
         showTimePicker = showTimePicker,
         timePickerState = timePickerState,
         onDateConfirm = viewModel::changeSelectedDate,
-        dateTimeIsValid = viewModel::dateTimeIsValid,
         onTimeConfirm = viewModel::changeSelectedTime
     )
+
+    fun startStopMonitor(stop: Stop?) {
+        if (!viewModel.selectedDateTimeIsValid()) {
+            Toast.makeText(
+                context,
+                "Time was corrected to current time",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        viewModel.startStopMonitor(stop)
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-10).dp),
@@ -102,7 +115,9 @@ fun HomeScreen(
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
             onResetDateTime = { viewModel.resetDateTime() },
-            onSearchButtonClick = { viewModel.startStopMonitor(stopList.firstOrNull()) },
+            onSearchButtonClick = {
+                startStopMonitor(stopList.firstOrNull())
+            },
             modifier = Modifier
                 .zIndex(1f)
                 .fillMaxWidth()
@@ -130,7 +145,7 @@ fun HomeScreen(
                             StopView(
                                 stop = stop,
                                 onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
-                                onNameClick = { viewModel.startStopMonitor(stop) },
+                                onNameClick = { startStopMonitor(stop) },
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .fillMaxWidth(fraction = 0.9f)
@@ -153,7 +168,7 @@ fun HomeScreen(
                     StopView(
                         stop = stop,
                         onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
-                        onNameClick = { viewModel.startStopMonitor(stop) },
+                        onNameClick = { startStopMonitor(stop) },
                         modifier = Modifier
                             .animateItem(fadeInSpec = null, fadeOutSpec = null)
                             .fillMaxWidth()
@@ -173,11 +188,8 @@ private fun DateAndTimePickers(
     onDateConfirm: (date: LocalDate) -> Unit,
     showTimePicker: MutableState<Boolean>,
     timePickerState: TimePickerState,
-    dateTimeIsValid: (date: LocalDate?, time: LocalTime?) -> Boolean,
     onTimeConfirm: (time: LocalTime) -> Unit
 ) {
-    val context = LocalView.current.context
-
     if (showDatePicker.value) {
         DatePickerDialog(
             onDismissRequest = {
@@ -191,23 +203,12 @@ private fun DateAndTimePickers(
                             return@TextButton
                         }
 
-                        val selected = Instant
-                            .fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .date
-
-                        if (!dateTimeIsValid(selected, null)) {
-                            Toast.makeText(
-                                context,
-                                "Please select a date in the future",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@TextButton
-                        }
-
                         showDatePicker.value = false
                         onDateConfirm(
-                            selected
+                            Instant
+                                .fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .date
                         )
                     }
                 ) { Text("OK") }
@@ -235,21 +236,9 @@ private fun DateAndTimePickers(
             confirmButton = {
                 TextButton(
                     onClick = {
-
-                        val selected = LocalTime(timePickerState.hour, timePickerState.minute)
-
-                        if (!dateTimeIsValid(null, selected)) {
-                            Toast.makeText(
-                                context,
-                                "Please select a time in the future",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@TextButton
-                        }
-
                         showTimePicker.value = false
                         onTimeConfirm(
-                            selected
+                            LocalTime(timePickerState.hour, timePickerState.minute)
                         )
                     }
                 ) { Text("OK") }

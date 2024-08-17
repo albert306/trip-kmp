@@ -12,20 +12,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import util.CoroutineViewModel
 import util.Result
-import viewmodel.helper.PickableDateTime
-import viewmodel.helper.truncateTo
+import domain.models.PickableDateTime
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
@@ -40,7 +34,9 @@ class HomeScreenViewModel(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private val _selectedDateTime: MutableStateFlow<PickableDateTime> = MutableStateFlow(PickableDateTime())
+    private val _selectedDateTime: MutableStateFlow<PickableDateTime> = MutableStateFlow(
+        PickableDateTime()
+    )
     val selectedDateTime = _selectedDateTime.asStateFlow()
 
     private val _stopList = MutableStateFlow(listOf<Stop>())
@@ -109,16 +105,13 @@ class HomeScreenViewModel(
         _selectedDateTime.update { it.copy(time = time) }
     }
 
-    fun dateTimeIsValid(
-        date: LocalDate?,
-        time: LocalTime?
-    ): Boolean {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateTo(DateTimeUnit.MINUTE)
-        val selected = LocalDateTime(
-            (date ?: selectedDateTime.value.date) ?: now.date,
-            (time ?: selectedDateTime.value.time) ?: now.time
-        )
-        return selected >= now
+    fun selectedDateTimeIsValid(): Boolean {
+        if (_selectedDateTime.value.dateTimeIsValid()) {
+            return true
+        } else {
+            resetDateTime()
+            return false
+        }
     }
 
     fun resetDateTime() {
@@ -160,7 +153,6 @@ class HomeScreenViewModel(
                 // TODO: display error
                 _stopList.update { emptyList() }
             }
-
             is Result.Success -> {
                 _stopList.update { favoriteStopsResult.data }
             }

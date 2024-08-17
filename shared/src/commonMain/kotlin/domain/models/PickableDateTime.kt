@@ -1,6 +1,7 @@
-package viewmodel.helper
+package domain.models
 
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -8,6 +9,7 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import viewmodel.helper.truncateTo
 
 class PickableDateTime(
     val date: LocalDate? = null,
@@ -19,6 +21,16 @@ class PickableDateTime(
 
     fun hasTime(): Boolean {
         return time != null
+    }
+
+    fun dateTimeIsValid(): Boolean {
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateTo(
+            DateTimeUnit.MINUTE)
+        val selected = LocalDateTime(
+            this.date ?: now.date,
+            this.time ?: now.time
+        )
+        return selected >= now
     }
 
     fun toLocalDateTime(): LocalDateTime {

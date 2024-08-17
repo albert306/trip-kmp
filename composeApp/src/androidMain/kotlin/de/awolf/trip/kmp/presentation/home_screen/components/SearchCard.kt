@@ -39,7 +39,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import viewmodel.helper.PickableDateTime
+import domain.models.PickableDateTime
 
 @Preview(showBackground = true)
 @Composable
