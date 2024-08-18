@@ -1,4 +1,4 @@
-package viewmodel.helper
+package util
 
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime

@@ -2,8 +2,6 @@ package de.awolf.trip.kmp.presentation.home_screen
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,10 +31,9 @@ import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
-import domain.models.Stop
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import viewmodel.HomeScreenViewModel
+import presentation.home_screen.HomeScreenViewModel
 import domain.models.StopListSource
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -44,33 +41,27 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import presentation.home_screen.HomeScreenEvent
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
 ) {
-
-    val searchText by viewModel.searchText.collectAsState()
-    val selectedDateTime by viewModel.selectedDateTime.collectAsState()
-//    val isSearching by viewModel.isSearching.collectAsState() not currently in use
-    val stopList by viewModel.stopList.collectAsState()
-    val stopListSource by viewModel.stopListSource.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     val view = LocalView.current
-    val context = LocalView.current.context
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
-    val datePickerState = rememberDatePickerState()
     val showDatePicker = remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    val showTimePicker = remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState(
         initialHour = now.hour,
         initialMinute = now.minute,
         is24Hour = true,
     )
-    val showTimePicker = remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()
 
@@ -78,8 +69,13 @@ fun HomeScreen(
         lazyListState = lazyListState,
         scrollThresholdPadding = PaddingValues(top = 100.dp)
     ) { from, to ->
-        viewModel.reorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
-        view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_TICK)
+        viewModel.onEvent(
+            HomeScreenEvent
+                .ReorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_TICK)
+        }
     }
 
 
@@ -88,20 +84,9 @@ fun HomeScreen(
         datePickerState = datePickerState,
         showTimePicker = showTimePicker,
         timePickerState = timePickerState,
-        onDateConfirm = viewModel::changeSelectedDate,
-        onTimeConfirm = viewModel::changeSelectedTime
+        onDateConfirm = { viewModel.onEvent(HomeScreenEvent.ChangeSelectedDate(it)) },
+        onTimeConfirm = { viewModel.onEvent(HomeScreenEvent.ChangeSelectedTime(it)) }
     )
-
-    fun startStopMonitor(stop: Stop?) {
-        if (!viewModel.selectedDateTimeIsValid()) {
-            Toast.makeText(
-                context,
-                "Time was corrected to current time",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        viewModel.startStopMonitor(stop)
-    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-10).dp),
@@ -109,14 +94,13 @@ fun HomeScreen(
             .fillMaxSize()
     ) {
         SearchCard(
-            searchText = searchText,
-            onSearchTextChange = viewModel::onSearchTextChange,
-            selectedDateTime = selectedDateTime,
+            homeScreenState = state,
+            onSearchTextChange = { viewModel.onEvent(HomeScreenEvent.Search(it)) },
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
-            onResetDateTime = { viewModel.resetDateTime() },
+            onResetDateTime = { viewModel.onEvent(HomeScreenEvent.ResetSelectedDateTime) },
             onSearchButtonClick = {
-                startStopMonitor(stopList.firstOrNull())
+                viewModel.onEvent(HomeScreenEvent.StartStopMonitor(null))
             },
             modifier = Modifier
                 .zIndex(1f)
@@ -132,8 +116,8 @@ fun HomeScreen(
             item {
                 Spacer(modifier = Modifier.height(6.dp))
             }
-            items(items = stopList, key = { it.id }) { stop ->
-                if (stopListSource == StopListSource.FAVORITES) {
+            items(items = state.stopList, key = { it.id }) { stop ->
+                if (state.stopListSource == StopListSource.FAVORITES) {
                     ReorderableItem(
                         state = reorderableLazyListState,
                         key = stop.id
@@ -144,8 +128,10 @@ fun HomeScreen(
                         ) {
                             StopView(
                                 stop = stop,
-                                onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
-                                onNameClick = { startStopMonitor(stop) },
+                                onFavoriteStarClick = {
+                                    viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
+                                },
+                                onNameClick = { viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop)) },
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .fillMaxWidth(fraction = 0.9f)
@@ -167,8 +153,10 @@ fun HomeScreen(
                 } else {
                     StopView(
                         stop = stop,
-                        onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
-                        onNameClick = { startStopMonitor(stop) },
+                        onFavoriteStarClick = {
+                            viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
+                        },
+                        onNameClick = { viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop)) },
                         modifier = Modifier
                             .animateItem(fadeInSpec = null, fadeOutSpec = null)
                             .fillMaxWidth()
