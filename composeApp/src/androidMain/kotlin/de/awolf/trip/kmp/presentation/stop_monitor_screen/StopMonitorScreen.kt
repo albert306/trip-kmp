@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,11 +32,7 @@ import presentation.stop_monitor.StopMonitorViewModel
 fun StopMonitorScreen(
     viewModel: StopMonitorViewModel,
 ) {
-
-    val stop = viewModel.stop
-    val isStopInfoCardExpanded by viewModel.isStopInfoCardExpanded.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
-    val departures by viewModel.departures.collectAsState()
+    val state = viewModel.state.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-10).dp),
@@ -45,19 +40,22 @@ fun StopMonitorScreen(
             .fillMaxSize()
     ) {
         StopInfoCard(
-            stop = stop,
+            stop = viewModel.stop,
             queriedTime = viewModel.queriedTime,
-            isStopInfoCardExpanded = isStopInfoCardExpanded,
+            isStopInfoCardExpanded = state.value.isStopInfoCardExpanded,
             expandStopInfo = viewModel::expandStopInfo,
             onCloseButtonClick = viewModel::close,
             modifier = Modifier.zIndex(1f)
         )
 
-        val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = viewModel::updateDepartures)
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = state.value.isRefreshing,
+            onRefresh = viewModel::updateDepartures
+        )
         val lazyListState = rememberLazyListState()
         val isAtBottom = lazyListState.isFinalItemVisible(tolerance = 0)
         LaunchedEffect(isAtBottom) {
-            if (isAtBottom && !isRefreshing && departures.isNotEmpty()) { //prevent repeated calls
+            if (isAtBottom && !state.value.isRefreshing && state.value.departures.isNotEmpty()) { //prevent repeated calls
                 viewModel.increaseDepartureCount()
             }
         }
@@ -67,7 +65,7 @@ fun StopMonitorScreen(
                 .pullRefresh(pullRefreshState)
         ) {
             PullRefreshIndicator(
-                refreshing = isRefreshing,
+                refreshing = state.value.isRefreshing,
                 state = pullRefreshState,
                 backgroundColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -86,7 +84,7 @@ fun StopMonitorScreen(
                     Spacer(modifier = Modifier.height(6.dp))
                 }
                 items(
-                    items = departures,
+                    items = state.value.departures,
                     key = { it.complexId() }
                 ) { departure ->
                     DepartureView(
@@ -96,7 +94,7 @@ fun StopMonitorScreen(
                         },
                     )
                 }
-                if (!isRefreshing) {
+                if (!state.value.isRefreshing) {
                     items(3) {
                         ShimmerDepartureItem()
                     }

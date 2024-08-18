@@ -1,6 +1,5 @@
 package presentation.stop_monitor
 
-import domain.models.Departure
 import domain.models.Stop
 import domain.use_case.UseCases
 import kotlinx.coroutines.delay
@@ -22,74 +21,53 @@ class StopMonitorViewModel(
 
     private val useCases: UseCases by inject()
 
-    private val _isStopInfoCardExpanded = MutableStateFlow(false)
-    val isStopInfoCardExpanded = _isStopInfoCardExpanded.asStateFlow()
-
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
-
-    private val _departures = MutableStateFlow(listOf<Departure>())
-    val departures = _departures.asStateFlow()
-
-    private val _departureCount = MutableStateFlow(30)
-    val departureCount = _departureCount.asStateFlow()
+    private val _state = MutableStateFlow(StopMonitorState())
+    val state = _state.asStateFlow()
 
     init {
         updateDepartures()
     }
 
     fun expandStopInfo() {
-        _isStopInfoCardExpanded.value = !_isStopInfoCardExpanded.value
+        _state.value = _state.value.copy(
+            isStopInfoCardExpanded = !_state.value.isStopInfoCardExpanded
+        )
     }
 
     fun close() {
         onCloseClicked()
     }
 
-    fun updateDepartures() {
+    fun updateDepartures(showRefreshingIndicator: Boolean = true) {
         coroutineScope.launch {
-            _isRefreshing.update { true }
-            _departures.update {
-                val stopMonitorInfoResource = useCases.getStopMonitorUseCase(
-                    stop = stop,
-                    time = queriedTime,
-                    limit = departureCount.value,
-                )
-                when (stopMonitorInfoResource) {
-                    is Result.Error -> {
-                        // TODO: display error
-                        emptyList()
-                    }
-                    is Result.Success -> {
-                        stopMonitorInfoResource.data.departures
-                    }
+            if (showRefreshingIndicator)
+                _state.value = _state.value.copy(isRefreshing = true)
+
+            val stopMonitorInfoResource = useCases.getStopMonitorUseCase(
+                stop = stop,
+                time = queriedTime,
+                limit = state.value.departureCount,
+            )
+            val departures = when (stopMonitorInfoResource) {
+                is Result.Error -> {
+                    // TODO: display error
+                    emptyList()
+                }
+                is Result.Success -> {
+                    stopMonitorInfoResource.data.departures
                 }
             }
-            delay(300)
-            _isRefreshing.update { false }
+            _state.value = _state.value.copy(departures = departures)
+
+            if (showRefreshingIndicator)
+                delay(300)
+                _state.value = _state.value.copy(isRefreshing = false)
         }
     }
 
     fun increaseDepartureCount() {
-        _departureCount.value += 20
-        coroutineScope.launch {
-            _departures.update {
-                val stopMonitorInfoResource = useCases.getStopMonitorUseCase(
-                    stop = stop,
-                    time = queriedTime,
-                    limit = departureCount.value,
-                )
-                when (stopMonitorInfoResource) {
-                    is Result.Error -> {
-                        // TODO: display error
-                        emptyList()
-                    }
-                    is Result.Success -> {
-                        stopMonitorInfoResource.data.departures
-                    }
-                }
-            }
-        }
+        _state.value = _state.value.copy(departureCount = state.value.departureCount + 10)
+        updateDepartures(false)
     }
 
 //    fun toggleVisibilityDetailedStopSchedule(departureIndex: Int) {
