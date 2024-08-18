@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import util.CoroutineViewModel
@@ -24,7 +22,7 @@ import kotlinx.coroutines.flow.map
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
-    val onStopClicked: (Stop, Instant) -> Unit,
+    private val onStopClicked: (Stop, Instant) -> Unit,
 ) : CoroutineViewModel(), KoinComponent {
 
     private val useCases: UseCases by inject()
@@ -52,18 +50,46 @@ class HomeScreenViewModel(
             )
     }
 
+    fun onEvent(event: HomeScreenEvent) {
+        when (event) {
 
-    fun onSearchTextChange(text: String) {
-        _state.value = state.value.copy(searchText = text)
+            is HomeScreenEvent.Search -> {
+                _state.value = state.value.copy(searchText = event.text)
+            }
+
+            is HomeScreenEvent.StartStopMonitor -> {
+                val stop = event.stop ?: state.value.stopList.firstOrNull()
+                if (stop == null) { return } //TODO(give user feedback that no such stop was found)
+
+                onStopClicked(stop, state.value.selectedDateTime.toInstant())
+            }
+
+            is HomeScreenEvent.ToggleFavorite -> toggleFavoriteStop(event.stop)
+
+            is HomeScreenEvent.ReorderFavoriteStop -> reorderFavoriteStop(event.stopId, event.from, event.to)
+
+            is HomeScreenEvent.ChangeSelectedDate -> {
+                _state.value = state.value.copy(
+                    selectedDateTime = state.value.selectedDateTime.copy(date = event.date)
+                )
+            }
+
+            is HomeScreenEvent.ChangeSelectedTime -> {
+                _state.value = state.value.copy(
+                    selectedDateTime = state.value.selectedDateTime.copy(time = event.time)
+                )
+            }
+
+            is HomeScreenEvent.ResetSelectedDateTime -> {
+                _state.value = _state.value.copy(
+                    selectedDateTime = PickableDateTime()
+                )
+            }
+        }
     }
 
-    fun startStopMonitor(stop: Stop?) {
-        if (stop == null) { return } //TODO(give user feedback that no such stop was found)
 
-        onStopClicked(stop, state.value.selectedDateTime.toInstant())
-    }
-
-    fun toggleFavoriteStop(stop: Stop) {
+    private fun toggleFavoriteStop(stop: Stop) {
         coroutineScope.launch {
             useCases.toggleFavoriteStopUseCase(stop)
 
@@ -85,35 +111,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun changeSelectedDate(date: LocalDate) {
-        _state.value = state.value.copy(
-            selectedDateTime = state.value.selectedDateTime.copy(date = date)
-        )
-    }
-
-    fun changeSelectedTime(time: LocalTime) {
-        _state.value = state.value.copy(
-            selectedDateTime = state.value.selectedDateTime.copy(time = time)
-        )
-    }
-
-    fun selectedDateTimeIsValid(): Boolean {
-        if (_state.value.selectedDateTime.dateTimeIsValid()) {
-            return true
-        } else {
-            resetDateTime()
-            return false
-        }
-    }
-
-    fun resetDateTime() {
-        _state.value = _state.value.copy(
-            selectedDateTime = PickableDateTime()
-        )
-    }
-
-
-    fun reorderFavoriteStop(stopId: String, from: Int, to: Int) {
+    private fun reorderFavoriteStop(stopId: String, from: Int, to: Int) {
         coroutineScope.launch {
             useCases.reorderFavoriteStops(stopId, from.toLong(), to.toLong())
 

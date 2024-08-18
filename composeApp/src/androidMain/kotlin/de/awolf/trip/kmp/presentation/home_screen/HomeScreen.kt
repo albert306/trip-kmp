@@ -2,7 +2,6 @@ package de.awolf.trip.kmp.presentation.home_screen
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,6 +42,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import presentation.home_screen.HomeScreenEvent
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -71,7 +71,10 @@ fun HomeScreen(
         lazyListState = lazyListState,
         scrollThresholdPadding = PaddingValues(top = 100.dp)
     ) { from, to ->
-        viewModel.reorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
+        viewModel.onEvent(
+            HomeScreenEvent
+                .ReorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_TICK)
         }
@@ -83,19 +86,19 @@ fun HomeScreen(
         datePickerState = datePickerState,
         showTimePicker = showTimePicker,
         timePickerState = timePickerState,
-        onDateConfirm = viewModel::changeSelectedDate,
-        onTimeConfirm = viewModel::changeSelectedTime
+        onDateConfirm = { viewModel.onEvent(HomeScreenEvent.ChangeSelectedDate(it)) },
+        onTimeConfirm = { viewModel.onEvent(HomeScreenEvent.ChangeSelectedTime(it)) }
     )
 
     fun startStopMonitor(stop: Stop?) {
-        if (!viewModel.selectedDateTimeIsValid()) {
-            Toast.makeText(
-                context,
-                "Time was corrected to current time",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        viewModel.startStopMonitor(stop)
+//        if (!viewModel.selectedDateTimeIsValid()) {
+//            Toast.makeText(
+//                context,
+//                "Time was corrected to current time",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }
+        viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop))
     }
 
     Column(
@@ -105,10 +108,10 @@ fun HomeScreen(
     ) {
         SearchCard(
             homeScreenState = state,
-            onSearchTextChange = viewModel::onSearchTextChange,
+            onSearchTextChange = { viewModel.onEvent(HomeScreenEvent.Search(it)) },
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
-            onResetDateTime = { viewModel.resetDateTime() },
+            onResetDateTime = { viewModel.onEvent(HomeScreenEvent.ResetSelectedDateTime) },
             onSearchButtonClick = {
                 startStopMonitor(state.stopList.firstOrNull())
             },
@@ -138,7 +141,9 @@ fun HomeScreen(
                         ) {
                             StopView(
                                 stop = stop,
-                                onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
+                                onFavoriteStarClick = {
+                                    viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
+                                },
                                 onNameClick = { startStopMonitor(stop) },
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
@@ -161,7 +166,9 @@ fun HomeScreen(
                 } else {
                     StopView(
                         stop = stop,
-                        onFavoriteStarClick = { viewModel.toggleFavoriteStop(stop) },
+                        onFavoriteStarClick = {
+                            viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
+                        },
                         onNameClick = { startStopMonitor(stop) },
                         modifier = Modifier
                             .animateItem(fadeInSpec = null, fadeOutSpec = null)
