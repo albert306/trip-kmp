@@ -19,6 +19,7 @@ import util.Result
 import domain.models.PickableDateTime
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Clock
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
@@ -61,7 +62,15 @@ class HomeScreenViewModel(
                 val stop = event.stop ?: state.value.stopList.firstOrNull()
                 if (stop == null) { return } //TODO(give user feedback that no such stop was found)
 
-                onStopClicked(stop, state.value.selectedDateTime.toInstant())
+
+                val queriedTime = if (state.value.selectedDateTime.dateTimeIsValid()) {
+                    state.value.selectedDateTime.toInstant()
+                } else {
+                    // TODO: display time correction
+                    Clock.System.now()
+                }
+
+                onStopClicked(stop, queriedTime)
             }
 
             is HomeScreenEvent.ToggleFavorite -> toggleFavoriteStop(event.stop)

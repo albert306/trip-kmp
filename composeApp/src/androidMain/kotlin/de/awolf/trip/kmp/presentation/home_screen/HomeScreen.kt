@@ -31,7 +31,6 @@ import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
-import domain.models.Stop
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import presentation.home_screen.HomeScreenViewModel
@@ -52,18 +51,17 @@ fun HomeScreen(
     val state by viewModel.state.collectAsState()
 
     val view = LocalView.current
-    val context = LocalView.current.context
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
-    val datePickerState = rememberDatePickerState()
     val showDatePicker = remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    val showTimePicker = remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState(
         initialHour = now.hour,
         initialMinute = now.minute,
         is24Hour = true,
     )
-    val showTimePicker = remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()
 
@@ -90,17 +88,6 @@ fun HomeScreen(
         onTimeConfirm = { viewModel.onEvent(HomeScreenEvent.ChangeSelectedTime(it)) }
     )
 
-    fun startStopMonitor(stop: Stop?) {
-//        if (!viewModel.selectedDateTimeIsValid()) {
-//            Toast.makeText(
-//                context,
-//                "Time was corrected to current time",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }
-        viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop))
-    }
-
     Column(
         verticalArrangement = Arrangement.spacedBy((-10).dp),
         modifier = Modifier
@@ -113,7 +100,7 @@ fun HomeScreen(
             onShowTimePicker = { showTimePicker.value = true },
             onResetDateTime = { viewModel.onEvent(HomeScreenEvent.ResetSelectedDateTime) },
             onSearchButtonClick = {
-                startStopMonitor(state.stopList.firstOrNull())
+                viewModel.onEvent(HomeScreenEvent.StartStopMonitor(null))
             },
             modifier = Modifier
                 .zIndex(1f)
@@ -144,7 +131,7 @@ fun HomeScreen(
                                 onFavoriteStarClick = {
                                     viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
                                 },
-                                onNameClick = { startStopMonitor(stop) },
+                                onNameClick = { viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop)) },
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .fillMaxWidth(fraction = 0.9f)
@@ -169,7 +156,7 @@ fun HomeScreen(
                         onFavoriteStarClick = {
                             viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
                         },
-                        onNameClick = { startStopMonitor(stop) },
+                        onNameClick = { viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop)) },
                         modifier = Modifier
                             .animateItem(fadeInSpec = null, fadeOutSpec = null)
                             .fillMaxWidth()
