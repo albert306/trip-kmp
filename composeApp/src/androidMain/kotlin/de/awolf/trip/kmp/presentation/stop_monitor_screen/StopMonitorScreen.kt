@@ -25,6 +25,7 @@ import de.awolf.trip.kmp.presentation.helper.isFinalItemVisible
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureView
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
+import presentation.stop_monitor.StopMonitorEvent
 import presentation.stop_monitor.StopMonitorViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -43,20 +44,20 @@ fun StopMonitorScreen(
             stop = viewModel.stop,
             queriedTime = viewModel.queriedTime,
             isStopInfoCardExpanded = state.value.isStopInfoCardExpanded,
-            expandStopInfo = viewModel::expandStopInfo,
-            onCloseButtonClick = viewModel::close,
+            expandStopInfo = { viewModel.onEvent(StopMonitorEvent.ToggleExpandedStopInfo) },
+            onCloseButtonClick = { viewModel.onEvent(StopMonitorEvent.Close) },
             modifier = Modifier.zIndex(1f)
         )
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = state.value.isRefreshing,
-            onRefresh = viewModel::updateDepartures
+            onRefresh = { viewModel.onEvent(StopMonitorEvent.UpdateDepartures) }
         )
         val lazyListState = rememberLazyListState()
         val isAtBottom = lazyListState.isFinalItemVisible(tolerance = 0)
         LaunchedEffect(isAtBottom) {
             if (isAtBottom && !state.value.isRefreshing && state.value.departures.isNotEmpty()) { //prevent repeated calls
-                viewModel.increaseDepartureCount()
+                viewModel.onEvent(StopMonitorEvent.IncreaseDepartureCount)
             }
         }
 

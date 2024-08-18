@@ -5,7 +5,6 @@ import domain.use_case.UseCases
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import org.koin.core.component.KoinComponent
@@ -25,20 +24,32 @@ class StopMonitorViewModel(
     val state = _state.asStateFlow()
 
     init {
-        updateDepartures()
+        updateDepartures(true)
     }
 
-    fun expandStopInfo() {
-        _state.value = _state.value.copy(
-            isStopInfoCardExpanded = !_state.value.isStopInfoCardExpanded
-        )
+    fun onEvent(event: StopMonitorEvent) {
+        when (event) {
+            StopMonitorEvent.ToggleExpandedStopInfo -> {
+                _state.value = _state.value.copy(
+                    isStopInfoCardExpanded = !_state.value.isStopInfoCardExpanded
+                )
+            }
+
+            StopMonitorEvent.Close -> onCloseClicked()
+
+            StopMonitorEvent.UpdateDepartures -> updateDepartures(true)
+
+            StopMonitorEvent.IncreaseDepartureCount -> {
+                _state.value = _state.value.copy(
+                    departureCount = state.value.departureCount + 10
+                )
+                updateDepartures(false)
+            }
+        }
     }
 
-    fun close() {
-        onCloseClicked()
-    }
 
-    fun updateDepartures(showRefreshingIndicator: Boolean = true) {
+    private fun updateDepartures(showRefreshingIndicator: Boolean = true) {
         coroutineScope.launch {
             if (showRefreshingIndicator)
                 _state.value = _state.value.copy(isRefreshing = true)
@@ -63,11 +74,6 @@ class StopMonitorViewModel(
                 delay(300)
                 _state.value = _state.value.copy(isRefreshing = false)
         }
-    }
-
-    fun increaseDepartureCount() {
-        _state.value = _state.value.copy(departureCount = state.value.departureCount + 10)
-        updateDepartures(false)
     }
 
 //    fun toggleVisibilityDetailedStopSchedule(departureIndex: Int) {
