@@ -16,6 +16,8 @@ import domain.models.Stop
 import presentation.home_screen.HomeScreenViewModel
 import presentation.stop_monitor.StopMonitorViewModel
 import kotlinx.datetime.Instant
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 
 @Composable
@@ -47,7 +49,7 @@ fun Navigation() {
                         onStopClicked = { stop: Stop, queriedTime: Instant ->
                             navController.navigate(Screen.StopMonitorScreen.withArgs(
                                 stop.id,
-                                stop.name,
+                                URLEncoder.encode(stop.name, "utf-8"), // encode stop name to avoid issues with "/" in name
                                 stop.region,
                                 stop.isFavorite.toString(),
                                 queriedTime.toEpochMilliseconds().toString()
@@ -99,7 +101,7 @@ fun Navigation() {
                     StopMonitorViewModel(
                         stop = Stop(
                             id = entry.arguments?.getString("stopId") ?: "0000000",
-                            name = entry.arguments?.getString("stopName") ?: "unknown",
+                            name = URLDecoder.decode(entry.arguments?.getString("stopName") ?: "","utf-8"),
                             region = entry.arguments?.getString("stopRegion") ?: "Dresden",
                             isFavorite = entry.arguments?.getBoolean("stopIsFavorite") ?: false
                         ),
