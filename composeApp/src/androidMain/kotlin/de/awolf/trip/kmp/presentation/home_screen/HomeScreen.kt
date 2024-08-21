@@ -2,6 +2,7 @@ package de.awolf.trip.kmp.presentation.home_screen
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import de.awolf.trip.kmp.presentation.helper.SingleEventEffect
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
@@ -42,6 +44,9 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import presentation.home_screen.HomeScreenEvent
+import presentation.home_screen.HomeScreenSideEffect
+import util.error.DatabaseError
+import util.error.NetworkError
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -78,6 +83,32 @@ fun HomeScreen(
         }
     }
 
+    SingleEventEffect(sideEffectFlow = viewModel.sideEffect) { sideEffect ->
+        val toastMsg: String
+        when (sideEffect) {
+            is HomeScreenSideEffect.ShowCorrectedDateTimeMsg -> toastMsg = "Corrected time to current time"
+            is HomeScreenSideEffect.ShowError -> toastMsg = when (sideEffect.error) {
+                DatabaseError.UNKNOWN -> "Unknown database error"
+                NetworkError.UNKNOWN -> "Unknown network error"
+                NetworkError.REQUEST_TIMEOUT -> "Request timeout"
+                NetworkError.UNAUTHORIZED -> "Network unauthorized error"
+                NetworkError.CONFLICT -> "Network conflict"
+                NetworkError.TOO_MANY_REQUESTS -> "Too many network requests"
+                NetworkError.NO_INTERNET -> "No internet connection"
+                NetworkError.PAYLOAD_TOO_LARGE -> "Network payload too large"
+                NetworkError.SERVER_ERROR -> "Network server error"
+                NetworkError.SERIALIZATION -> "Network serialization error"
+                else -> {
+                    "Unknown error"
+                }
+            }
+        }
+        Toast.makeText(
+            view.context,
+            toastMsg,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 
     DateAndTimePickers(
         showDatePicker = showDatePicker,

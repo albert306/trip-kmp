@@ -17,8 +17,11 @@ import org.koin.core.component.inject
 import util.CoroutineViewModel
 import util.Result
 import domain.models.PickableDateTime
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.datetime.Clock
 
 @OptIn(FlowPreview::class)
@@ -31,6 +34,8 @@ class HomeScreenViewModel(
     private val _state = MutableStateFlow(HomeScreenState())
     val state = _state.asStateFlow()
 
+    private val _sideEffect = Channel<HomeScreenSideEffect>(Channel.BUFFERED)
+    val sideEffect = _sideEffect.receiveAsFlow()
 
     init {
         state
@@ -66,7 +71,9 @@ class HomeScreenViewModel(
                 val queriedTime = if (state.value.selectedDateTime.dateTimeIsValid()) {
                     state.value.selectedDateTime.toInstant()
                 } else {
-                    // TODO: display time correction
+                    coroutineScope.launch {
+                        _sideEffect.send(HomeScreenSideEffect.ShowCorrectedDateTimeMsg)
+                    }
                     Clock.System.now()
                 }
 
@@ -136,7 +143,7 @@ class HomeScreenViewModel(
     private suspend fun setStopsByQuery(query: String) {
         val resultList = when (val recommendedStopsResult = useCases.findStopByQueryUseCase(query)) {
             is Result.Error -> {
-                // TODO: display error
+                _sideEffect.send(HomeScreenSideEffect.ShowError(recommendedStopsResult.error))
                 emptyList()
             }
 
@@ -153,7 +160,7 @@ class HomeScreenViewModel(
     private suspend fun setFavoriteStops() {
         val resultList = when (val favoriteStopsResult = useCases.getFavoriteStopsUseCase()) {
             is Result.Error -> {
-                // TODO: display error
+                _sideEffect.send(HomeScreenSideEffect.ShowError(favoriteStopsResult.error))
                 emptyList()
             }
             is Result.Success -> {
