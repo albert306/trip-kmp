@@ -21,7 +21,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.datetime.Clock
 
 @OptIn(FlowPreview::class)
 class HomeScreenViewModel(
@@ -66,17 +65,14 @@ class HomeScreenViewModel(
                 val stop = event.stop ?: state.value.stopList.firstOrNull()
                 if (stop == null) { return } //TODO(give user feedback that no such stop was found)
 
-
-                val queriedTime = if (state.value.selectedDateTime.dateTimeIsValid()) {
-                    state.value.selectedDateTime.toInstant()
-                } else {
+                if (!state.value.selectedDateTime.dateTimeIsValid()) {
                     coroutineScope.launch {
-                        _sideEffect.send(HomeScreenSideEffect.ShowCorrectedDateTimeMsg)
+                        _sideEffect.send(HomeScreenSideEffect.ShowInvalidDateTimeMsg)
                     }
-                    Clock.System.now()
+                    return
                 }
 
-                onStopClicked(stop, queriedTime)
+                onStopClicked(stop, state.value.selectedDateTime.toInstant())
             }
 
             is HomeScreenEvent.ToggleFavorite -> toggleFavoriteStop(event.stop)

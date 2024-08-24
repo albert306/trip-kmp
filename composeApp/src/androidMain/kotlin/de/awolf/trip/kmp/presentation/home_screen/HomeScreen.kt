@@ -90,7 +90,7 @@ fun HomeScreen(
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
         val toastMsg: String
         when (sideEffect) {
-            is HomeScreenSideEffect.ShowCorrectedDateTimeMsg -> toastMsg = "Corrected time to current time"
+            is HomeScreenSideEffect.ShowInvalidDateTimeMsg -> toastMsg = "Selected date and time is in the past"
             is HomeScreenSideEffect.ShowDatabaseError -> toastMsg = when (sideEffect.error) {
                 DatabaseError.UNKNOWN -> "Unknown database error"
             }
@@ -109,7 +109,6 @@ fun HomeScreen(
                 }
             }
         }
-        println("SNACKBAR: $toastMsg")
 
         scope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
