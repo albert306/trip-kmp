@@ -16,6 +16,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import de.awolf.trip.kmp.presentation.helper.SideEffectListener
 import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
 import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
@@ -35,6 +38,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import presentation.home_screen.HomeScreenViewModel
 import domain.models.StopListSource
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -42,15 +46,20 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import presentation.home_screen.HomeScreenEvent
+import presentation.home_screen.HomeScreenSideEffect
+import util.error.DatabaseError
+import util.error.NetworkError
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
+    snackbarHostState: SnackbarHostState
 ) {
     val state by viewModel.state.collectAsState()
 
     val view = LocalView.current
+    val scope = rememberCoroutineScope()
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
@@ -78,6 +87,38 @@ fun HomeScreen(
         }
     }
 
+    SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
+        val toastMsg: String
+        when (sideEffect) {
+            is HomeScreenSideEffect.ShowNoStopFoundMsg -> toastMsg = "No stop selected"
+            is HomeScreenSideEffect.ShowInvalidDateTimeMsg -> toastMsg = "Selected date and time is in the past"
+            is HomeScreenSideEffect.ShowDatabaseError -> toastMsg = when (sideEffect.error) {
+                DatabaseError.UNKNOWN -> "Unknown database error"
+            }
+            is HomeScreenSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
+                NetworkError.UNKNOWN -> "Unknown network error"
+                NetworkError.REQUEST_TIMEOUT -> "Request timeout"
+                NetworkError.UNAUTHORIZED -> "Network unauthorized error"
+                NetworkError.CONFLICT -> "Network conflict"
+                NetworkError.TOO_MANY_REQUESTS -> "Too many network requests"
+                NetworkError.NO_INTERNET -> "No internet connection"
+                NetworkError.PAYLOAD_TOO_LARGE -> "Network payload too large"
+                NetworkError.SERVER_ERROR -> "Network server error"
+                NetworkError.SERIALIZATION -> "Network serialization error"
+                else -> {
+                    "Unknown error"
+                }
+            }
+        }
+
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(
+                message = toastMsg,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
 
     DateAndTimePickers(
         showDatePicker = showDatePicker,

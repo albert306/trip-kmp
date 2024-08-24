@@ -6,34 +6,77 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import de.awolf.trip.kmp.presentation.helper.SideEffectListener
 import de.awolf.trip.kmp.presentation.helper.isFinalItemVisible
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureView
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
+import kotlinx.coroutines.launch
 import presentation.stop_monitor.StopMonitorEvent
+import presentation.stop_monitor.StopMonitorSideEffect
 import presentation.stop_monitor.StopMonitorViewModel
+import util.error.NetworkError
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StopMonitorScreen(
     viewModel: StopMonitorViewModel,
+    snackbarHostState: SnackbarHostState,
 ) {
     val state = viewModel.state.collectAsState()
+
+    val scope = rememberCoroutineScope()
+
+    SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
+        val toastMsg: String
+        when (sideEffect) {
+            is StopMonitorSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
+                NetworkError.UNKNOWN -> "Unknown network error"
+                NetworkError.REQUEST_TIMEOUT -> "Request timeout"
+                NetworkError.UNAUTHORIZED -> "Network unauthorized error"
+                NetworkError.CONFLICT -> "Network conflict"
+                NetworkError.TOO_MANY_REQUESTS -> "Too many network requests"
+                NetworkError.NO_INTERNET -> "No internet connection"
+                NetworkError.PAYLOAD_TOO_LARGE -> "Network payload too large"
+                NetworkError.SERVER_ERROR -> "Network server error"
+                NetworkError.SERIALIZATION -> "Network serialization error"
+                else -> {
+                    "Unknown error"
+                }
+            }
+        }
+
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(
+                message = toastMsg,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy((-10).dp),
@@ -63,6 +106,7 @@ fun StopMonitorScreen(
 
         Box(
             modifier = Modifier
+                .fillMaxSize()
                 .pullRefresh(pullRefreshState)
         ) {
             PullRefreshIndicator(
@@ -73,6 +117,25 @@ fun StopMonitorScreen(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
             )
+
+            if (state.value.departures.isEmpty() && !state.value.isRefreshing) {
+                Surface(
+                    color = MaterialTheme.colorScheme.error,
+                    shape = RoundedCornerShape(4.dp),
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .align(Alignment.TopCenter)
+                ) {
+                    Text(
+                        text = "No upcoming departures found",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onError,
+                        modifier = Modifier
+                            .padding(8.dp)
+                    )
+                }
+                return@Box
+            }
 
             LazyColumn(
                 state = lazyListState,

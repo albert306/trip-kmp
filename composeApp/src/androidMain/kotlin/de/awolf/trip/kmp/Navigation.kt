@@ -2,7 +2,9 @@ package de.awolf.trip.kmp
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,12 +23,16 @@ import java.net.URLEncoder
 
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    snackbarHostState: SnackbarHostState,
+    modifier: Modifier = Modifier
+) {
 
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = Screen.HomeScreen.route,
+        modifier = modifier
     ) {
         composable(
             route = Screen.HomeScreen.route,
@@ -60,7 +66,8 @@ fun Navigation() {
             )
 
             HomeScreen(
-                viewModel = homeScreenViewModel
+                viewModel = homeScreenViewModel,
+                snackbarHostState = snackbarHostState
             )
         }
 
@@ -112,7 +119,8 @@ fun Navigation() {
             )
 
             StopMonitorScreen(
-                viewModel = stopMonitorViewModel
+                viewModel = stopMonitorViewModel,
+                snackbarHostState = snackbarHostState
             )
         }
     }

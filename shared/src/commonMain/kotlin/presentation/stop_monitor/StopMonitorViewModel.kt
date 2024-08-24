@@ -2,9 +2,11 @@ package presentation.stop_monitor
 
 import domain.models.Stop
 import domain.use_case.UseCases
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import org.koin.core.component.KoinComponent
@@ -22,6 +24,9 @@ class StopMonitorViewModel(
 
     private val _state = MutableStateFlow(StopMonitorState())
     val state = _state.asStateFlow()
+
+    private val _sideEffect = Channel<StopMonitorSideEffect>(Channel.BUFFERED)
+    val sideEffect = _sideEffect.receiveAsFlow()
 
     init {
         updateDepartures(true)
@@ -61,7 +66,7 @@ class StopMonitorViewModel(
             )
             val departures = when (stopMonitorInfoResource) {
                 is Result.Error -> {
-                    // TODO: display error
+                    _sideEffect.send(StopMonitorSideEffect.ShowNetworkError(stopMonitorInfoResource.error))
                     emptyList()
                 }
                 is Result.Success -> {
