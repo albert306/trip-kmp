@@ -90,6 +90,7 @@ fun HomeScreen(
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
         val toastMsg: String
         when (sideEffect) {
+            is HomeScreenSideEffect.ShowNoStopFoundMsg -> toastMsg = "No stop selected"
             is HomeScreenSideEffect.ShowInvalidDateTimeMsg -> toastMsg = "Selected date and time is in the past"
             is HomeScreenSideEffect.ShowDatabaseError -> toastMsg = when (sideEffect.error) {
                 DatabaseError.UNKNOWN -> "Unknown database error"

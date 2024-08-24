@@ -63,7 +63,12 @@ class HomeScreenViewModel(
 
             is HomeScreenEvent.StartStopMonitor -> {
                 val stop = event.stop ?: state.value.stopList.firstOrNull()
-                if (stop == null) { return } //TODO(give user feedback that no such stop was found)
+                if (stop == null) {
+                    coroutineScope.launch {
+                        _sideEffect.send(HomeScreenSideEffect.ShowNoStopFoundMsg)
+                    }
+                    return
+                }
 
                 if (!state.value.selectedDateTime.dateTimeIsValid()) {
                     coroutineScope.launch {
