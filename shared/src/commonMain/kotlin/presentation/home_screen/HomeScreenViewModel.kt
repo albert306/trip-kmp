@@ -18,7 +18,6 @@ import util.CoroutineViewModel
 import util.Result
 import domain.models.PickableDateTime
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -143,7 +142,7 @@ class HomeScreenViewModel(
     private suspend fun setStopsByQuery(query: String) {
         val resultList = when (val recommendedStopsResult = useCases.findStopByQueryUseCase(query)) {
             is Result.Error -> {
-                _sideEffect.send(HomeScreenSideEffect.ShowError(recommendedStopsResult.error))
+                _sideEffect.send(HomeScreenSideEffect.ShowNetworkError(recommendedStopsResult.error))
                 emptyList()
             }
 
@@ -160,7 +159,7 @@ class HomeScreenViewModel(
     private suspend fun setFavoriteStops() {
         val resultList = when (val favoriteStopsResult = useCases.getFavoriteStopsUseCase()) {
             is Result.Error -> {
-                _sideEffect.send(HomeScreenSideEffect.ShowError(favoriteStopsResult.error))
+                _sideEffect.send(HomeScreenSideEffect.ShowDatabaseError(favoriteStopsResult.error))
                 emptyList()
             }
             is Result.Success -> {

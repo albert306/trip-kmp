@@ -17,7 +17,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.util.network.UnresolvedAddressException
+import io.ktor.utils.io.errors.IOException
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -139,15 +139,11 @@ class VvoServiceRepositoryImpl(
 
         val response = try {
             request()
-        } catch (e: UnresolvedAddressException) {
+        } catch (e: IOException) {
             return Result.Error(NetworkError.NO_INTERNET)
         } catch (e: SerializationException) {
             return Result.Error(NetworkError.SERIALIZATION)
         } catch (e: Exception) {
-            println(e.stackTraceToString())
-//            if (e is UnknownHostException) {
-//                return Result.Error(NetworkError.NO_INTERNET)
-//            }
             return Result.Error(NetworkError.UNKNOWN)
         }
 

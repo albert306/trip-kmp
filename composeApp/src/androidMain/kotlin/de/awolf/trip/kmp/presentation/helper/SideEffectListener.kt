@@ -8,16 +8,16 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun <T> SingleEventEffect(
-    sideEffectFlow: Flow<T>,
+fun <T> SideEffectListener(
+    flow: Flow<T>,
     lifeCycleState: Lifecycle.State = Lifecycle.State.STARTED,
-    onEvent: (T) -> Unit
+    collector: (T) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(sideEffectFlow) {
-//        lifecycleOwner.repeatOnLifecycle(lifeCycleState) {
-            sideEffectFlow.collect(onEvent)
-//        }
+    LaunchedEffect(flow) {
+        lifecycleOwner.repeatOnLifecycle(lifeCycleState) {
+            flow.collect(collector)
+        }
     }
 }
