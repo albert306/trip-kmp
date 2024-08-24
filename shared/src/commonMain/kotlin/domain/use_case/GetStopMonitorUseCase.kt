@@ -4,14 +4,14 @@ import domain.models.Stop
 import domain.models.StopMonitorInfo
 import domain.repository.VvoServiceRepository
 import kotlinx.datetime.Instant
-import util.error.Error
 import util.Result
+import util.error.NetworkError
 
 class GetStopMonitorUseCase(
     private val vvoServiceRepository: VvoServiceRepository
 ) {
 
-    suspend operator fun invoke(stop: Stop, time: Instant, limit: Int): Result<StopMonitorInfo, Error> {
+    suspend operator fun invoke(stop: Stop, time: Instant, limit: Int): Result<StopMonitorInfo, NetworkError> {
         return when (val response = vvoServiceRepository.monitorStop(
             stopId = stop.id,
             limit = limit,

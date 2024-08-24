@@ -119,7 +119,8 @@ fun Navigation(
             )
 
             StopMonitorScreen(
-                viewModel = stopMonitorViewModel
+                viewModel = stopMonitorViewModel,
+                snackbarHostState = snackbarHostState
             )
         }
     }
