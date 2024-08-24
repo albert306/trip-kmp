@@ -118,7 +118,7 @@ fun StopMonitorScreen(
                     .align(Alignment.TopCenter)
             )
 
-            if (state.value.departures.isEmpty() && !state.value.isRefreshing) {
+            if (state.value.maxDepartureCount == 0 && !state.value.isRefreshing) {
                 Surface(
                     color = MaterialTheme.colorScheme.error,
                     shape = RoundedCornerShape(4.dp),
@@ -158,7 +158,9 @@ fun StopMonitorScreen(
                         },
                     )
                 }
-                if (!state.value.isRefreshing) {
+                if (!state.value.isRefreshing &&
+                    state.value.departures.size < state.value.maxDepartureCount
+                ) {
                     items(3) {
                         ShimmerDepartureItem()
                     }

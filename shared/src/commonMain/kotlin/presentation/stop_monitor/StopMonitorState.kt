@@ -6,5 +6,6 @@ data class StopMonitorState(
     val isStopInfoCardExpanded: Boolean = false,
     val isRefreshing: Boolean = false,
     val departures: List<Departure> = emptyList(),
-    val departureCount: Int = 30,
+    val queriedDepartureCount: Int = 30,
+    val maxDepartureCount: Int = Int.MAX_VALUE,
 )

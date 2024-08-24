@@ -1,5 +1,6 @@
 package presentation.stop_monitor
 
+import domain.models.Departure
 import domain.models.Stop
 import domain.use_case.UseCases
 import kotlinx.coroutines.channels.Channel
@@ -46,7 +47,7 @@ class StopMonitorViewModel(
 
             StopMonitorEvent.IncreaseDepartureCount -> {
                 _state.value = _state.value.copy(
-                    departureCount = state.value.departureCount + 10
+                    queriedDepartureCount = state.value.queriedDepartureCount + 10
                 )
                 updateDepartures(false)
             }
@@ -59,25 +60,34 @@ class StopMonitorViewModel(
             if (showRefreshingIndicator)
                 _state.value = _state.value.copy(isRefreshing = true)
 
+            val departures: List<Departure>
+            val maxDepartureCount: Int?
+
             val stopMonitorInfoResource = useCases.getStopMonitorUseCase(
                 stop = stop,
                 time = queriedTime,
-                limit = state.value.departureCount,
+                limit = state.value.queriedDepartureCount,
             )
-            val departures = when (stopMonitorInfoResource) {
+            when (stopMonitorInfoResource) {
                 is Result.Error -> {
                     _sideEffect.send(StopMonitorSideEffect.ShowNetworkError(stopMonitorInfoResource.error))
-                    emptyList()
+                    departures = emptyList()
+                    maxDepartureCount = 0
                 }
                 is Result.Success -> {
-                    stopMonitorInfoResource.data.departures
+                    departures = stopMonitorInfoResource.data.departures
+                    maxDepartureCount = stopMonitorInfoResource.data.maxDepartureCount
                 }
             }
-            _state.value = _state.value.copy(departures = departures)
+            _state.value = _state.value.copy(
+                departures = departures,
+                maxDepartureCount = maxDepartureCount
+            )
 
-            if (showRefreshingIndicator)
+            if (showRefreshingIndicator) {
                 delay(300)
                 _state.value = _state.value.copy(isRefreshing = false)
+            }
         }
     }
 

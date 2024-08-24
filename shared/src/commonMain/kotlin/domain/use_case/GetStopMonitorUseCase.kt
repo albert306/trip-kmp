@@ -21,8 +21,17 @@ class GetStopMonitorUseCase(
                 response
             }
             is Result.Success -> {
+                val maxDepartureCount = if (response.data.departures.size < limit) {
+                     response.data.departures.size
+                } else {
+                    Int.MAX_VALUE
+                }
                 val sortedUniqueDepartures = response.data.departures.distinct().sorted()
-                Result.Success(response.data.copy(departures = sortedUniqueDepartures))
+
+                Result.Success(response.data.copy(
+                    departures = sortedUniqueDepartures,
+                    maxDepartureCount = maxDepartureCount
+                ))
             }
         }
     }
