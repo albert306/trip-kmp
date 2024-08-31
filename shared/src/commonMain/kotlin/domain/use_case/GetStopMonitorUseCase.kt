@@ -22,7 +22,7 @@ class GetStopMonitorUseCase(
             }
             is Result.Success -> {
                 val maxDepartureCount = if (response.data.departures.size < limit) {
-                     response.data.departures.size
+                    response.data.departures.size
                 } else {
                     Int.MAX_VALUE
                 }

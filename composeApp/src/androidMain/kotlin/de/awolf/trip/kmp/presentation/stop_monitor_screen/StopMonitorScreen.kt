@@ -153,8 +153,9 @@ fun StopMonitorScreen(
                 ) { departure ->
                     DepartureView(
                         departure = departure,
+                        showDetail = state.value.detailVisibility[departure] ?: false,
                         onClick = {
-//                            viewModel.toggleVisibilityDetailedStopSchedule(index)
+                            viewModel.onEvent(StopMonitorEvent.ToggleStopSchedule(departure))
                         },
                     )
                 }

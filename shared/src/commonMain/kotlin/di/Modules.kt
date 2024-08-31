@@ -7,6 +7,7 @@ import domain.repository.VvoServiceRepository
 import domain.use_case.FindStopByQueryUseCase
 import domain.use_case.GetFavoriteStopsUseCase
 import domain.use_case.GetStopMonitorUseCase
+import domain.use_case.GetStopScheduleUseCase
 import domain.use_case.ReorderFavoriteStopsUseCase
 import domain.use_case.ToggleFavoriteStopUseCase
 import domain.use_case.UseCases
@@ -31,6 +32,7 @@ val sharedModule = module {
             FindStopByQueryUseCase(get(), get()),
             GetFavoriteStopsUseCase(get()),
             GetStopMonitorUseCase(get()),
+            GetStopScheduleUseCase(get()),
             ToggleFavoriteStopUseCase(get()),
             ReorderFavoriteStopsUseCase(get())
         )

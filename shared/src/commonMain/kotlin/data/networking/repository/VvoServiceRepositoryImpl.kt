@@ -69,12 +69,11 @@ class VvoServiceRepositoryImpl(
         )
     }
 
-    override suspend fun getDetailedStopSchedule(
+    override suspend fun getStopSchedule(
         stopId: String,
         departureId: String,
         time: Instant
     ): Result<List<StopScheduleItem>, NetworkError> {
-
 
         val jsonBody = JsonObject(
             mapOf(

@@ -63,14 +63,14 @@ fun DepartureViewPreview() {
                     departureState = Departure.DepartureState.INTIME,
                     routeChanges = emptyList(),
                     diva = null,
-                    isShowingDetailedStopSchedule = true,
-                    detailedStopSchedule = listOf(
+                    stopSchedule = listOf(
                         StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                         StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                         StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                         StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
-                    )
+                    ),
                 ),
+                showDetail = true,
                 onClick = {})
         }
     }
@@ -79,6 +79,7 @@ fun DepartureViewPreview() {
 @Composable
 fun DepartureView(
     departure: Departure,
+    showDetail: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -203,18 +204,18 @@ fun DepartureView(
                     }
 
                     val delay = departure.getDelay()
-                    var departureStateDescription = "pünktlich"
+                    var departureStateDescription = "on time"
                     var departureStateDescriptionColor = green
                     if (delay > 0) {
-                        departureStateDescription = "+ " + delay.toString()
+                        departureStateDescription = "+ $delay"
                         departureStateDescriptionColor = red
                     }
                     if (delay < 0) {
-                        departureStateDescription = "- " + delay.absoluteValue.toString()
+                        departureStateDescription = "- ${delay.absoluteValue}"
                         departureStateDescriptionColor = blue
                     }
                     if (departure.departureState == Departure.DepartureState.CANCELLED) {
-                        departureStateDescription = "ausgefallen"
+                        departureStateDescription = "cancelled"
                         departureStateDescriptionColor = red
                     }
 
@@ -239,7 +240,7 @@ fun DepartureView(
                         modifier = Modifier.weight(1f),
                     )
                 }
-                AnimatedVisibility(visible = departure.isShowingDetailedStopSchedule && departure.platform != null) {
+                AnimatedVisibility(visible = showDetail && departure.platform != null) {
                     if (departure.platform == null) return@AnimatedVisibility
                     Text(
                         text = departure.platform!!.type + " " +  departure.platform!!.name,
@@ -253,8 +254,8 @@ fun DepartureView(
                 }
             }
         }
-        AnimatedVisibility(visible = departure.isShowingDetailedStopSchedule && departure.detailedStopSchedule != null) {
-            if (departure.detailedStopSchedule == null) return@AnimatedVisibility
+        AnimatedVisibility(visible = showDetail && departure.stopSchedule != null) {
+            if (departure.stopSchedule == null) return@AnimatedVisibility
             Column (
                 modifier = Modifier
                     .padding(start = 4.dp)
@@ -270,7 +271,7 @@ fun DepartureView(
                     fontWeight = FontWeight(400),
                     modifier = Modifier.fillMaxWidth(),
                 )
-                for (detailedStop in departure.detailedStopSchedule!!) {
+                for (detailedStop in departure.stopSchedule!!) {
                     StopScheduleItemView(
                         stopScheduleItem = detailedStop,
 //                                    modifier = Modifier.padding(start = 8.dp)

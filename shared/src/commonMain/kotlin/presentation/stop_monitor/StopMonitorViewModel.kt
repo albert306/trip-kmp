@@ -35,21 +35,32 @@ class StopMonitorViewModel(
 
     fun onEvent(event: StopMonitorEvent) {
         when (event) {
-            StopMonitorEvent.ToggleExpandedStopInfo -> {
-                _state.value = _state.value.copy(
-                    isStopInfoCardExpanded = !_state.value.isStopInfoCardExpanded
+            is StopMonitorEvent.ToggleExpandedStopInfo -> {
+                _state.value = state.value.copy(
+                    isStopInfoCardExpanded = !state.value.isStopInfoCardExpanded
                 )
             }
 
-            StopMonitorEvent.Close -> onCloseClicked()
+            is StopMonitorEvent.Close -> onCloseClicked()
 
-            StopMonitorEvent.UpdateDepartures -> updateDepartures(true)
+            is StopMonitorEvent.UpdateDepartures -> updateDepartures(true)
 
-            StopMonitorEvent.IncreaseDepartureCount -> {
-                _state.value = _state.value.copy(
+            is StopMonitorEvent.IncreaseDepartureCount -> {
+                _state.value = state.value.copy(
                     queriedDepartureCount = state.value.queriedDepartureCount + 10
                 )
                 updateDepartures(false)
+            }
+
+            is StopMonitorEvent.ToggleStopSchedule -> {
+                val isVisible = state.value.detailVisibility[event.departure] ?: false
+                if (isVisible) {
+                    _state.value = state.value.copy(
+                        detailVisibility = state.value.detailVisibility + (event.departure to false)
+                    )
+                } else {
+                    showStopSchedule(event.departure)
+                }
             }
         }
     }
@@ -58,7 +69,7 @@ class StopMonitorViewModel(
     private fun updateDepartures(showRefreshingIndicator: Boolean = true) {
         coroutineScope.launch {
             if (showRefreshingIndicator)
-                _state.value = _state.value.copy(isRefreshing = true)
+                _state.value = state.value.copy(isRefreshing = true)
 
             val departures: List<Departure>
             val maxDepartureCount: Int?
@@ -79,45 +90,49 @@ class StopMonitorViewModel(
                     maxDepartureCount = stopMonitorInfoResource.data.maxDepartureCount
                 }
             }
-            _state.value = _state.value.copy(
+            _state.value = state.value.copy(
                 departures = departures,
                 maxDepartureCount = maxDepartureCount
             )
 
             if (showRefreshingIndicator) {
                 delay(300)
-                _state.value = _state.value.copy(isRefreshing = false)
+                _state.value = state.value.copy(isRefreshing = false)
             }
         }
     }
 
-//    fun toggleVisibilityDetailedStopSchedule(departureIndex: Int) {
-//        coroutineScope.launch {
-//            _departures.update { currentDepartures ->
-//                when (currentDepartures[departureIndex].isShowingDetailedStopSchedule) {
-//                    true -> {
-//                        currentDepartures[departureIndex].isShowingDetailedStopSchedule = false
-//                    }
-//                    false -> {
-//                        currentDepartures[departureIndex].isShowingDetailedStopSchedule = true
-//                        val detailedStopScheduleResource = useCases.getDetailedStopSchedule(
-//                            departure = currentDepartures[departureIndex],
-//                            stopId = stop.id
-//                        )
-//                        when (detailedStopScheduleResource) {
-//                            is Result.Error -> {
-//                                println("TOAST: " + detailedStopScheduleResource.message)
-//                                currentDepartures[departureIndex].detailedStopSchedule = null
-//                            }
-//
-//                            is Result.Success -> {
-//                                currentDepartures[departureIndex].detailedStopSchedule = detailedStopScheduleResource.data!!.filter { it.shedulePosition == "Next" }
-//                            }
-//                        }
-//                    }
-//                }
-//                currentDepartures
-//            }
-//        }
-//    }
+    private fun showStopSchedule(departure: Departure) {
+
+        coroutineScope.launch {
+            val stopScheduleResource = useCases.getStopSchedule(
+                departure = departure,
+                stopId = stop.id
+            )
+            val updatedDepartures = when (stopScheduleResource) {
+                is Result.Error -> {
+                    _sideEffect.send(StopMonitorSideEffect.ShowNetworkError(stopScheduleResource.error))
+
+                    state.value.departures
+                }
+
+                is Result.Success -> {
+                    state.value.departures.map {
+                        if (it == departure) {
+                            it.copy(
+                                stopSchedule = stopScheduleResource.data
+                            )
+                        } else {
+                            it
+                        }
+                    }
+                }
+
+            }
+            _state.value = state.value.copy(
+                departures = updatedDepartures,
+                detailVisibility = state.value.detailVisibility + (departure to true)
+            )
+        }
+    }
 }

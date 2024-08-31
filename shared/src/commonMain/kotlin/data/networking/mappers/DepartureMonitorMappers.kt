@@ -61,6 +61,7 @@ fun DepartureDto.toDeparture(): Departure {
         departureState = Departure.DepartureState.fromString(state),
         routeChanges = routeChanges,
         diva = diva?.toDiva(),
+        stopSchedule = null,
     )
 }
 
