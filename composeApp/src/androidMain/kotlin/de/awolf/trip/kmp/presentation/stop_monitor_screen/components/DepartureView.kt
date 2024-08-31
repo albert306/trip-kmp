@@ -39,6 +39,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import presentation.stop_monitor.DepartureDetailLevel
 import kotlin.math.absoluteValue
 
 @Preview()
@@ -70,7 +71,7 @@ fun DepartureViewPreview() {
                         StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                     ),
                 ),
-                showDetail = true,
+                detailLevel = DepartureDetailLevel.STOP_SCHEDULE,
                 onClick = {})
         }
     }
@@ -79,7 +80,7 @@ fun DepartureViewPreview() {
 @Composable
 fun DepartureView(
     departure: Departure,
-    showDetail: Boolean,
+    detailLevel: DepartureDetailLevel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -240,7 +241,10 @@ fun DepartureView(
                         modifier = Modifier.weight(1f),
                     )
                 }
-                AnimatedVisibility(visible = showDetail && departure.platform != null) {
+                AnimatedVisibility(
+                    visible = detailLevel != DepartureDetailLevel.NONE &&
+                            departure.platform != null
+                ) {
                     if (departure.platform == null) return@AnimatedVisibility
                     Text(
                         text = departure.platform!!.type + " " +  departure.platform!!.name,
@@ -254,7 +258,10 @@ fun DepartureView(
                 }
             }
         }
-        AnimatedVisibility(visible = showDetail && departure.stopSchedule != null) {
+        AnimatedVisibility(
+            visible = detailLevel == DepartureDetailLevel.STOP_SCHEDULE &&
+                    departure.stopSchedule != null
+        ) {
             if (departure.stopSchedule == null) return@AnimatedVisibility
             Column (
                 modifier = Modifier

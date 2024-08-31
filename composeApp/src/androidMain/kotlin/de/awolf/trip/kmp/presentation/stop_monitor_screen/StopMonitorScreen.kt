@@ -35,6 +35,7 @@ import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureVi
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
 import kotlinx.coroutines.launch
+import presentation.stop_monitor.DepartureDetailLevel
 import presentation.stop_monitor.StopMonitorEvent
 import presentation.stop_monitor.StopMonitorSideEffect
 import presentation.stop_monitor.StopMonitorViewModel
@@ -153,7 +154,7 @@ fun StopMonitorScreen(
                 ) { departure ->
                     DepartureView(
                         departure = departure,
-                        showDetail = state.value.detailVisibility[departure] ?: false,
+                        detailLevel = state.value.detailVisibility[departure] ?: DepartureDetailLevel.NONE,
                         onClick = {
                             viewModel.onEvent(StopMonitorEvent.ToggleStopSchedule(departure))
                         },
