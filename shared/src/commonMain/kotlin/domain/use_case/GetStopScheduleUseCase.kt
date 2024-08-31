@@ -9,13 +9,12 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class GetStopScheduleUseCase(
-    val vvoServiceRepository: VvoServiceRepository
+    private val vvoServiceRepository: VvoServiceRepository
 ) {
     suspend operator fun invoke(
         departure: Departure,
         stopId: String
     ): Result<List<StopScheduleItem>, NetworkError> {
-        println("GetStopScheduleUseCase invoked")
 
         return when (val response = vvoServiceRepository.getStopSchedule(
             departureId = departure.id,
@@ -37,6 +36,5 @@ class GetStopScheduleUseCase(
                 })
             }
         }
-
     }
 }
