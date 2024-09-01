@@ -26,12 +26,12 @@ class GetStopScheduleUseCase(
             }
 
             is Result.Success -> {
-                val delay = departure.getDelay()
+                val delay = departure.getDelay().toDuration(DurationUnit.MINUTES)
 
                 Result.Success(response.data.map {
                     it.copy(
                         stopName = it.stopName.removePrefix("Dresden "),
-                        arrivalTime = it.arrivalTime.plus(delay.toDuration(DurationUnit.MINUTES))
+                        arrivalTime = it.arrivalTime.plus(delay)
                     )
                 })
             }

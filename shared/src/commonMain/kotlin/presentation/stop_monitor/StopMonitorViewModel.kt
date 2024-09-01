@@ -2,6 +2,7 @@ package presentation.stop_monitor
 
 import domain.models.Departure
 import domain.models.Stop
+import domain.models.StopScheduleItem
 import domain.use_case.UseCases
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -52,18 +53,12 @@ class StopMonitorViewModel(
                 updateDepartures(false)
             }
 
-            is StopMonitorEvent.ToggleStopSchedule -> {
-                val visibility = state.value.detailVisibility[event.departure] ?: DepartureDetailLevel.NONE
-                if (visibility != DepartureDetailLevel.NONE) {
-                    _state.value = state.value.copy(
-                        detailVisibility = state.value.detailVisibility +
-                                (event.departure to DepartureDetailLevel.NONE)
-                    )
-                } else {
-                    _state.value = state.value.copy(
-                        detailVisibility = state.value.detailVisibility +
-                                (event.departure to DepartureDetailLevel.PLATFORM)
-                    )
+            is StopMonitorEvent.DepartureDetails -> {
+                _state.value = state.value.copy(
+                    detailVisibility = state.value.detailVisibility +
+                            (event.departure to event.detailLevel)
+                )
+                if (event.detailLevel >= DepartureDetailLevel.STOP_SCHEDULE) {
                     showStopSchedule(event.departure)
                 }
             }
@@ -108,15 +103,40 @@ class StopMonitorViewModel(
     }
 
     private fun showStopSchedule(departure: Departure) {
-        if (departure.stopSchedule != null) {
-            _state.value = state.value.copy(
-                detailVisibility = state.value.detailVisibility +
-                        (departure to DepartureDetailLevel.STOP_SCHEDULE)
-            )
-            return
-        }
-
         coroutineScope.launch {
+            if (departure.stopSchedule != null) {
+                _state.value = state.value.copy(
+                    detailVisibility = state.value.detailVisibility +
+                            (departure to DepartureDetailLevel.STOP_SCHEDULE)
+                )
+                return@launch
+            }
+            getStopSchedule(departure).let { stopSchedule ->
+                val updatedDepartures = state.value.departures.map {
+                    if (it == departure) {
+                        it.copy(
+                            stopSchedule = stopSchedule
+                        )
+                    } else {
+                        it
+                    }
+                }
+                _state.value = state.value.copy(
+                    departures = updatedDepartures,
+                    detailVisibility = state.value.detailVisibility +
+                            (departure to DepartureDetailLevel.STOP_SCHEDULE)
+                )
+            }
+        }
+    }
+
+    private suspend fun getStopSchedule(
+        departure: Departure,
+    ): List<StopScheduleItem>? {
+
+        return if (departure.stopSchedule != null) {
+            departure.stopSchedule
+        } else {
             val stopScheduleResource = useCases.getStopSchedule(
                 departure = departure,
                 stopId = stop.id
@@ -124,23 +144,11 @@ class StopMonitorViewModel(
             when (stopScheduleResource) {
                 is Result.Error -> {
                     _sideEffect.send(StopMonitorSideEffect.ShowNetworkError(stopScheduleResource.error))
+                    null
                 }
 
                 is Result.Success -> {
-                    val updatedDepartures = state.value.departures.map {
-                        if (it == departure) {
-                            it.copy(
-                                stopSchedule = stopScheduleResource.data
-                            )
-                        } else {
-                            it
-                        }
-                    }
-                    _state.value = state.value.copy(
-                        departures = updatedDepartures,
-                        detailVisibility = state.value.detailVisibility +
-                                (departure to DepartureDetailLevel.STOP_SCHEDULE)
-                    )
+                    stopScheduleResource.data
                 }
             }
         }
