@@ -9,5 +9,6 @@ data class StopScheduleItem(
     val stopName: String,
     val schedulePosition: String,
     val platform: Platform?,
-    val arrivalTime: Instant
+    val scheduledTime: Instant,
+    val realTime: Instant = scheduledTime
 )

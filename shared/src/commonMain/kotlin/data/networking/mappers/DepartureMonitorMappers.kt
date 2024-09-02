@@ -82,8 +82,9 @@ fun StopScheduleItemDto.toStopScheduleItem(): StopScheduleItem {
         dlId = dlId,
         stopRegion = stopRegion,
         stopName = stopName,
-        schedulePosition = shedulePosition,
+        schedulePosition = schedulePosition,
         platform = platform?.toPlatform(),
-        arrivalTime = dateStringToInstant(arrivalTime)
+        scheduledTime = dateStringToInstant(scheduledTime),
+        realTime = dateStringToInstant(realTime),
     )
 }
