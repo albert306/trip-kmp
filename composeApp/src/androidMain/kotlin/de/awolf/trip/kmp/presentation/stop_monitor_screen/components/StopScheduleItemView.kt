@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,42 +53,45 @@ private fun StopScheduleItemViewPreview() {
 fun StopScheduleItemView(
     stopScheduleItem: StopScheduleItem,
     modifier: Modifier = Modifier,
+    isFirst: Boolean = false,
+    isLast: Boolean = false
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-//            .padding(end = 8.dp)
     ) {
-
-//        Spacer(Modifier.width(58.dp))
-
         Text(
-            text = stopScheduleItem.arrivalTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
+            text = stopScheduleItem.realTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
                 kotlinx.datetime.LocalDateTime.Format {
                     hour()
                     char(':')
                     minute()
                 }),
-            textAlign = TextAlign.Center,
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
-            fontWeight = FontWeight(200),
-            modifier = Modifier.width(42.dp)
+            modifier = Modifier
+                .width(48.dp)
         )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(start = 6.dp, end = 8.dp)
+                .padding(end = 8.dp)
+                .width(6.dp)
         ) {
             VerticalDivider(
                 color = Color.Gray,
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxHeight(if (isFirst || isLast) 0.5f else 1f)
                     .width(1.dp)
+                    .align(
+                        if (isFirst) Alignment.BottomCenter
+                        else if (isLast) Alignment.TopCenter
+                        else Alignment.Center
+                    )
             )
             Box(
                 modifier = Modifier

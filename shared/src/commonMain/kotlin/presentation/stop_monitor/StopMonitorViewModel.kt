@@ -97,9 +97,13 @@ class StopMonitorViewModel(
 
     private fun showDepartureDetails(departure: Departure, detailLevel: DepartureDetailLevel) {
         coroutineScope.launch {
+            val initialDetailLevel = if (detailLevel == DepartureDetailLevel.NONE)
+                DepartureDetailLevel.NONE
+            else
+                DepartureDetailLevel.PLATFORM
+
             _state.value = state.value.copy(
-                detailVisibility = state.value.detailVisibility +
-                        (departure to DepartureDetailLevel.PLATFORM)
+                detailVisibility = state.value.detailVisibility + (departure to initialDetailLevel)
             )
 
             if (detailLevel < DepartureDetailLevel.STOP_SCHEDULE)

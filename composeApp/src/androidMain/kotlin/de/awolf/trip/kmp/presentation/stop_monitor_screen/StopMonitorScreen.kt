@@ -152,11 +152,18 @@ fun StopMonitorScreen(
                     items = state.value.departures,
                     key = { it.complexId() }
                 ) { departure ->
+                    val detailLevel = state.value.detailVisibility[departure] ?: DepartureDetailLevel.NONE
                     DepartureView(
                         departure = departure,
-                        detailLevel = state.value.detailVisibility[departure] ?: DepartureDetailLevel.NONE,
+                        detailLevel = detailLevel,
                         onClick = {
-                            viewModel.onEvent(StopMonitorEvent.ToggleStopSchedule(departure))
+                            viewModel.onEvent(
+                                StopMonitorEvent.DepartureDetails(
+                                    departure = departure,
+                                    detailLevel = if (detailLevel == DepartureDetailLevel.NONE) DepartureDetailLevel.STOP_SCHEDULE
+                                        else DepartureDetailLevel.NONE
+                                )
+                            )
                         },
                     )
                 }
