@@ -44,10 +44,11 @@ fun StopScheduleListPreview() {
 @Composable
 fun StopScheduleList(
     departure: Departure,
+    modifier: Modifier = Modifier,
 ) {
     if (departure.stopSchedule == null) return
     Column(
-        modifier = Modifier
+        modifier = modifier
 //            .background(
 //                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
 //            )
