@@ -6,7 +6,7 @@ import data.networking.mappers.toStopMonitorInfo
 import data.networking.mappers.toStopScheduleItem
 import data.networking.dto.stop_finder.StopFinderResponseDto
 import data.networking.dto.stop_monitor.StopMonitorResponseDto
-import de.awolf.trip_compose.data.remote.dto.stop_monitor.StopScheduleResponseDto
+import data.networking.dto.stop_monitor.StopScheduleResponseDto
 import domain.models.StopFinderInfo
 import domain.models.StopMonitorInfo
 import domain.models.StopScheduleItem
