@@ -12,7 +12,7 @@ data class DepartureDto(
     @SerialName("Platform") val platform: PlatformDto? = null,
     @SerialName("Mot") val mode: String = "Unknown",
     @SerialName("ScheduledTime") val scheduledTime: String,
-    @SerialName("RealTime") val realTime: String = scheduledTime,
+    @SerialName("RealTime") val realTime: String? = null,
     @SerialName("State") val state: String = "InTime",
     @SerialName("RouteChanges") val routeChanges: List<String> = emptyList(),
     @SerialName("Diva") val diva: DivaDto? = null,

@@ -11,4 +11,9 @@ data class StopScheduleItem(
     val platform: Platform?,
     val scheduledTime: Instant,
     val realTime: Instant = scheduledTime
-)
+) {
+    fun getDelay(): Long {
+        val diff = realTime.minus(scheduledTime)
+        return diff.inWholeMinutes
+    }
+}

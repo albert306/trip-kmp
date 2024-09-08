@@ -12,5 +12,5 @@ data class StopScheduleItemDto(
     @SerialName("Position") val schedulePosition: String,
     @SerialName("Platform") val platform: PlatformDto? = null,
     @SerialName("Time") val scheduledTime: String,
-    @SerialName("RealTime") val realTime: String
+    @SerialName("RealTime") val realTime: String? = null,
 )
