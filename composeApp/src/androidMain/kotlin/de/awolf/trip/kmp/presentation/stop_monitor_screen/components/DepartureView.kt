@@ -36,6 +36,7 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import presentation.stop_monitor.DepartureDetailLevel
+import kotlin.math.absoluteValue
 
 @Composable
 @Preview(showBackground = true)
@@ -231,11 +232,29 @@ fun StatusRow(
                 .padding(horizontal = 6.dp)
         )
 
-        DelayStateText(
-            delay = departure.getDelay(),
-            isCancelled = departure.departureState == Departure.DepartureState.CANCELLED,
+        val delay = departure.getDelay()
+        val (red, green, blue) = DelayStateColors.getColors()
+
+        var departureStateDescription = "on time"
+        var departureStateDescriptionColor = green
+        if (delay > 0) {
+            departureStateDescription = "+ $delay"
+            departureStateDescriptionColor = red
+        }
+        if (delay < 0) {
+            departureStateDescription = "- ${delay.absoluteValue}"
+            departureStateDescriptionColor = blue
+        }
+        if (departure.departureState == Departure.DepartureState.CANCELLED) {
+            departureStateDescription = "cancelled"
+            departureStateDescriptionColor = red
+        }
+
+        Text(
+            text = departureStateDescription,
             fontSize = 14.sp,
-            modifier = Modifier
+            color = departureStateDescriptionColor,
+            modifier = modifier
         )
 
         Text(
