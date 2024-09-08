@@ -111,7 +111,6 @@ fun StopScheduleItemView(
                 }
         )
 
-
         Text(
             text = stopScheduleItem.stopName,
             fontSize = 16.sp,
@@ -127,6 +126,5 @@ fun StopScheduleItemView(
                     width = Dimension.fillToConstraints
                 }
         )
-
     }
 }

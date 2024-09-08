@@ -90,7 +90,7 @@ fun StopMonitorScreen(
             isStopInfoCardExpanded = state.value.isStopInfoCardExpanded,
             expandStopInfo = { viewModel.onEvent(StopMonitorEvent.ToggleExpandedStopInfo) },
             onCloseButtonClick = { viewModel.onEvent(StopMonitorEvent.Close) },
-            modifier = Modifier.zIndex(1f)
+            modifier = Modifier.zIndex(2f)
         )
 
         val pullRefreshState = rememberPullRefreshState(
@@ -117,6 +117,7 @@ fun StopMonitorScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
+                    .zIndex(1f)
             )
 
             if (state.value.maxDepartureCount == 0 && !state.value.isRefreshing) {

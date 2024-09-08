@@ -190,6 +190,7 @@ fun DepartureView(
                     top.linkTo(platform.bottom)
                     bottom.linkTo(parent.bottom)
                 }
+                .clickableWithoutRipple { /* intentionally blank */ }
         ) {
             StopScheduleList(
                 departure = departure,
