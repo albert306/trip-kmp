@@ -60,8 +60,8 @@ fun TestPreview() {
                     routeChanges = emptyList(),
                     diva = null,
                     stopSchedule = listOf(
-                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
-                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(32, DateTimeUnit.MINUTE)),
+                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Previous", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                        StopScheduleItem("", "", "Dresden", "Münzteichweg", "Current", Platform(type = "track", name = "2"), Clock.System.now().plus(32, DateTimeUnit.MINUTE)),
                         StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(100, DateTimeUnit.MINUTE)),
                         StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Instant.parse("2022-12-24T23:00:00Z")),
                     ),

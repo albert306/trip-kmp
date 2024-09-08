@@ -70,6 +70,8 @@ fun StopScheduleList(
     Column(
         modifier = modifier
     ) {
+        Spacer(modifier = Modifier.height(4.dp))
+
         if (previousSchedule.isNotEmpty()) {
             Row(
                 modifier = Modifier
@@ -86,9 +88,8 @@ fun StopScheduleList(
                     fontSize = 16.sp,
                 )
             }
+            Spacer(modifier = Modifier.height(4.dp))
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         AnimatedVisibility(visible = isShowingWholeSchedule) {
             Column {
