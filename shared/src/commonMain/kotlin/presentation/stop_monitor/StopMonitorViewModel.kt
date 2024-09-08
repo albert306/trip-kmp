@@ -116,10 +116,14 @@ class StopMonitorViewModel(
                 return@launch
             }
 
-            fetchStopSchedule(departure).let { stopSchedule ->
+            fetchStopSchedule(departure)?.let { stopSchedule ->
+                val currentStop = stopSchedule.firstOrNull { it.schedulePosition == "Current" }
                 val updatedDepartures = state.value.departures.map {
                     if (it == departure) {
-                        it.copy(stopSchedule = stopSchedule)
+                        it.copy(
+                            realTime = currentStop?.realTime ?: it.realTime,
+                            stopSchedule = stopSchedule
+                        )
                     } else {
                         it
                     }
