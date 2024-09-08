@@ -1,6 +1,7 @@
 package util.error
 
 enum class NetworkError : Error {
+    BAD_REQUEST,
     REQUEST_TIMEOUT,
     UNAUTHORIZED,
     CONFLICT,

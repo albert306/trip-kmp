@@ -150,6 +150,7 @@ class VvoServiceRepositoryImpl(
             in 200..299 -> {
                 Result.Success(onSuccess(response))
             }
+            400 -> Result.Error(NetworkError.BAD_REQUEST)
             408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
             413 -> Result.Error(NetworkError.PAYLOAD_TOO_LARGE)
             429 -> Result.Error(NetworkError.TOO_MANY_REQUESTS)

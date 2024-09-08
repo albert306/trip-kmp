@@ -97,6 +97,7 @@ fun HomeScreen(
             }
             is HomeScreenSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
                 NetworkError.UNKNOWN -> "Unknown network error"
+                NetworkError.BAD_REQUEST -> "Bad network request"
                 NetworkError.REQUEST_TIMEOUT -> "Request timeout"
                 NetworkError.UNAUTHORIZED -> "Network unauthorized error"
                 NetworkError.CONFLICT -> "Network conflict"
@@ -105,9 +106,6 @@ fun HomeScreen(
                 NetworkError.PAYLOAD_TOO_LARGE -> "Network payload too large"
                 NetworkError.SERVER_ERROR -> "Network server error"
                 NetworkError.SERIALIZATION -> "Network serialization error"
-                else -> {
-                    "Unknown error"
-                }
             }
         }
 
