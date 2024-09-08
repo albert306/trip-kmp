@@ -128,6 +128,8 @@ fun DepartureView(
                 .constrainAs(lineDirection) {
                     start.linkTo(lineNumber.end, margin = 8.dp)
                     top.linkTo(parent.top)
+                    end.linkTo(eta.start, margin = 8.dp)
+                    width = Dimension.fillToConstraints
                 }
         )
         var etaText = departure.getETA().toString() + " min"
