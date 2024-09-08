@@ -19,11 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import de.awolf.trip.kmp.theme.AppTheme
 import domain.models.Platform
 import domain.models.StopScheduleItem
@@ -51,6 +55,102 @@ private fun StopScheduleItemViewPreview() {
 
 @Composable
 fun StopScheduleItemView(
+    stopScheduleItem: StopScheduleItem,
+    modifier: Modifier = Modifier,
+    isFirst: Boolean = false,
+    isLast: Boolean = false
+) {
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        val (time, state, divider, stopName) = createRefs()
+        val dividerGuideline = createGuidelineFromStart(64.dp)
+
+        Text(
+            text = stopScheduleItem.realTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
+                kotlinx.datetime.LocalDateTime.Format {
+                    hour()
+                    char(':')
+                    minute()
+                }),
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            modifier = Modifier
+                .constrainAs(time) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    end.linkTo(dividerGuideline)
+                    width = Dimension.fillToConstraints
+                }
+        )
+        
+        DelayStateText(
+            delay = stopScheduleItem.getDelay(),
+            fontSize = 14.sp,
+            modifier = Modifier
+                .constrainAs(state) {
+                    start.linkTo(parent.start)
+                    top.linkTo(time.bottom)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(dividerGuideline)
+                    width = Dimension.fillToConstraints
+                }
+        )
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .constrainAs(divider) {
+                    start.linkTo(dividerGuideline)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    height = Dimension.fillToConstraints
+                }
+        ) {
+            VerticalDivider(
+                color = Color.Gray,
+                thickness = 1.5.dp,
+                modifier = Modifier
+                    .fillMaxHeight(if (isFirst || isLast) 0.5f else 1f)
+                    .align(
+                        if (isFirst) Alignment.BottomCenter
+                        else if (isLast) Alignment.TopCenter
+                        else Alignment.Center
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(
+                        color = Color.Gray,
+                        shape = CircleShape
+                    )
+            )
+        }
+
+        Text(
+            text = stopScheduleItem.stopName,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .constrainAs(stopName) {
+                    start.linkTo(divider.end, margin = 8.dp)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+        )
+
+    }
+}
+
+@Composable
+fun StopScheduleItemView1(
     stopScheduleItem: StopScheduleItem,
     modifier: Modifier = Modifier,
     isFirst: Boolean = false,

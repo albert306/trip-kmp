@@ -2,7 +2,6 @@ package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,7 +37,6 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import presentation.stop_monitor.DepartureDetailLevel
-import kotlin.math.absoluteValue
 
 @Composable
 @Preview(showBackground = true)
@@ -83,6 +82,12 @@ fun DepartureView(
 ) {
     ConstraintLayout(
         modifier = modifier
+            .background(
+                color = if (detailLevel >= DepartureDetailLevel.STOP_SCHEDULE)
+                    MaterialTheme.colorScheme.surfaceContainer
+                else
+                    MaterialTheme.colorScheme.surface
+            )
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .clickableWithoutRipple {
@@ -180,7 +185,7 @@ fun DepartureView(
             visible = detailLevel >= DepartureDetailLevel.STOP_SCHEDULE,
             modifier = Modifier
                 .constrainAs(stopSchedule) {
-                    start.linkTo(lineDirection.start)
+                    start.linkTo(parent.start)
                     top.linkTo(platform.bottom)
                     bottom.linkTo(parent.bottom)
                 }
@@ -217,45 +222,16 @@ fun StatusRow(
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = 6.dp)
         )
 
-        val red: Color
-        val green: Color
-        val blue: Color
-
-        if (isSystemInDarkTheme()) {
-            red = Color(0xFFFF6666)
-            green = Color(0xFF00DD00)
-            blue = Color(0xFF60A0FF)
-        } else {
-            red = Color(0xFF990000)
-            green = Color(0xFF005500)
-            blue = Color(0xFF0000BB)
-        }
-
-        val delay = departure.getDelay()
-        var departureStateDescription = "on time"
-        var departureStateDescriptionColor = green
-        if (delay > 0) {
-            departureStateDescription = "+ $delay"
-            departureStateDescriptionColor = red
-        }
-        if (delay < 0) {
-            departureStateDescription = "- ${delay.absoluteValue}"
-            departureStateDescriptionColor = blue
-        }
-        if (departure.departureState == Departure.DepartureState.CANCELLED) {
-            departureStateDescription = "cancelled"
-            departureStateDescriptionColor = red
-        }
-
-        Text(
-            text = departureStateDescription,
+        DelayStateText(
+            delay = departure.getDelay(),
+            isCancelled = departure.departureState == Departure.DepartureState.CANCELLED,
             fontSize = 14.sp,
-            color = departureStateDescriptionColor,
             modifier = Modifier
         )
+
         Text(
             text = departure.realTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
                 LocalDateTime.Format {
