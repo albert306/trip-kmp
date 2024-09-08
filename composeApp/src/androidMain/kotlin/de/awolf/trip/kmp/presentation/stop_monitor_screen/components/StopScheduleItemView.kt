@@ -37,8 +37,8 @@ private fun StopScheduleItemViewPreview() {
 //            modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.surface
         ) {
-            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
-            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
+            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", StopScheduleItem.SchedulePosition.NEXT, Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
+            StopScheduleItemView(StopScheduleItem("", "", "Dresden", "Münzteichweg", StopScheduleItem.SchedulePosition.NEXT, Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)))
         }
     }
 }

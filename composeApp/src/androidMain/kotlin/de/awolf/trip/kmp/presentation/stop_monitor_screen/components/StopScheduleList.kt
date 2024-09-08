@@ -44,11 +44,11 @@ fun StopScheduleListPreview() {
                 routeChanges = emptyList(),
                 diva = null,
                 stopSchedule = listOf(
-                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Previous", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
-                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Previous", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
-                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Current", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
-                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
-                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                    StopScheduleItem("", "", "Dresden", "Münzteichweg", StopScheduleItem.SchedulePosition.PREVIOUS, Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                    StopScheduleItem("", "", "Dresden", "Münzteichweg", StopScheduleItem.SchedulePosition.PREVIOUS, Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                    StopScheduleItem("", "", "Dresden", "Münzteichweg", StopScheduleItem.SchedulePosition.CURRENT, Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                    StopScheduleItem("", "", "Dresden", "Münzteichweg", StopScheduleItem.SchedulePosition.NEXT, Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                    StopScheduleItem("", "", "Dresden", "Münzteichweg", StopScheduleItem.SchedulePosition.NEXT, Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                 ),
             ),
             isShowingWholeSchedule = false,
@@ -64,8 +64,12 @@ fun StopScheduleList(
     onShowWholeScheduleClicked: () -> Unit = {},
 ) {
     val wholeSchedule = departure.stopSchedule ?: return
-    val previousSchedule = wholeSchedule.filter { it.schedulePosition == "Previous" }
-    val upcomingSchedule = wholeSchedule.filter { it.schedulePosition != "Previous" }
+    val previousSchedule = wholeSchedule.filter {
+        it.schedulePosition == StopScheduleItem.SchedulePosition.PREVIOUS
+    }
+    val upcomingSchedule = wholeSchedule.filter {
+        it.schedulePosition != StopScheduleItem.SchedulePosition.PREVIOUS
+    }
 
     Column(
         modifier = modifier

@@ -11,7 +11,7 @@ data class Departure(
     val platform: Platform?,
     val mode: Mode,
     val scheduledTime: Instant,
-    val realTime: Instant,
+    val realTime: Instant = scheduledTime,
     val departureState: DepartureState,
     val routeChanges: List<String>,
     val diva: Diva?,
