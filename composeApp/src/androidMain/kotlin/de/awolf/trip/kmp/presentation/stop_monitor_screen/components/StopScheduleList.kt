@@ -1,15 +1,22 @@
 package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.VerticalDivider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
+import androidx.compose.ui.unit.sp
+import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
 import domain.models.Departure
 import domain.models.Mode
@@ -37,67 +44,69 @@ fun StopScheduleListPreview() {
                 routeChanges = emptyList(),
                 diva = null,
                 stopSchedule = listOf(
+                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Previous", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
+                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Previous", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                     StopScheduleItem("", "", "Dresden", "Münzteichweg", "Current", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                     StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                     StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
-                    StopScheduleItem("", "", "Dresden", "Münzteichweg", "Next", Platform(type = "track", name = "2"), Clock.System.now().plus(2, DateTimeUnit.MINUTE)),
                 ),
-            )
+            ),
+            isShowingWholeSchedule = false,
         )
     }
 }
 
 @Composable
 fun StopScheduleList(
-    departure: Departure,
     modifier: Modifier = Modifier,
+    departure: Departure,
+    isShowingWholeSchedule: Boolean = false,
+    onShowWholeScheduleClicked: () -> Unit = {},
 ) {
-    if (departure.stopSchedule == null) return
+    val wholeSchedule = departure.stopSchedule ?: return
+    val previousSchedule = wholeSchedule.filter { it.schedulePosition == "Previous" }
+    val upcomingSchedule = wholeSchedule.filter { it.schedulePosition != "Previous" }
+
     Column(
         modifier = modifier
     ) {
-        StopScheduleItemView(
-            stopScheduleItem = departure.stopSchedule!![0],
-            isFirst = true,
-        )
-
-        SpacerWithDivider(modifier = Modifier.height(8.dp))
-
-        for (detailedStop in departure.stopSchedule!!.subList(1, departure.stopSchedule!!.size - 1)) {
-            StopScheduleItemView(
-                stopScheduleItem = detailedStop,
-            )
-            SpacerWithDivider(modifier = Modifier.height(8.dp))
+        if (previousSchedule.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .clickableWithoutRipple { onShowWholeScheduleClicked() }
+            ) {
+                Icon(
+                    imageVector = if (isShowingWholeSchedule) Icons.Default.KeyboardArrowUp else
+                        Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Keyboard Arrow",
+                )
+                Text(
+                    text = "${if (isShowingWholeSchedule) "Hide" else "Show"} ${previousSchedule.size} previous stops",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                )
+            }
         }
 
-        StopScheduleItemView(
-            stopScheduleItem = departure.stopSchedule!![departure.stopSchedule!!.size - 1],
-            isLast = true,
-        )
-    }
-}
+        Spacer(modifier = Modifier.height(8.dp))
 
-@Composable
-private fun SpacerWithDivider(
-    modifier: Modifier = Modifier,
-) {
-    ConstraintLayout(
-        modifier = modifier
-    ) {
-        val divider = createRef()
-        val dividerGuideline = createGuidelineFromStart(64.dp)
-
-        VerticalDivider(
-            color = Color.Gray,
-            thickness = 1.5.dp,
-            modifier = Modifier
-                .constrainAs(divider) {
-                    start.linkTo(dividerGuideline)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(dividerGuideline)
-                    height = Dimension.fillToConstraints
+        AnimatedVisibility(visible = isShowingWholeSchedule) {
+            Column {
+                for (i in previousSchedule.indices) {
+                    StopScheduleItemView(
+                        stopScheduleItem = previousSchedule[i],
+                        isFirst = i == 0,
+                    )
                 }
-        )
+            }
+        }
+
+        for (i in upcomingSchedule.indices) {
+            StopScheduleItemView(
+                stopScheduleItem = upcomingSchedule[i],
+                isFirst = i == 0 && previousSchedule.isEmpty(),
+                isLast = i == upcomingSchedule.size - 1,
+            )
+        }
     }
 }

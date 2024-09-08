@@ -2,24 +2,16 @@ package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,7 +54,7 @@ fun StopScheduleItemView(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        val (time, state, dividerLine, dividerDot , stopName) = createRefs()
+        val (time, dividerLine, dividerDot , stopName) = createRefs()
         val dividerGuideline = createGuidelineFromStart(64.dp)
 
         Text(
@@ -79,19 +71,6 @@ fun StopScheduleItemView(
                 .constrainAs(time) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
-                    end.linkTo(dividerGuideline)
-                    width = Dimension.fillToConstraints
-                }
-        )
-        
-        DelayStateText(
-            delay = stopScheduleItem.getDelay(),
-            fontSize = 12.sp,
-            modifier = Modifier
-                .constrainAs(state) {
-                    start.linkTo(parent.start)
-                    top.linkTo(time.bottom)
-                    bottom.linkTo(parent.bottom)
                     end.linkTo(dividerGuideline)
                     width = Dimension.fillToConstraints
                 }
@@ -150,70 +129,4 @@ fun StopScheduleItemView(
         )
 
     }
-}
-
-@Composable
-fun StopScheduleItemView1(
-    stopScheduleItem: StopScheduleItem,
-    modifier: Modifier = Modifier,
-    isFirst: Boolean = false,
-    isLast: Boolean = false
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-    ) {
-        Text(
-            text = stopScheduleItem.realTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(
-                kotlinx.datetime.LocalDateTime.Format {
-                    hour()
-                    char(':')
-                    minute()
-                }),
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            modifier = Modifier
-                .width(48.dp)
-        )
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(end = 8.dp)
-                .width(6.dp)
-        ) {
-            VerticalDivider(
-                color = Color.Gray,
-                modifier = Modifier
-                    .fillMaxHeight(if (isFirst || isLast) 0.5f else 1f)
-                    .width(1.dp)
-                    .align(
-                        if (isFirst) Alignment.BottomCenter
-                        else if (isLast) Alignment.TopCenter
-                        else Alignment.Center
-                    )
-            )
-            Box(
-                modifier = Modifier
-                    .size(4.dp)
-                    .background(
-                        color = Color.Gray,
-                        shape = CircleShape
-                    )
-            )
-        }
-        Text(
-            text = stopScheduleItem.stopName,
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight(400),
-            modifier = Modifier.weight(1f)
-        )
-    }
-
 }

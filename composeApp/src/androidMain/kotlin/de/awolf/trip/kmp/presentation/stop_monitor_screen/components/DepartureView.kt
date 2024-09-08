@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,7 +66,8 @@ fun TestPreview() {
                     ),
                 ),
                 detailLevel = DepartureDetailLevel.STOP_SCHEDULE,
-                onClick = {}
+                onClick = {},
+                onShowWholeScheduleClicked = {},
             )
         }
     }
@@ -78,6 +78,7 @@ fun DepartureView(
     departure: Departure,
     detailLevel: DepartureDetailLevel,
     onClick: () -> Unit,
+    onShowWholeScheduleClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ConstraintLayout(
@@ -192,6 +193,10 @@ fun DepartureView(
         ) {
             StopScheduleList(
                 departure = departure,
+                isShowingWholeSchedule = detailLevel == DepartureDetailLevel.WHOLE_STOP_SCHEDULE,
+                onShowWholeScheduleClicked = {
+                    onShowWholeScheduleClicked()
+                },
             )
         }
     }

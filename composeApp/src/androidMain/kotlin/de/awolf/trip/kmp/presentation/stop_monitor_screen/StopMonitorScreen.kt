@@ -160,11 +160,24 @@ fun StopMonitorScreen(
                             viewModel.onEvent(
                                 StopMonitorEvent.DepartureDetails(
                                     departure = departure,
-                                    detailLevel = if (detailLevel == DepartureDetailLevel.NONE) DepartureDetailLevel.STOP_SCHEDULE
-                                        else DepartureDetailLevel.NONE
+                                    detailLevel = if (detailLevel == DepartureDetailLevel.NONE)
+                                        DepartureDetailLevel.STOP_SCHEDULE
+                                    else
+                                        DepartureDetailLevel.NONE
                                 )
                             )
                         },
+                        onShowWholeScheduleClicked = {
+                            viewModel.onEvent(
+                                StopMonitorEvent.DepartureDetails(
+                                    departure = departure,
+                                    detailLevel = if (detailLevel == DepartureDetailLevel.STOP_SCHEDULE)
+                                        DepartureDetailLevel.WHOLE_STOP_SCHEDULE
+                                    else
+                                        DepartureDetailLevel.STOP_SCHEDULE
+                                )
+                            )
+                        }
                     )
                 }
                 if (!state.value.isRefreshing &&
