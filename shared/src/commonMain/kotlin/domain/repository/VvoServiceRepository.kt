@@ -27,7 +27,7 @@ interface VvoServiceRepository {
         stopShortcuts: Boolean = false
     ): Result<StopFinderInfo, NetworkError>
 
-    suspend fun getDetailedStopSchedule(
+    suspend fun getStopSchedule(
         stopId: String,
         departureId: String,
         time: Instant

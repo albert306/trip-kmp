@@ -2,7 +2,6 @@ package domain.models
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlin.time.Duration
 
 data class Departure(
     val id: String,
@@ -12,12 +11,11 @@ data class Departure(
     val platform: Platform?,
     val mode: Mode,
     val scheduledTime: Instant,
-    val realTime: Instant,
+    val realTime: Instant = scheduledTime,
     val departureState: DepartureState,
     val routeChanges: List<String>,
     val diva: Diva?,
-    var isShowingDetailedStopSchedule: Boolean = false,
-    var detailedStopSchedule: List<StopScheduleItem>? = null,
+    val stopSchedule: List<StopScheduleItem>?,
 ) : Comparable<Departure> {
 
     enum class DepartureState(val rawValue: String = "Unknown") {

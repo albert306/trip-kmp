@@ -35,6 +35,7 @@ import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureVi
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
 import kotlinx.coroutines.launch
+import presentation.stop_monitor.DepartureDetailLevel
 import presentation.stop_monitor.StopMonitorEvent
 import presentation.stop_monitor.StopMonitorSideEffect
 import presentation.stop_monitor.StopMonitorViewModel
@@ -89,7 +90,7 @@ fun StopMonitorScreen(
             isStopInfoCardExpanded = state.value.isStopInfoCardExpanded,
             expandStopInfo = { viewModel.onEvent(StopMonitorEvent.ToggleExpandedStopInfo) },
             onCloseButtonClick = { viewModel.onEvent(StopMonitorEvent.Close) },
-            modifier = Modifier.zIndex(1f)
+            modifier = Modifier.zIndex(2f)
         )
 
         val pullRefreshState = rememberPullRefreshState(
@@ -116,6 +117,7 @@ fun StopMonitorScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
+                    .zIndex(1f)
             )
 
             if (state.value.maxDepartureCount == 0 && !state.value.isRefreshing) {
@@ -151,11 +153,32 @@ fun StopMonitorScreen(
                     items = state.value.departures,
                     key = { it.complexId() }
                 ) { departure ->
+                    val detailLevel = state.value.detailVisibility[departure] ?: DepartureDetailLevel.NONE
                     DepartureView(
                         departure = departure,
+                        detailLevel = detailLevel,
                         onClick = {
-//                            viewModel.toggleVisibilityDetailedStopSchedule(index)
+                            viewModel.onEvent(
+                                StopMonitorEvent.DepartureDetails(
+                                    departure = departure,
+                                    detailLevel = if (detailLevel == DepartureDetailLevel.NONE)
+                                        DepartureDetailLevel.STOP_SCHEDULE
+                                    else
+                                        DepartureDetailLevel.NONE
+                                )
+                            )
                         },
+                        onShowWholeScheduleClicked = {
+                            viewModel.onEvent(
+                                StopMonitorEvent.DepartureDetails(
+                                    departure = departure,
+                                    detailLevel = if (detailLevel == DepartureDetailLevel.STOP_SCHEDULE)
+                                        DepartureDetailLevel.WHOLE_STOP_SCHEDULE
+                                    else
+                                        DepartureDetailLevel.STOP_SCHEDULE
+                                )
+                            )
+                        }
                     )
                 }
                 if (!state.value.isRefreshing &&

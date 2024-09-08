@@ -49,6 +49,8 @@ fun StopMonitorResponseDto.toStopMonitorInfo(): StopMonitorInfo {
 
 
 fun DepartureDto.toDeparture(): Departure {
+    val scheduledTime = dateStringToInstant(scheduledTime)
+    val realTime = if (realTime != null) dateStringToInstant(realTime) else scheduledTime
     return Departure(
         id = id,
         dlId = dlId,
@@ -56,11 +58,12 @@ fun DepartureDto.toDeparture(): Departure {
         lineDirection = lineDirection,
         platform = platform?.toPlatform(),
         mode = Mode.fromString(mode),
-        scheduledTime = dateStringToInstant(scheduledTime),
-        realTime = dateStringToInstant(realTime),
+        scheduledTime = scheduledTime,
+        realTime = realTime,
         departureState = Departure.DepartureState.fromString(state),
         routeChanges = routeChanges,
         diva = diva?.toDiva(),
+        stopSchedule = null,
     )
 }
 
@@ -76,13 +79,16 @@ fun StopFinderResponseDto.toStopFinderInfo(): StopFinderInfo {
 }
 
 fun StopScheduleItemDto.toStopScheduleItem(): StopScheduleItem {
+    val scheduledTime = dateStringToInstant(scheduledTime)
+    val realTime = if (realTime != null) dateStringToInstant(realTime) else scheduledTime
     return StopScheduleItem(
         stopId = stopId,
         dlId = dlId,
         stopRegion = stopRegion,
         stopName = stopName,
-        schedulePosition = shedulePosition,
+        schedulePosition = StopScheduleItem.SchedulePosition.fromString(schedulePosition),
         platform = platform?.toPlatform(),
-        arrivalTime = dateStringToInstant(arrivalTime)
+        scheduledTime = scheduledTime,
+        realTime = realTime,
     )
 }
