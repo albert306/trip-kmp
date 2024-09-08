@@ -19,9 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,7 +62,7 @@ fun StopScheduleItemView(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        val (time, state, divider, stopName) = createRefs()
+        val (time, state, dividerLine, dividerDot , stopName) = createRefs()
         val dividerGuideline = createGuidelineFromStart(64.dp)
 
         Text(
@@ -88,7 +86,7 @@ fun StopScheduleItemView(
         
         DelayStateText(
             delay = stopScheduleItem.getDelay(),
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             modifier = Modifier
                 .constrainAs(state) {
                     start.linkTo(parent.start)
@@ -99,36 +97,41 @@ fun StopScheduleItemView(
                 }
         )
 
-        Box(
-            contentAlignment = Alignment.Center,
+        VerticalDivider(
+            color = Color.Gray,
+            thickness = 1.5.dp,
             modifier = Modifier
-                .constrainAs(divider) {
+                .constrainAs(dividerLine) {
+                    start.linkTo(dividerGuideline)
+                    if (isFirst) {
+                        top.linkTo(dividerDot.bottom)
+                    } else {
+                        top.linkTo(parent.top)
+                    }
+                    if (isLast) {
+                        bottom.linkTo(dividerDot.top)
+                    } else {
+                        bottom.linkTo(parent.bottom)
+                    }
+                    end.linkTo(dividerGuideline)
+                    height = Dimension.fillToConstraints
+                }
+        )
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .background(
+                    color = Color.Gray,
+                    shape = CircleShape
+                )
+                .constrainAs(dividerDot) {
                     start.linkTo(dividerGuideline)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                    height = Dimension.fillToConstraints
+                    end.linkTo(dividerGuideline)
                 }
-        ) {
-            VerticalDivider(
-                color = Color.Gray,
-                thickness = 1.5.dp,
-                modifier = Modifier
-                    .fillMaxHeight(if (isFirst || isLast) 0.5f else 1f)
-                    .align(
-                        if (isFirst) Alignment.BottomCenter
-                        else if (isLast) Alignment.TopCenter
-                        else Alignment.Center
-                    )
-            )
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .background(
-                        color = Color.Gray,
-                        shape = CircleShape
-                    )
-            )
-        }
+        )
+
 
         Text(
             text = stopScheduleItem.stopName,
@@ -138,7 +141,7 @@ fun StopScheduleItemView(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .constrainAs(stopName) {
-                    start.linkTo(divider.end, margin = 8.dp)
+                    start.linkTo(dividerGuideline, margin = 10.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
