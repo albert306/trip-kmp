@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.home_screen
+package de.awolf.trip.kmp.search.presentation
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
@@ -30,13 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import de.awolf.trip.kmp.presentation.helper.SideEffectListener
-import de.awolf.trip.kmp.presentation.home_screen.components.SearchCard
-import de.awolf.trip.kmp.presentation.home_screen.components.StopView
-import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
+import de.awolf.trip.kmp.core.presentation.helper.SideEffectListener
+import de.awolf.trip.kmp.search.presentation.components.SearchCard
+import de.awolf.trip.kmp.search.presentation.components.StopView
+import de.awolf.trip.kmp.search.presentation.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import de.awolf.trip.kmp.search.presentation.SearchScreenViewModel
 import de.awolf.trip.kmp.search.domain.models.StopListSource
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -45,8 +44,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import de.awolf.trip.kmp.search.presentation.SearchScreenEvent
-import de.awolf.trip.kmp.search.presentation.SearchScreenSideEffect
 import de.awolf.trip.kmp.core.util.error.DatabaseError
 import de.awolf.trip.kmp.core.util.error.NetworkError
 

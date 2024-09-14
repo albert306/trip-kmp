@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.stop_monitor_screen
+package de.awolf.trip.kmp.departures.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,16 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import de.awolf.trip.kmp.presentation.helper.SideEffectListener
-import de.awolf.trip.kmp.presentation.helper.isFinalItemVisible
-import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureView
-import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
-import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
+import de.awolf.trip.kmp.core.presentation.helper.SideEffectListener
+import de.awolf.trip.kmp.core.presentation.helper.isFinalItemVisible
+import de.awolf.trip.kmp.departures.presentation.components.DepartureView
+import de.awolf.trip.kmp.departures.presentation.components.ShimmerDepartureItem
+import de.awolf.trip.kmp.departures.presentation.components.StopInfoCard
 import kotlinx.coroutines.launch
-import de.awolf.trip.kmp.departures.presentation.DepartureDetailLevel
-import de.awolf.trip.kmp.departures.presentation.DeparturesScreenEvent
-import de.awolf.trip.kmp.departures.presentation.DeparturesScreenSideEffect
-import de.awolf.trip.kmp.departures.presentation.DeparturesViewModel
 import de.awolf.trip.kmp.core.util.error.NetworkError
 
 @OptIn(ExperimentalMaterialApi::class)

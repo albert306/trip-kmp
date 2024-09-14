@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
+package de.awolf.trip.kmp.departures.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
+import de.awolf.trip.kmp.core.presentation.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
 import de.awolf.trip.kmp.departures.domain.models.Departure
 import de.awolf.trip.kmp.core.domain.models.Mode

@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.home_screen.components
+package de.awolf.trip.kmp.search.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

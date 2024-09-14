@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
+package de.awolf.trip.kmp.departures.presentation.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable

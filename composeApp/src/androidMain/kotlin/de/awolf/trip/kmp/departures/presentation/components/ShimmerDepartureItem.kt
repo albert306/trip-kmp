@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.stop_monitor_screen.components
+package de.awolf.trip.kmp.departures.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import de.awolf.trip.kmp.presentation.helper.shimmerEffect
+import de.awolf.trip.kmp.core.presentation.helper.shimmerEffect
 import de.awolf.trip.kmp.theme.AppTheme
 
 @Preview

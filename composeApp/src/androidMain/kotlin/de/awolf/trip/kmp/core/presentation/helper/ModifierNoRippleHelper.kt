@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.helper
+package de.awolf.trip.kmp.core.presentation.helper
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,8 +8,10 @@ import androidx.compose.ui.composed
 
 
 fun Modifier.clickableWithoutRipple(onClick: () -> Unit): Modifier = composed {
-    clickable(indication = null,
-        interactionSource = remember { MutableInteractionSource() }) {
+    clickable(
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() }
+    ) {
         onClick()
     }
 }

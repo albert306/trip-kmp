@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.presentation.helper
+package de.awolf.trip.kmp.core.presentation.helper
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
