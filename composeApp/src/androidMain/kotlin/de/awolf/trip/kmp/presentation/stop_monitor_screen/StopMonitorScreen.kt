@@ -35,16 +35,16 @@ import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.DepartureVi
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.presentation.stop_monitor_screen.components.StopInfoCard
 import kotlinx.coroutines.launch
-import presentation.stop_monitor.DepartureDetailLevel
-import presentation.stop_monitor.StopMonitorEvent
-import presentation.stop_monitor.StopMonitorSideEffect
-import presentation.stop_monitor.StopMonitorViewModel
-import util.error.NetworkError
+import de.awolf.trip.kmp.departures.presentation.DepartureDetailLevel
+import de.awolf.trip.kmp.departures.presentation.DeparturesScreenEvent
+import de.awolf.trip.kmp.departures.presentation.DeparturesScreenSideEffect
+import de.awolf.trip.kmp.departures.presentation.DeparturesViewModel
+import de.awolf.trip.kmp.core.util.error.NetworkError
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StopMonitorScreen(
-    viewModel: StopMonitorViewModel,
+    viewModel: DeparturesViewModel,
     snackbarHostState: SnackbarHostState,
 ) {
     val state = viewModel.state.collectAsState()
@@ -54,7 +54,7 @@ fun StopMonitorScreen(
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
         val toastMsg: String
         when (sideEffect) {
-            is StopMonitorSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
+            is DeparturesScreenSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
                 NetworkError.UNKNOWN -> "Unknown network error"
                 NetworkError.BAD_REQUEST -> "Bad network request"
                 NetworkError.REQUEST_TIMEOUT -> "Request timeout"
@@ -86,20 +86,20 @@ fun StopMonitorScreen(
             stop = viewModel.stop,
             queriedTime = viewModel.queriedTime,
             isStopInfoCardExpanded = state.value.isStopInfoCardExpanded,
-            expandStopInfo = { viewModel.onEvent(StopMonitorEvent.ToggleExpandedStopInfo) },
-            onCloseButtonClick = { viewModel.onEvent(StopMonitorEvent.Close) },
+            expandStopInfo = { viewModel.onEvent(DeparturesScreenEvent.ToggleExpandedStopInfo) },
+            onCloseButtonClick = { viewModel.onEvent(DeparturesScreenEvent.Close) },
             modifier = Modifier.zIndex(2f)
         )
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = state.value.isRefreshing,
-            onRefresh = { viewModel.onEvent(StopMonitorEvent.UpdateDepartures) }
+            onRefresh = { viewModel.onEvent(DeparturesScreenEvent.UpdateDeparturesScreen) }
         )
         val lazyListState = rememberLazyListState()
         val isAtBottom = lazyListState.isFinalItemVisible(tolerance = 0)
         LaunchedEffect(isAtBottom) {
             if (isAtBottom && !state.value.isRefreshing && state.value.departures.isNotEmpty()) { //prevent repeated calls
-                viewModel.onEvent(StopMonitorEvent.IncreaseDepartureCount)
+                viewModel.onEvent(DeparturesScreenEvent.IncreaseDepartureCount)
             }
         }
 
@@ -157,7 +157,7 @@ fun StopMonitorScreen(
                         detailLevel = detailLevel,
                         onClick = {
                             viewModel.onEvent(
-                                StopMonitorEvent.DepartureDetails(
+                                DeparturesScreenEvent.DepartureDetails(
                                     departure = departure,
                                     detailLevel = if (detailLevel == DepartureDetailLevel.NONE)
                                         DepartureDetailLevel.STOP_SCHEDULE
@@ -168,7 +168,7 @@ fun StopMonitorScreen(
                         },
                         onShowWholeScheduleClicked = {
                             viewModel.onEvent(
-                                StopMonitorEvent.DepartureDetails(
+                                DeparturesScreenEvent.DepartureDetails(
                                     departure = departure,
                                     detailLevel = if (detailLevel == DepartureDetailLevel.STOP_SCHEDULE)
                                         DepartureDetailLevel.WHOLE_STOP_SCHEDULE

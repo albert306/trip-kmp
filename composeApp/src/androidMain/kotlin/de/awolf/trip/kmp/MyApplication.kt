@@ -1,7 +1,7 @@
 package de.awolf.trip.kmp
 
 import android.app.Application
-import di.initKoin
+import de.awolf.trip.kmp.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
 class MyApplication : Application() {

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.R
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
-import domain.models.Stop
+import de.awolf.trip.kmp.core.domain.models.Stop
 
 @Preview(showBackground = true)
 @Composable

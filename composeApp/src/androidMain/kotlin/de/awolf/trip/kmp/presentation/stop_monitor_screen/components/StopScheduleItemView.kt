@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import de.awolf.trip.kmp.theme.AppTheme
-import domain.models.Platform
-import domain.models.StopScheduleItem
+import de.awolf.trip.kmp.core.domain.models.Platform
+import de.awolf.trip.kmp.departures.domain.models.StopScheduleItem
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone

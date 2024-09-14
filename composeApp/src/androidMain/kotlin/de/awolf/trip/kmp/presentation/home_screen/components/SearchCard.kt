@@ -38,7 +38,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import presentation.home_screen.HomeScreenState
+import de.awolf.trip.kmp.search.presentation.SearchScreenState
 
 @Preview(showBackground = true)
 @Composable
@@ -50,7 +50,7 @@ private fun SearchCardPreview() {
         ) {
             Column() {
                 SearchCard(
-                    homeScreenState = HomeScreenState(),
+                    searchScreenState = SearchScreenState(),
                     onSearchTextChange = {},
                     onSearchButtonClick = {},
                     modifier = Modifier
@@ -65,7 +65,7 @@ private fun SearchCardPreview() {
 
 @Composable
 fun SearchCard(
-    homeScreenState: HomeScreenState,
+    searchScreenState: SearchScreenState,
     modifier: Modifier = Modifier,
     onSearchTextChange: (newText: String) -> Unit,
     onShowDatePicker: () -> Unit = {},
@@ -83,7 +83,7 @@ fun SearchCard(
             .padding(top = 4.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
     ) {
         OutlinedTextField(
-            value = homeScreenState.searchText,
+            value = searchScreenState.searchText,
             onValueChange = { newText: String -> onSearchTextChange(newText) },
             label = {
                 Text(
@@ -122,14 +122,14 @@ fun SearchCard(
             modifier = Modifier
         ) {
 
-            val dateString: String = homeScreenState.selectedDateTime.date?.format(LocalDate.Format {
+            val dateString: String = searchScreenState.selectedDateTime.date?.format(LocalDate.Format {
                     dayOfMonth()
                     char('.')
                     monthNumber()
                     char('.')
                 }) ?: "Today"
 
-            val timeString: String = homeScreenState.selectedDateTime.time?.format(LocalTime.Format {
+            val timeString: String = searchScreenState.selectedDateTime.time?.format(LocalTime.Format {
                     hour()
                     char(':')
                     minute()
@@ -165,7 +165,7 @@ fun SearchCard(
                     }
             )
 
-            if (homeScreenState.selectedDateTime.hasDate() || homeScreenState.selectedDateTime.hasTime()) {
+            if (searchScreenState.selectedDateTime.hasDate() || searchScreenState.selectedDateTime.hasTime()) {
                 Button(
                     onClick = { onResetDateTime() },
                     contentPadding = PaddingValues(0.dp),

@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.presentation.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
-import domain.models.Departure
-import domain.models.Mode
-import domain.models.Platform
-import domain.models.StopScheduleItem
+import de.awolf.trip.kmp.departures.domain.models.Departure
+import de.awolf.trip.kmp.core.domain.models.Mode
+import de.awolf.trip.kmp.core.domain.models.Platform
+import de.awolf.trip.kmp.departures.domain.models.StopScheduleItem
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus

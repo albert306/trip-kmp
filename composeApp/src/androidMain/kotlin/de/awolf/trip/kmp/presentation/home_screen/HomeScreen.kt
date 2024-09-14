@@ -36,8 +36,8 @@ import de.awolf.trip.kmp.presentation.home_screen.components.StopView
 import de.awolf.trip.kmp.presentation.home_screen.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import presentation.home_screen.HomeScreenViewModel
-import domain.models.StopListSource
+import de.awolf.trip.kmp.search.presentation.SearchScreenViewModel
+import de.awolf.trip.kmp.search.domain.models.StopListSource
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -45,15 +45,15 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import presentation.home_screen.HomeScreenEvent
-import presentation.home_screen.HomeScreenSideEffect
-import util.error.DatabaseError
-import util.error.NetworkError
+import de.awolf.trip.kmp.search.presentation.SearchScreenEvent
+import de.awolf.trip.kmp.search.presentation.SearchScreenSideEffect
+import de.awolf.trip.kmp.core.util.error.DatabaseError
+import de.awolf.trip.kmp.core.util.error.NetworkError
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel,
+    viewModel: SearchScreenViewModel,
     snackbarHostState: SnackbarHostState
 ) {
     val state by viewModel.state.collectAsState()
@@ -79,7 +79,7 @@ fun HomeScreen(
         scrollThresholdPadding = PaddingValues(top = 100.dp)
     ) { from, to ->
         viewModel.onEvent(
-            HomeScreenEvent
+            SearchScreenEvent
                 .ReorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -90,12 +90,12 @@ fun HomeScreen(
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
         val toastMsg: String
         when (sideEffect) {
-            is HomeScreenSideEffect.ShowNoStopFoundMsg -> toastMsg = "No stop selected"
-            is HomeScreenSideEffect.ShowInvalidDateTimeMsg -> toastMsg = "Selected date and time is in the past"
-            is HomeScreenSideEffect.ShowDatabaseError -> toastMsg = when (sideEffect.error) {
+            is SearchScreenSideEffect.ShowNoStopFoundMsg -> toastMsg = "No stop selected"
+            is SearchScreenSideEffect.ShowInvalidDateTimeMsg -> toastMsg = "Selected date and time is in the past"
+            is SearchScreenSideEffect.ShowDatabaseError -> toastMsg = when (sideEffect.error) {
                 DatabaseError.UNKNOWN -> "Unknown database error"
             }
-            is HomeScreenSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
+            is SearchScreenSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
                 NetworkError.UNKNOWN -> "Unknown network error"
                 NetworkError.BAD_REQUEST -> "Bad network request"
                 NetworkError.REQUEST_TIMEOUT -> "Request timeout"
@@ -123,8 +123,8 @@ fun HomeScreen(
         datePickerState = datePickerState,
         showTimePicker = showTimePicker,
         timePickerState = timePickerState,
-        onDateConfirm = { viewModel.onEvent(HomeScreenEvent.ChangeSelectedDate(it)) },
-        onTimeConfirm = { viewModel.onEvent(HomeScreenEvent.ChangeSelectedTime(it)) }
+        onDateConfirm = { viewModel.onEvent(SearchScreenEvent.ChangeSelectedDate(it)) },
+        onTimeConfirm = { viewModel.onEvent(SearchScreenEvent.ChangeSelectedTime(it)) }
     )
 
     Column(
@@ -133,13 +133,13 @@ fun HomeScreen(
             .fillMaxSize()
     ) {
         SearchCard(
-            homeScreenState = state,
-            onSearchTextChange = { viewModel.onEvent(HomeScreenEvent.Search(it)) },
+            searchScreenState = state,
+            onSearchTextChange = { viewModel.onEvent(SearchScreenEvent.Search(it)) },
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
-            onResetDateTime = { viewModel.onEvent(HomeScreenEvent.ResetSelectedDateTime) },
+            onResetDateTime = { viewModel.onEvent(SearchScreenEvent.ResetSelectedDateTime) },
             onSearchButtonClick = {
-                viewModel.onEvent(HomeScreenEvent.StartStopMonitor(null))
+                viewModel.onEvent(SearchScreenEvent.StartStopMonitor(null))
             },
             modifier = Modifier
                 .zIndex(1f)
@@ -168,9 +168,9 @@ fun HomeScreen(
                             StopView(
                                 stop = stop,
                                 onFavoriteStarClick = {
-                                    viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
+                                    viewModel.onEvent(SearchScreenEvent.ToggleFavorite(stop))
                                 },
-                                onNameClick = { viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop)) },
+                                onNameClick = { viewModel.onEvent(SearchScreenEvent.StartStopMonitor(stop)) },
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .fillMaxWidth(fraction = 0.9f)
@@ -193,9 +193,9 @@ fun HomeScreen(
                     StopView(
                         stop = stop,
                         onFavoriteStarClick = {
-                            viewModel.onEvent(HomeScreenEvent.ToggleFavorite(stop))
+                            viewModel.onEvent(SearchScreenEvent.ToggleFavorite(stop))
                         },
-                        onNameClick = { viewModel.onEvent(HomeScreenEvent.StartStopMonitor(stop)) },
+                        onNameClick = { viewModel.onEvent(SearchScreenEvent.StartStopMonitor(stop)) },
                         modifier = Modifier
                             .animateItem(fadeInSpec = null, fadeOutSpec = null)
                             .fillMaxWidth()
