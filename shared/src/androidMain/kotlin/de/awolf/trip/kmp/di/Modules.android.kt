@@ -1,7 +1,7 @@
 package de.awolf.trip.kmp.di
 
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import de.awolf.trip.kmp.search.data.local.createStopDatabase
+import de.awolf.trip.kmp.core.data.local.createStopDatabase
 import de.awolf.trip.kmp.core.data.remote.createHttpClient
 import de.awolf.trip.kmp.shared.database.StopDatabase
 import io.ktor.client.HttpClient

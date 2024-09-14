@@ -15,8 +15,8 @@ import de.awolf.trip.kmp.core.presentation.helper.viewModelFactory
 import de.awolf.trip.kmp.search.presentation.HomeScreen
 import de.awolf.trip.kmp.departures.presentation.StopMonitorScreen
 import de.awolf.trip.kmp.core.domain.models.Stop
-import de.awolf.trip.kmp.search.presentation.SearchScreenViewModel
-import de.awolf.trip.kmp.departures.presentation.DeparturesViewModel
+import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
+import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel
 import kotlinx.datetime.Instant
 import java.net.URLDecoder
 import java.net.URLEncoder

@@ -1,7 +1,7 @@
 package de.awolf.trip.kmp.di
 
 import de.awolf.trip.kmp.departures.di.departuresModule
-import de.awolf.trip.kmp.search.di.searchModule
+import de.awolf.trip.kmp.core.di.searchModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 

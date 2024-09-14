@@ -35,7 +35,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import de.awolf.trip.kmp.departures.presentation.DepartureDetailLevel
+import de.awolf.trip.kmp.departures.presentation.departures_screen.DepartureDetailLevel
 import kotlin.math.absoluteValue
 
 @Composable

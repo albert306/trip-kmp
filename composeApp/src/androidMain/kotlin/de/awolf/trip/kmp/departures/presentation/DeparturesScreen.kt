@@ -36,6 +36,10 @@ import de.awolf.trip.kmp.departures.presentation.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.departures.presentation.components.StopInfoCard
 import kotlinx.coroutines.launch
 import de.awolf.trip.kmp.core.util.error.NetworkError
+import de.awolf.trip.kmp.departures.presentation.departures_screen.DepartureDetailLevel
+import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesScreenEvent
+import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesScreenSideEffect
+import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

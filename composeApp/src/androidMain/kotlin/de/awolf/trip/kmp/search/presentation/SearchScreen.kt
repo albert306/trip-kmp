@@ -36,7 +36,7 @@ import de.awolf.trip.kmp.search.presentation.components.StopView
 import de.awolf.trip.kmp.search.presentation.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import de.awolf.trip.kmp.search.domain.models.StopListSource
+import de.awolf.trip.kmp.core.domain.models.StopListSource
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -46,6 +46,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import de.awolf.trip.kmp.core.util.error.DatabaseError
 import de.awolf.trip.kmp.core.util.error.NetworkError
+import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenEvent
+import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenSideEffect
+import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable

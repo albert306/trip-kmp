@@ -38,7 +38,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import de.awolf.trip.kmp.search.presentation.SearchScreenState
+import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenState
 
 @Preview(showBackground = true)
 @Composable
