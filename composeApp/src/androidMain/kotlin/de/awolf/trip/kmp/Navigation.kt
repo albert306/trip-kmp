@@ -11,12 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import de.awolf.trip.kmp.presentation.helper.viewModelFactory
-import de.awolf.trip.kmp.presentation.home_screen.HomeScreen
-import de.awolf.trip.kmp.presentation.stop_monitor_screen.StopMonitorScreen
-import domain.models.Stop
-import presentation.home_screen.HomeScreenViewModel
-import presentation.stop_monitor.StopMonitorViewModel
+import de.awolf.trip.kmp.core.presentation.helper.viewModelFactory
+import de.awolf.trip.kmp.search.presentation.HomeScreen
+import de.awolf.trip.kmp.departures.presentation.StopMonitorScreen
+import de.awolf.trip.kmp.core.domain.models.Stop
+import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
+import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel
 import kotlinx.datetime.Instant
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -49,9 +49,9 @@ fun Navigation(
                 )
             }
         ) {
-            val homeScreenViewModel = viewModel<HomeScreenViewModel>(
+            val searchScreenViewModel = viewModel<SearchScreenViewModel>(
                 factory = viewModelFactory {
-                    HomeScreenViewModel(
+                    SearchScreenViewModel(
                         onStopClicked = { stop: Stop, queriedTime: Instant ->
                             navController.navigate(Screen.StopMonitorScreen.withArgs(
                                 stop.id,
@@ -66,7 +66,7 @@ fun Navigation(
             )
 
             HomeScreen(
-                viewModel = homeScreenViewModel,
+                viewModel = searchScreenViewModel,
                 snackbarHostState = snackbarHostState
             )
         }
@@ -103,9 +103,9 @@ fun Navigation(
                 )
             }
         ) { entry ->
-            val stopMonitorViewModel = viewModel<StopMonitorViewModel>(
+            val departuresViewModel = viewModel<DeparturesViewModel>(
                 factory = viewModelFactory {
-                    StopMonitorViewModel(
+                    DeparturesViewModel(
                         stop = Stop(
                             id = entry.arguments?.getString("stopId") ?: "0000000",
                             name = URLDecoder.decode(entry.arguments?.getString("stopName") ?: "","utf-8"),
@@ -119,7 +119,7 @@ fun Navigation(
             )
 
             StopMonitorScreen(
-                viewModel = stopMonitorViewModel,
+                viewModel = departuresViewModel,
                 snackbarHostState = snackbarHostState
             )
         }
