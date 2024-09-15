@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -22,11 +23,8 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.constraintlayout.compose)
-            implementation(libs.navigation.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-
-            implementation(libs.reorderable)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -37,8 +35,12 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(projects.shared)
 
+            implementation(libs.navigation.compose)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+
             implementation(libs.androidx.material3)
+            implementation(libs.reorderable)
         }
     }
 }
