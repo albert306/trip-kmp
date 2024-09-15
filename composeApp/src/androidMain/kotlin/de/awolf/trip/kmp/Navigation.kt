@@ -11,9 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import de.awolf.trip.kmp.core.presentation.helper.viewModelFactory
-import de.awolf.trip.kmp.search.presentation.HomeScreen
-import de.awolf.trip.kmp.departures.presentation.StopMonitorScreen
+import de.awolf.trip.kmp.core.helper.viewModelFactory
+import de.awolf.trip.kmp.departures.search_screen.HomeScreen
+import de.awolf.trip.kmp.departures.departures_screen.StopMonitorScreen
 import de.awolf.trip.kmp.core.domain.models.Stop
 import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel

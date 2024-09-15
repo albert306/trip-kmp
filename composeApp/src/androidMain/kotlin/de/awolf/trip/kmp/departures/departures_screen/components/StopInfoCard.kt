@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.departures.presentation.components
+package de.awolf.trip.kmp.departures.departures_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import de.awolf.trip.kmp.core.presentation.helper.clickableWithoutRipple
+import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.core.domain.models.Stop
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime

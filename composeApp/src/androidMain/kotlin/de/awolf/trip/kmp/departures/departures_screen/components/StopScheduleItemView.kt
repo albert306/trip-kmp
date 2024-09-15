@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.departures.presentation.components
+package de.awolf.trip.kmp.departures.departures_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

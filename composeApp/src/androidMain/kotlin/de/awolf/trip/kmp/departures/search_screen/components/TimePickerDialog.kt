@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.search.presentation.components
+package de.awolf.trip.kmp.departures.search_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

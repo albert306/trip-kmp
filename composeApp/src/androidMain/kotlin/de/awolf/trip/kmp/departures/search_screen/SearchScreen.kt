@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.search.presentation
+package de.awolf.trip.kmp.departures.search_screen
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
@@ -30,10 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import de.awolf.trip.kmp.core.presentation.helper.SideEffectListener
-import de.awolf.trip.kmp.search.presentation.components.SearchCard
-import de.awolf.trip.kmp.search.presentation.components.StopView
-import de.awolf.trip.kmp.search.presentation.components.TimePickerDialog
+import de.awolf.trip.kmp.core.helper.SideEffectListener
+import de.awolf.trip.kmp.departures.search_screen.components.SearchCard
+import de.awolf.trip.kmp.departures.search_screen.components.StopView
+import de.awolf.trip.kmp.departures.search_screen.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import de.awolf.trip.kmp.core.domain.models.StopListSource

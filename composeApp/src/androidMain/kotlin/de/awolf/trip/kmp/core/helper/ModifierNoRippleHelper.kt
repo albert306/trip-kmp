@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.core.presentation.helper
+package de.awolf.trip.kmp.core.helper
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

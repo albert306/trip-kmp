@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.search.presentation.components
+package de.awolf.trip.kmp.departures.search_screen.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.R
-import de.awolf.trip.kmp.core.presentation.helper.clickableWithoutRipple
+import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
 import de.awolf.trip.kmp.core.domain.models.Stop
 

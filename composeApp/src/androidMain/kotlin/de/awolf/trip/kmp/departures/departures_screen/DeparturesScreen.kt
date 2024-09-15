@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.departures.presentation
+package de.awolf.trip.kmp.departures.departures_screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,11 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import de.awolf.trip.kmp.core.presentation.helper.SideEffectListener
-import de.awolf.trip.kmp.core.presentation.helper.isFinalItemVisible
-import de.awolf.trip.kmp.departures.presentation.components.DepartureView
-import de.awolf.trip.kmp.departures.presentation.components.ShimmerDepartureItem
-import de.awolf.trip.kmp.departures.presentation.components.StopInfoCard
+import de.awolf.trip.kmp.core.helper.SideEffectListener
+import de.awolf.trip.kmp.core.helper.isFinalItemVisible
+import de.awolf.trip.kmp.departures.departures_screen.components.DepartureView
+import de.awolf.trip.kmp.departures.departures_screen.components.ShimmerDepartureItem
+import de.awolf.trip.kmp.departures.departures_screen.components.StopInfoCard
 import kotlinx.coroutines.launch
 import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DepartureDetailLevel
