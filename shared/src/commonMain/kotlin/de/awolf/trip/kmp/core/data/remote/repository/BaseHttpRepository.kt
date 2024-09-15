@@ -6,7 +6,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.utils.io.errors.IOException
 import kotlinx.serialization.SerializationException
 
-abstract class BaseVvoRepository {
+abstract class BaseHttpRepository {
 
     protected suspend fun <T> catchNetworkExceptions(
         request: suspend () -> HttpResponse,

@@ -1,14 +1,14 @@
 package de.awolf.trip.kmp.core.domain.use_cases
 
-import de.awolf.trip.kmp.core.domain.models.StopFinderInfo
+import de.awolf.trip.kmp.core.domain.models.StopSearchInfo
 import de.awolf.trip.kmp.core.domain.repository.StopRepository
-import de.awolf.trip.kmp.core.domain.repository.StopRemoteSearchRepository
+import de.awolf.trip.kmp.core.domain.repository.StopSearchRemoteRepository
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.util.error.NetworkError
 
 class FindStopByQueryUseCase(
     private val stopRepository: StopRepository,
-    private val stopRemoteSearchRepository: StopRemoteSearchRepository
+    private val stopSearchRemoteRepository: StopSearchRemoteRepository
 ) {
     suspend operator fun invoke(
         query: String,
@@ -16,9 +16,9 @@ class FindStopByQueryUseCase(
         stopsOnly: Boolean = true,
         regionalOnly: Boolean = true,
         stopShortcuts: Boolean = false
-    ): Result<StopFinderInfo, NetworkError> {
+    ): Result<StopSearchInfo, NetworkError> {
 
-        return when (val response = stopRemoteSearchRepository.getStopByName(
+        return when (val response = stopSearchRemoteRepository.getStopByName(
             query = query,
             limit = limit,
             stopsOnly = stopsOnly,

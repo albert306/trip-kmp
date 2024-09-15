@@ -5,8 +5,8 @@ import de.awolf.trip.kmp.core.data.remote.HttpRoutes
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.core.data.remote.dto.StopSearchResponseDto
-import de.awolf.trip.kmp.core.domain.models.StopFinderInfo
-import de.awolf.trip.kmp.core.domain.repository.StopRemoteSearchRepository
+import de.awolf.trip.kmp.core.domain.models.StopSearchInfo
+import de.awolf.trip.kmp.core.domain.repository.StopSearchRemoteRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -17,16 +17,16 @@ import io.ktor.http.contentType
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-class StopRemoteSearchRepositoryImpl(
+class StopSearchRemoteRepositoryImpl(
     private val client: HttpClient
-): BaseVvoRepository(), StopRemoteSearchRepository {
+): BaseHttpRepository(), StopSearchRemoteRepository {
     override suspend fun getStopByName(
         query: String,
         limit: Int,
         stopsOnly: Boolean,
         regionalOnly: Boolean,
         stopShortcuts: Boolean
-    ): Result<StopFinderInfo, NetworkError> {
+    ): Result<StopSearchInfo, NetworkError> {
 
         val jsonBody = JsonObject(
             mapOf(
@@ -38,7 +38,7 @@ class StopRemoteSearchRepositoryImpl(
             )
         )
 
-        return catchNetworkExceptions<StopFinderInfo>(
+        return catchNetworkExceptions<StopSearchInfo>(
             request = {
                 client.post {
                     url(HttpRoutes.STOP_SEARCH)

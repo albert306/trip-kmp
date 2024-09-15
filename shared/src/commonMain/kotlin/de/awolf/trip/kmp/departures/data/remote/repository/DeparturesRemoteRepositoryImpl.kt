@@ -1,6 +1,6 @@
 package de.awolf.trip.kmp.departures.data.remote.repository
 
-import de.awolf.trip.kmp.core.data.remote.repository.BaseVvoRepository
+import de.awolf.trip.kmp.core.data.remote.repository.BaseHttpRepository
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.data.remote.HttpRoutes
@@ -29,7 +29,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 class DeparturesRemoteRepositoryImpl(
     private val client: HttpClient
-): BaseVvoRepository(), DeparturesRemoteRepository {
+): BaseHttpRepository(), DeparturesRemoteRepository {
     override suspend fun getDepartures(
         stopId: String,
         limit: Int,

@@ -16,7 +16,7 @@ import org.koin.core.component.inject
 import de.awolf.trip.kmp.core.util.CoroutineViewModel
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
-import de.awolf.trip.kmp.core.domain.use_cases.SearchUseCases
+import de.awolf.trip.kmp.core.domain.use_cases.CoreUseCases
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -27,7 +27,7 @@ class SearchScreenViewModel(
     private val onStopClicked: (Stop, Instant) -> Unit,
 ) : CoroutineViewModel(), KoinComponent {
 
-    private val useCases: SearchUseCases by inject()
+    private val useCases: CoreUseCases by inject()
 
     private val _state = MutableStateFlow(SearchScreenState())
     val state = _state.asStateFlow()
