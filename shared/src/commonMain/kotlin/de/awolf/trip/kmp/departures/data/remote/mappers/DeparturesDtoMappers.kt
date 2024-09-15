@@ -1,6 +1,6 @@
 package de.awolf.trip.kmp.departures.data.remote.mappers
 
-import data.remote.mappers.dateStringToInstant
+import de.awolf.trip.kmp.core.data.remote.mappers.dateStringToInstant
 import de.awolf.trip.kmp.core.data.remote.mappers.toResponseStatus
 import de.awolf.trip.kmp.departures.data.remote.dto.DepartureDto
 import de.awolf.trip.kmp.core.data.remote.mappers.toDiva

@@ -1,4 +1,4 @@
-package data.remote.mappers
+package de.awolf.trip.kmp.core.data.remote.mappers
 
 import de.awolf.trip.kmp.core.domain.models.Stop
 import kotlinx.datetime.Instant
