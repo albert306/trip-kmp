@@ -33,11 +33,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
+import de.awolf.trip.kmp.core.helper.dateText
+import de.awolf.trip.kmp.core.helper.timeText
 import de.awolf.trip.kmp.theme.AppTheme
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.format
-import kotlinx.datetime.format.char
 import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenState
 
 @Preview(showBackground = true)
@@ -121,25 +119,10 @@ fun SearchCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
         ) {
-
-            val dateString: String = searchScreenState.selectedDateTime.date?.format(LocalDate.Format {
-                    dayOfMonth()
-                    char('.')
-                    monthNumber()
-                    char('.')
-                }) ?: "Today"
-
-            val timeString: String = searchScreenState.selectedDateTime.time?.format(LocalTime.Format {
-                    hour()
-                    char(':')
-                    minute()
-                }) ?: "Now"
-
             Text(
-                text = timeString,
+                text = searchScreenState.selectedDateTime.timeText(),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight(400),
                 modifier = Modifier
                     .clickableWithoutRipple {
                         onShowTimePicker()
@@ -148,17 +131,16 @@ fun SearchCard(
 
             Text(
                 text = "•",
-                fontSize = 14.sp,
+                fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight(300),
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp),
             )
 
             Text(
-                text = dateString,
+                text = searchScreenState.selectedDateTime.dateText(),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight(400),
                 modifier = Modifier
                     .clickableWithoutRipple {
                         onShowDatePicker()

@@ -26,9 +26,8 @@ import androidx.compose.ui.unit.sp
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.core.domain.models.Stop
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.format
-import kotlinx.datetime.format.char
+import de.awolf.trip.kmp.core.helper.dateText
+import de.awolf.trip.kmp.core.helper.timeText
 
 @Composable
 fun StopInfoCard(
@@ -87,29 +86,34 @@ fun StopInfoCard(
                     text = stop.region,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight(200),
                 )
+
                 Text(
                     text = "•",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight(200),
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp),
                 )
+
                 Text(
-                    text = queriedTime.toLocalDateTime().format(LocalDateTime.Format {
-                        hour()
-                        char(':')
-                        minute()
-                        chars(" • ")
-                        dayOfMonth()
-                        char('.')
-                        monthNumber()
-                        char('.')
-                    }),
+                    text = queriedTime.timeText(),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight(200),
+                )
+
+                Text(
+                    text = "•",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp),
+                )
+
+                Text(
+                    text = queriedTime.dateText(),
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
