@@ -10,7 +10,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import de.awolf.trip.kmp.core.util.truncateTo
+import kotlinx.serialization.Serializable
 
+@Serializable
 class PickableDateTime(
     val date: LocalDate? = null,
     val time: LocalTime? = null

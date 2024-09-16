@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import de.awolf.trip.kmp.core.util.CoroutineViewModel
@@ -24,7 +23,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 @OptIn(FlowPreview::class)
 class SearchScreenViewModel(
-    private val onStopClicked: (Stop, Instant) -> Unit,
+    private val onStopClicked: (Stop, PickableDateTime) -> Unit,
 ) : CoroutineViewModel(), KoinComponent {
 
     private val useCases: CoreUseCases by inject()
@@ -77,7 +76,7 @@ class SearchScreenViewModel(
                     return
                 }
 
-                onStopClicked(stop, state.value.selectedDateTime.toInstant())
+                onStopClicked(stop, state.value.selectedDateTime)
             }
 
             is SearchScreenEvent.ToggleFavorite -> toggleFavoriteStop(event.stop)

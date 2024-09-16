@@ -1,5 +1,6 @@
 package de.awolf.trip.kmp.departures.presentation.departures_screen
 
+import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.departures.domain.models.Departure
 import de.awolf.trip.kmp.core.domain.models.Stop
 import de.awolf.trip.kmp.departures.domain.models.StopScheduleItem
@@ -9,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import de.awolf.trip.kmp.core.util.CoroutineViewModel
@@ -18,7 +18,7 @@ import de.awolf.trip.kmp.departures.domain.use_cases.DeparturesUseCases
 
 class DeparturesViewModel(
     val stop: Stop,
-    val queriedTime: Instant,
+    val queriedTime: PickableDateTime,
     private val onCloseClicked: () -> Unit,
 ) : CoroutineViewModel(), KoinComponent {
 
@@ -68,7 +68,7 @@ class DeparturesViewModel(
 
             val stopMonitorInfoResource = useCases.fetchDepartures(
                 stop = stop,
-                time = queriedTime,
+                time = queriedTime.toInstant(),
                 limit = state.value.queriedDepartureCount,
             )
             when (stopMonitorInfoResource) {
