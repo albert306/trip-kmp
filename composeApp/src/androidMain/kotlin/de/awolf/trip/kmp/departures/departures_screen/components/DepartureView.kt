@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import de.awolf.trip.kmp.core.domain.models.DepartureState
 import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
 import de.awolf.trip.kmp.departures.domain.models.Departure
@@ -56,7 +57,7 @@ fun TestPreview() {
                     mode = Mode.CITYBUS,
                     scheduledTime = Clock.System.now(),
                     realTime = Clock.System.now(),
-                    departureState = Departure.DepartureState.INTIME,
+                    departureState = DepartureState.INTIME,
                     routeChanges = emptyList(),
                     diva = null,
                     stopSchedule = listOf(
@@ -247,7 +248,7 @@ fun StatusRow(
             departureStateDescription = "- ${delay.absoluteValue}"
             departureStateDescriptionColor = blue
         }
-        if (departure.departureState == Departure.DepartureState.CANCELLED) {
+        if (departure.departureState == DepartureState.CANCELLED) {
             departureStateDescription = "cancelled"
             departureStateDescriptionColor = red
         }

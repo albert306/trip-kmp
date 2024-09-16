@@ -5,6 +5,7 @@ import de.awolf.trip.kmp.core.data.remote.mappers.toResponseStatus
 import de.awolf.trip.kmp.departures.data.remote.dto.DepartureDto
 import de.awolf.trip.kmp.core.data.remote.mappers.toDiva
 import de.awolf.trip.kmp.core.data.remote.mappers.toPlatform
+import de.awolf.trip.kmp.core.domain.models.DepartureState
 import de.awolf.trip.kmp.departures.data.remote.dto.DepartureMonitorResponseDto
 import de.awolf.trip.kmp.departures.data.remote.dto.StopScheduleItemDto
 import de.awolf.trip.kmp.departures.domain.models.Departure
@@ -34,7 +35,7 @@ fun DepartureDto.toDeparture(): Departure {
         mode = Mode.fromString(mode),
         scheduledTime = scheduledTime,
         realTime = realTime,
-        departureState = Departure.DepartureState.fromString(state),
+        departureState = DepartureState.fromString(state),
         routeChanges = routeChanges,
         diva = diva?.toDiva(),
         stopSchedule = null,

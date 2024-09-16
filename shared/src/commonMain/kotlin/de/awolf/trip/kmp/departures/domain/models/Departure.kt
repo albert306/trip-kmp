@@ -1,5 +1,6 @@
 package de.awolf.trip.kmp.departures.domain.models
 
+import de.awolf.trip.kmp.core.domain.models.DepartureState
 import de.awolf.trip.kmp.core.domain.models.Diva
 import de.awolf.trip.kmp.core.domain.models.Mode
 import de.awolf.trip.kmp.core.domain.models.Platform
@@ -20,19 +21,6 @@ data class Departure(
     val diva: Diva?,
     val stopSchedule: List<StopScheduleItem>?,
 ) : Comparable<Departure> {
-
-    enum class DepartureState(val rawValue: String = "Unknown") {
-        INTIME("InTime"),
-        DELAYED("Delayed"),
-        CANCELLED("Cancelled"),
-        UNKNOWN("Unknown");
-
-        companion object {
-            fun fromString(value: String): DepartureState {
-                return entries.find { it.rawValue == value } ?: UNKNOWN
-            }
-        }
-    }
 
     fun getETA(): Long {
         val diff = realTime.minus(Clock.System.now())
