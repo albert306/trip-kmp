@@ -2,7 +2,7 @@ package de.awolf.trip.kmp.departures.domain.use_cases
 
 import de.awolf.trip.kmp.core.domain.models.Mode
 import de.awolf.trip.kmp.core.domain.models.Stop
-import de.awolf.trip.kmp.departures.domain.models.StopMonitorInfo
+import de.awolf.trip.kmp.departures.domain.models.DepartureMonitorInfo
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.domain.repository.DeparturesRemoteRepository
@@ -18,7 +18,7 @@ class FetchDeparturesUseCase(
         isArrival: Boolean = false,
         shorttermchanges: Boolean = true,
         modeOfTransport: List<String> = Mode.getAllLocal()
-    ): Result<StopMonitorInfo, NetworkError> {
+    ): Result<DepartureMonitorInfo, NetworkError> {
 
         return when (val response = departuresRemoteRepository.getDepartures(
             stopId = stop.id,

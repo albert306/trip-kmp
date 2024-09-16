@@ -9,11 +9,11 @@ import de.awolf.trip.kmp.departures.data.remote.dto.DepartureMonitorResponseDto
 import de.awolf.trip.kmp.departures.data.remote.dto.StopScheduleItemDto
 import de.awolf.trip.kmp.departures.domain.models.Departure
 import de.awolf.trip.kmp.core.domain.models.Mode
-import de.awolf.trip.kmp.departures.domain.models.StopMonitorInfo
+import de.awolf.trip.kmp.departures.domain.models.DepartureMonitorInfo
 import de.awolf.trip.kmp.departures.domain.models.StopScheduleItem
 
-fun DepartureMonitorResponseDto.toStopMonitorInfo(): StopMonitorInfo {
-    return StopMonitorInfo(
+fun DepartureMonitorResponseDto.toDepartureMonitorInfo(): DepartureMonitorInfo {
+    return DepartureMonitorInfo(
         name = name,
         responseStatus = responseStatusDto.toResponseStatus(),
         region = region,

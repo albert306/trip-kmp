@@ -3,7 +3,7 @@ package de.awolf.trip.kmp.departures.domain.models
 import de.awolf.trip.kmp.core.domain.models.ResponseStatus
 import kotlinx.datetime.Instant
 
-data class StopMonitorInfo(
+data class DepartureMonitorInfo(
     val responseStatus: ResponseStatus,
     val name: String,
     val region: String,

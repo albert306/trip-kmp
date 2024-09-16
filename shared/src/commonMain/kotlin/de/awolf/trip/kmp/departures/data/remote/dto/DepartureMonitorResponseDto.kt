@@ -10,6 +10,5 @@ data class DepartureMonitorResponseDto(
     @SerialName("Name") val name: String,
     @SerialName("Place") val region: String,
     @SerialName("ExpirationTime") val expirationTime: String? = null,
-    @SerialName("Departures") val departures: List<DepartureDto> = emptyList(),
-
-    )
+    @SerialName("Departures") val departures: List<DepartureDto> = emptyList()
+)

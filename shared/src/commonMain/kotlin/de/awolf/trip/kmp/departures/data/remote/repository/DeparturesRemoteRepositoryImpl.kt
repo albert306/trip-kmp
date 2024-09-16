@@ -6,9 +6,9 @@ import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.data.remote.HttpRoutes
 import de.awolf.trip.kmp.departures.data.remote.dto.DepartureMonitorResponseDto
 import de.awolf.trip.kmp.departures.data.remote.dto.StopScheduleResponseDto
-import de.awolf.trip.kmp.departures.data.remote.mappers.toStopMonitorInfo
+import de.awolf.trip.kmp.departures.data.remote.mappers.toDepartureMonitorInfo
 import de.awolf.trip.kmp.departures.data.remote.mappers.toStopScheduleItem
-import de.awolf.trip.kmp.departures.domain.models.StopMonitorInfo
+import de.awolf.trip.kmp.departures.domain.models.DepartureMonitorInfo
 import de.awolf.trip.kmp.departures.domain.models.StopScheduleItem
 import de.awolf.trip.kmp.departures.domain.repository.DeparturesRemoteRepository
 import io.ktor.client.HttpClient
@@ -37,7 +37,7 @@ class DeparturesRemoteRepositoryImpl(
         isArrival: Boolean,
         shorttermchanges: Boolean,
         modeOfTransport: List<String>
-    ): Result<StopMonitorInfo, NetworkError> {
+    ): Result<DepartureMonitorInfo, NetworkError> {
 
         val jsonBody = JsonObject(
             mapOf(
@@ -51,7 +51,7 @@ class DeparturesRemoteRepositoryImpl(
             )
         )
 
-        return catchNetworkExceptions<StopMonitorInfo>(
+        return catchNetworkExceptions<DepartureMonitorInfo>(
             request = {
                 client.post {
                     url(HttpRoutes.DEPARTURE_MONITOR)
@@ -60,7 +60,7 @@ class DeparturesRemoteRepositoryImpl(
                 }
             },
             onSuccessMapper = { response ->
-                response.body<DepartureMonitorResponseDto>().toStopMonitorInfo()
+                response.body<DepartureMonitorResponseDto>().toDepartureMonitorInfo()
             }
         )
     }
