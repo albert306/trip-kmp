@@ -1,14 +1,14 @@
 package de.awolf.trip.kmp.departures
 
+import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.core.domain.models.Stop
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-object DeparturesSearchScreen
+object DeparturesSearchRoute
 
 @Serializable
-data class DeparturesScreen(
+data class DeparturesRoute(
     val stop: Stop,
-    val queriedTime: Instant
+    val queriedTime: PickableDateTime
 )

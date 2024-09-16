@@ -23,19 +23,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.core.domain.models.Stop
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun StopInfoCard(
     stop: Stop,
-    queriedTime: Instant,
+    queriedTime: PickableDateTime,
     isStopInfoCardExpanded: Boolean,
     expandStopInfo: () -> Unit,
     onCloseButtonClick: () -> Unit,
@@ -99,7 +97,7 @@ fun StopInfoCard(
                     modifier = Modifier.padding(horizontal = 8.dp),
                 )
                 Text(
-                    text = queriedTime.toLocalDateTime(TimeZone.currentSystemDefault()).format(LocalDateTime.Format {
+                    text = queriedTime.toLocalDateTime().format(LocalDateTime.Format {
                         hour()
                         char(':')
                         minute()
