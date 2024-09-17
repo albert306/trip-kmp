@@ -4,8 +4,12 @@ import de.awolf.trip.kmp.core.data.remote.repository.BaseHttpRepository
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.trips.data.remote.HttpRoutes
+import de.awolf.trip.kmp.trips.data.remote.dto.TripsResponseDto
+import de.awolf.trip.kmp.trips.data.remote.mappers.toTripsResponse
+import de.awolf.trip.kmp.trips.domain.models.TripsResponse
 import de.awolf.trip.kmp.trips.domain.repository.TripsRemoteRepository
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -27,7 +31,7 @@ class TripsRemoteRepositoryImpl(
         time: Instant,
         isArrivalTime: Boolean,
         shorttermchanges: Boolean,
-    ): Result<TODO, NetworkError> {
+    ): Result<TripsResponse, NetworkError> {
 
         val jsonBody = JsonObject(
             mapOf(
@@ -39,7 +43,7 @@ class TripsRemoteRepositoryImpl(
             )
         )
 
-        return catchNetworkExceptions<TODO>(
+        return catchNetworkExceptions<TripsResponse>(
             request = {
                 client.post {
                     url(HttpRoutes.TRIPS)
@@ -48,7 +52,7 @@ class TripsRemoteRepositoryImpl(
                 }
             },
             onSuccessMapper = { response ->
-                TODO()
+                response.body<TripsResponseDto>().toTripsResponse()
             }
         )
     }
