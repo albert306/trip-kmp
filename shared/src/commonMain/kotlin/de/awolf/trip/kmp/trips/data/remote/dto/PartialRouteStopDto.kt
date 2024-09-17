@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PartialRouteStopDto(
-    @SerialName("ArrivalTime") val arrivalTime: String,
-    @SerialName("DepartureTime") val departureTime: String,
+    @SerialName("ArrivalTime") val arrivalScheduledTime: String,
+    @SerialName("DepartureTime") val departureScheduledTime: String,
     @SerialName("ArrivalRealTime") val arrivalRealTime: String? = null,
     @SerialName("DepartureRealTime") val departureRealTime: String? = null,
     @SerialName("Place") val stopRegion: String,
