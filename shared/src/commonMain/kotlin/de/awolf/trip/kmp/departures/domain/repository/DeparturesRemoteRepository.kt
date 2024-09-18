@@ -1,5 +1,6 @@
 package de.awolf.trip.kmp.departures.domain.repository
 
+import de.awolf.trip.kmp.core.domain.models.Mode
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.domain.models.DepartureMonitorInfo
@@ -13,7 +14,7 @@ interface DeparturesRemoteRepository {
         time: Instant,
         isArrival: Boolean,
         shorttermchanges: Boolean,
-        modeOfTransport: List<String>
+        modeOfTransport: List<Mode>
     ): Result<DepartureMonitorInfo, NetworkError>
 
     suspend fun getStopSchedule(

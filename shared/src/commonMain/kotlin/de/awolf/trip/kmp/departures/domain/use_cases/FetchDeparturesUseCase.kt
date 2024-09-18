@@ -17,7 +17,7 @@ class FetchDeparturesUseCase(
         limit: Int,
         isArrival: Boolean = false,
         shorttermchanges: Boolean = true,
-        modeOfTransport: List<String> = Mode.getAllLocal()
+        modeOfTransport: List<Mode> = Mode.getAllLocal()
     ): Result<DepartureMonitorInfo, NetworkError> {
 
         return when (val response = departuresRemoteRepository.getDepartures(

@@ -13,16 +13,16 @@ enum class Mode(val rawValue: String) {
     UNKNOWN("Unknown");
 
     companion object {
-        fun getAllLocal(): List<String> {
+        fun getAllLocal(): List<Mode> {
             return listOf(
-                TRAM.rawValue,
-                CITYBUS.rawValue,
-                INTERCITYBUS.rawValue,
-                PLUSBUS.rawValue,
-                SUBURBANRAILWAY.rawValue,
-                CABLEWAY.rawValue,
-                FERRY.rawValue,
-                HAILEDSHAREDTAXI.rawValue
+                TRAM,
+                CITYBUS,
+                INTERCITYBUS,
+                PLUSBUS,
+                SUBURBANRAILWAY,
+                CABLEWAY,
+                FERRY,
+                HAILEDSHAREDTAXI
             )
         }
 

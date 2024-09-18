@@ -1,6 +1,7 @@
 package de.awolf.trip.kmp.departures.data.remote.repository
 
 import de.awolf.trip.kmp.core.data.remote.repository.BaseHttpRepository
+import de.awolf.trip.kmp.core.domain.models.Mode
 import de.awolf.trip.kmp.core.util.Result
 import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.data.remote.HttpRoutes
@@ -36,7 +37,7 @@ class DeparturesRemoteRepositoryImpl(
         time: Instant,
         isArrival: Boolean,
         shorttermchanges: Boolean,
-        modeOfTransport: List<String>
+        modeOfTransport: List<Mode>
     ): Result<DepartureMonitorInfo, NetworkError> {
 
         val jsonBody = JsonObject(
@@ -47,7 +48,7 @@ class DeparturesRemoteRepositoryImpl(
                 "time" to JsonPrimitive(time.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)),
                 "isarrival" to JsonPrimitive(isArrival),
                 "shorttermchanges" to JsonPrimitive(shorttermchanges),
-                "mot" to JsonPrimitive(modeOfTransport.toString())
+                "mot" to JsonPrimitive(modeOfTransport.map { mode -> mode.rawValue }.toString())
             )
         )
 
