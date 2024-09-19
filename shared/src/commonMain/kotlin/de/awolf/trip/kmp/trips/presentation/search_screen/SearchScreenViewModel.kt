@@ -130,14 +130,10 @@ class SearchScreenViewModel(
                     setFavoriteStops()
                 }
 
-                is SearchScreenEvent.ToggleFavoriteTrip -> TODO()
-
                 is SearchScreenEvent.ReorderFavoriteStop -> {
                     useCases.reorderFavoriteStops(event.stopId, event.from.toLong(), event.to.toLong())
                     setFavoriteStops()
                 }
-
-                is SearchScreenEvent.ReorderFavoriteTrip -> TODO()
             }
         }
     }
