@@ -158,7 +158,7 @@ class SearchScreenViewModel(
     private suspend fun setStopsByQuery(query: String) {
         val resultList = when (val recommendedStopsResult = useCases.findStopByQuery(query)) {
             is Result.Error -> {
-                _sideEffect.send(SearchScreenSideEffect.ShowNetworkError(recommendedStopsResult.error))
+                _sideEffect.send(SearchScreenSideEffect.ShowError(recommendedStopsResult.error))
                 emptyList()
             }
 
@@ -174,7 +174,7 @@ class SearchScreenViewModel(
     private suspend fun setFavoriteStops() {
         val resultList = when (val favoriteStopsResult = useCases.getFavoriteStops()) {
             is Result.Error -> {
-                _sideEffect.send(SearchScreenSideEffect.ShowDatabaseError(favoriteStopsResult.error))
+                _sideEffect.send(SearchScreenSideEffect.ShowError(favoriteStopsResult.error))
                 emptyList()
             }
             is Result.Success -> {

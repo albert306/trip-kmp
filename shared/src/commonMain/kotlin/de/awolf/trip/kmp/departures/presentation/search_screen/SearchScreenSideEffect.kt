@@ -1,11 +1,9 @@
 package de.awolf.trip.kmp.departures.presentation.search_screen
 
-import de.awolf.trip.kmp.core.util.error.DatabaseError
-import de.awolf.trip.kmp.core.util.error.NetworkError
+import de.awolf.trip.kmp.core.util.error.Error
 
 sealed interface SearchScreenSideEffect {
     data object ShowNoStopFoundMsg: SearchScreenSideEffect
     data object ShowInvalidDateTimeMsg : SearchScreenSideEffect
-    data class ShowDatabaseError(val error: DatabaseError) : SearchScreenSideEffect
-    data class ShowNetworkError(val error: NetworkError) : SearchScreenSideEffect
+    data class ShowError(val error: Error) : SearchScreenSideEffect
 }

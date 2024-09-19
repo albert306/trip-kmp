@@ -57,7 +57,7 @@ class TripsViewModel(
         when (val response = useCases.fetchTrips(state.value.tripQuery)) {
             is Result.Error -> {
                 _sideEffect.send(
-                    TripsScreenSideEffect.ShowNetworkError(
+                    TripsScreenSideEffect.ShowError(
                         response.error
                     )
                 )

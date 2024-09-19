@@ -31,11 +31,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.core.helper.SideEffectListener
 import de.awolf.trip.kmp.core.helper.isFinalItemVisible
+import de.awolf.trip.kmp.core.helper.message
 import de.awolf.trip.kmp.departures.departures_screen.components.DepartureView
 import de.awolf.trip.kmp.departures.departures_screen.components.ShimmerDepartureItem
 import de.awolf.trip.kmp.departures.departures_screen.components.StopInfoCard
 import kotlinx.coroutines.launch
-import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DepartureDetailLevel
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesScreenEvent
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesScreenSideEffect
@@ -52,20 +52,8 @@ fun StopMonitorScreen(
     val scope = rememberCoroutineScope()
 
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
-        val toastMsg: String
-        when (sideEffect) {
-            is DeparturesScreenSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
-                NetworkError.UNKNOWN -> "Unknown network error"
-                NetworkError.BAD_REQUEST -> "Bad network request"
-                NetworkError.REQUEST_TIMEOUT -> "Request timeout"
-                NetworkError.UNAUTHORIZED -> "Network unauthorized error"
-                NetworkError.CONFLICT -> "Network conflict"
-                NetworkError.TOO_MANY_REQUESTS -> "Too many network requests"
-                NetworkError.NO_INTERNET -> "No internet connection"
-                NetworkError.PAYLOAD_TOO_LARGE -> "Network payload too large"
-                NetworkError.SERVER_ERROR -> "Network server error"
-                NetworkError.SERIALIZATION -> "Network serialization error"
-            }
+        val toastMsg = when (sideEffect) {
+            is DeparturesScreenSideEffect.ShowError -> sideEffect.error.message()
         }
 
         scope.launch {

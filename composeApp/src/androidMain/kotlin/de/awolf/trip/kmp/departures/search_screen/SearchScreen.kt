@@ -37,6 +37,7 @@ import de.awolf.trip.kmp.departures.search_screen.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import de.awolf.trip.kmp.core.domain.models.StopListSource
+import de.awolf.trip.kmp.core.helper.message
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -44,8 +45,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import de.awolf.trip.kmp.core.util.error.DatabaseError
-import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenEvent
 import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenSideEffect
 import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
@@ -88,25 +87,10 @@ fun HomeScreen(
     }
 
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
-        val toastMsg: String
-        when (sideEffect) {
-            is SearchScreenSideEffect.ShowNoStopFoundMsg -> toastMsg = "No stop selected"
-            is SearchScreenSideEffect.ShowInvalidDateTimeMsg -> toastMsg = "Selected date and time is in the past"
-            is SearchScreenSideEffect.ShowDatabaseError -> toastMsg = when (sideEffect.error) {
-                DatabaseError.UNKNOWN -> "Unknown database error"
-            }
-            is SearchScreenSideEffect.ShowNetworkError -> toastMsg = when (sideEffect.error) {
-                NetworkError.UNKNOWN -> "Unknown network error"
-                NetworkError.BAD_REQUEST -> "Bad network request"
-                NetworkError.REQUEST_TIMEOUT -> "Request timeout"
-                NetworkError.UNAUTHORIZED -> "Network unauthorized error"
-                NetworkError.CONFLICT -> "Network conflict"
-                NetworkError.TOO_MANY_REQUESTS -> "Too many network requests"
-                NetworkError.NO_INTERNET -> "No internet connection"
-                NetworkError.PAYLOAD_TOO_LARGE -> "Network payload too large"
-                NetworkError.SERVER_ERROR -> "Network server error"
-                NetworkError.SERIALIZATION -> "Network serialization error"
-            }
+        val toastMsg = when (sideEffect) {
+            is SearchScreenSideEffect.ShowNoStopFoundMsg -> "No stop selected"
+            is SearchScreenSideEffect.ShowInvalidDateTimeMsg -> "Selected date and time is in the past"
+            is SearchScreenSideEffect.ShowError -> sideEffect.error.message()
         }
 
         scope.launch {

@@ -74,9 +74,7 @@ class DeparturesViewModel(
             when (stopMonitorInfoResource) {
                 is Result.Error -> {
                     _sideEffect.send(
-                        DeparturesScreenSideEffect.ShowNetworkError(
-                            stopMonitorInfoResource.error
-                        )
+                        DeparturesScreenSideEffect.ShowError(stopMonitorInfoResource.error)
                     )
                     departures = emptyList()
                     maxDepartureCount = 0
@@ -157,9 +155,7 @@ class DeparturesViewModel(
             when (stopScheduleResource) {
                 is Result.Error -> {
                     _sideEffect.send(
-                        DeparturesScreenSideEffect.ShowNetworkError(
-                            stopScheduleResource.error
-                        )
+                        DeparturesScreenSideEffect.ShowError(stopScheduleResource.error)
                     )
                     null
                 }
