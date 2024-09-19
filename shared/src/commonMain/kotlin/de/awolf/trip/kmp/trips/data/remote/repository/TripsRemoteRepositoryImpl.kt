@@ -6,6 +6,7 @@ import de.awolf.trip.kmp.core.util.error.NetworkError
 import de.awolf.trip.kmp.trips.data.remote.HttpRoutes
 import de.awolf.trip.kmp.trips.data.remote.dto.TripsResponseDto
 import de.awolf.trip.kmp.trips.data.remote.mappers.toTripsResponse
+import de.awolf.trip.kmp.trips.domain.models.TripQuery
 import de.awolf.trip.kmp.trips.domain.models.TripsResponse
 import de.awolf.trip.kmp.trips.domain.repository.TripsRemoteRepository
 import io.ktor.client.HttpClient
@@ -15,40 +16,21 @@ import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.datetime.Instant
-import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeComponents
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class TripsRemoteRepositoryImpl(
     private val client: HttpClient
 ): BaseHttpRepository(), TripsRemoteRepository {
 
-    override suspend fun getTrips(
-        origin: String,
-        destination: String,
-        time: Instant,
-        isArrivalTime: Boolean,
-        shorttermchanges: Boolean,
-    ): Result<TripsResponse, NetworkError> {
-
-        val jsonBody = JsonObject(
-            mapOf(
-                "origin" to JsonPrimitive(origin),
-                "destination" to JsonPrimitive(destination),
-                "time" to JsonPrimitive(time.format(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)),
-                "isarrival" to JsonPrimitive(isArrivalTime),
-                "shorttermchanges" to JsonPrimitive(shorttermchanges),
-            )
-        )
+    override suspend fun getTrips(query: TripQuery, ): Result<TripsResponse, NetworkError> {
 
         return catchNetworkExceptions<TripsResponse>(
             request = {
                 client.post {
                     url(HttpRoutes.TRIPS)
                     contentType(ContentType.Application.Json)
-                    setBody(jsonBody)
+                    setBody(Json.encodeToString(query))
                 }
             },
             onSuccessMapper = { response ->

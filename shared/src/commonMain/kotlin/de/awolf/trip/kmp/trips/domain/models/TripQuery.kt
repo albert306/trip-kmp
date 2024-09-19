@@ -3,8 +3,6 @@ package de.awolf.trip.kmp.trips.domain.models
 import de.awolf.trip.kmp.core.domain.models.Mode
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 data class TripQuery(
     val origin: String,
