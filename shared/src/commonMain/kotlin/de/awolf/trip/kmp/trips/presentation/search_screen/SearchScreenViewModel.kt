@@ -4,16 +4,14 @@ import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.core.domain.use_cases.CoreUseCases
 import de.awolf.trip.kmp.core.util.CoroutineViewModel
 import de.awolf.trip.kmp.core.util.Result
-import de.awolf.trip.kmp.trips.domain.models.Trip
+import de.awolf.trip.kmp.trips.domain.models.TripQuery
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -22,7 +20,7 @@ import org.koin.core.component.inject
 
 @OptIn(FlowPreview::class)
 class SearchScreenViewModel(
-    private val onSubmitClicked: (Trip, PickableDateTime, Boolean) -> Unit,
+    private val onSubmitClicked: (TripQuery) -> Unit,
 ) : CoroutineViewModel(), KoinComponent {
 
     private val useCases: CoreUseCases by inject()
@@ -33,30 +31,13 @@ class SearchScreenViewModel(
     private val _sideEffect = Channel<SearchScreenSideEffect>(Channel.BUFFERED)
     val sideEffect = _sideEffect.receiveAsFlow()
 
-    init {
-        state
-            .map { it.originText }
-            .distinctUntilChanged()
-            .debounce(100L)
-            .onEach { text ->
-                if (text.length < 3) {
-                    setFavoriteStops()
-                }
-            }
-            .filter { it.length >= 3 } // Vvo api only returns results for 3 or more characters
-            .onEach { text ->
-                setStopsByQuery(text)
-            }
-            .launchIn(
-                coroutineScope
-            )
+    private val searchText = MutableStateFlow("")
 
-        state
-            .map { it.destinationText }
-            .distinctUntilChanged()
+    init {
+        searchText
             .debounce(100L)
-            .onEach { text ->
-                if (text.length < 3) {
+            .onEach {
+                if (it.length < 3) {
                     setFavoriteStops()
                 }
             }
@@ -73,42 +54,72 @@ class SearchScreenViewModel(
         coroutineScope.launch {
             when (event) {
                 is SearchScreenEvent.OriginTextChange -> {
-                    _state.value = state.value.copy(originText = event.text)
+                    searchText.value = event.text
+                }
+
+                is SearchScreenEvent.ViaTextChange -> {
+                    searchText.value = event.text
                 }
 
                 is SearchScreenEvent.DestinationTextChange -> {
-                    _state.value = state.value.copy(destinationText = event.text)
+                    searchText.value = event.text
                 }
 
                 is SearchScreenEvent.SetAsOrigin -> {
-                    _state.value = state.value.copy(origin = event.stop)
+                    _state.value = state.value.copy(
+                        tripQuery = state.value.tripQuery.copy(origin = event.stop.id),
+                    )
+                }
+
+                is SearchScreenEvent.SetAsVia ->  {
+                    _state.value = state.value.copy(
+                        tripQuery = state.value.tripQuery.copy(via = event.stop.id),
+                    )
                 }
 
                 is SearchScreenEvent.SetAsDestination -> {
-                    _state.value = state.value.copy(destination = event.stop)
+                    _state.value = state.value.copy(
+                        tripQuery = state.value.tripQuery.copy(destination = event.stop.id),
+                    )
                 }
 
                 is SearchScreenEvent.ChangeSelectedDate -> {
                     _state.value = state.value.copy(
-                        selectedDateTime = state.value.selectedDateTime.copy(date = event.date)
+                        tripQuery = state.value.tripQuery.copy(
+                            time = state.value.tripQuery.time.copy(date = event.date)
+                        ),
                     )
                 }
 
                 is SearchScreenEvent.ChangeSelectedTime -> {
                     _state.value = state.value.copy(
-                        selectedDateTime = state.value.selectedDateTime.copy(time = event.time)
+                        tripQuery = state.value.tripQuery.copy(
+                            time = state.value.tripQuery.time.copy(time = event.time)
+                        ),
                     )
                 }
 
                 is SearchScreenEvent.ResetSelectedDateTime -> {
                     _state.value = state.value.copy(
-                        selectedDateTime = PickableDateTime()
+                        tripQuery = state.value.tripQuery.copy(
+                            time = PickableDateTime()
+                        ),
                     )
                 }
 
                 is SearchScreenEvent.ToggleIsArrival -> {
                     _state.value = state.value.copy(
-                        isArrival = !state.value.isArrival
+                        tripQuery = state.value.tripQuery.copy(
+                            isArrivalTime = !state.value.tripQuery.isArrivalTime
+                        ),
+                    )
+                }
+
+                is SearchScreenEvent.ChangeDurationOfStay -> {
+                    _state.value = state.value.copy(
+                        tripQuery = state.value.tripQuery.copy(
+                            stayDuration = event.duration
+                        ),
                     )
                 }
 
@@ -132,27 +143,20 @@ class SearchScreenViewModel(
     }
 
     private suspend fun submit() {
-        val origin = state.value.origin
-        if (origin == null) {
+        if (state.value.tripQuery.origin.isEmpty()) {
             _sideEffect.send(SearchScreenSideEffect.ShowNoOriginSelectedMsg)
             return
         }
-        val destination = state.value.destination
-        if (destination == null) {
+        if (state.value.tripQuery.destination.isEmpty()) {
             _sideEffect.send(SearchScreenSideEffect.ShowNoDestinationSelectedMsg)
             return
         }
-        val selectedDateTime = state.value.selectedDateTime
-        if (!selectedDateTime.dateTimeIsValid()) {
+        if (!state.value.tripQuery.time.dateTimeIsValid()) {
             _sideEffect.send(SearchScreenSideEffect.ShowInvalidDateTimeMsg)
             return
         }
 
-        onSubmitClicked(
-            Trip(origin, destination),
-            selectedDateTime,
-            state.value.isArrival
-        )
+        onSubmitClicked(state.value.tripQuery)
     }
 
     private suspend fun setStopsByQuery(query: String) {
