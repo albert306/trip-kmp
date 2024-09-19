@@ -15,8 +15,8 @@ import de.awolf.trip.kmp.core.helper.viewModelFactory
 import de.awolf.trip.kmp.departures.search_screen.HomeScreen
 import de.awolf.trip.kmp.departures.departures_screen.StopMonitorScreen
 import de.awolf.trip.kmp.core.domain.models.Stop
-import de.awolf.trip.kmp.departures.DeparturesRoute
-import de.awolf.trip.kmp.departures.DeparturesSearchRoute
+import de.awolf.trip.kmp.departures.DeparturesScreenRoute
+import de.awolf.trip.kmp.departures.DeparturesSearchScreenRoute
 import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel
 import kotlin.reflect.typeOf
@@ -31,10 +31,10 @@ fun Navigation(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = DeparturesSearchRoute,
+        startDestination = DeparturesSearchScreenRoute,
         modifier = modifier
     ) {
-        composable<DeparturesSearchRoute>(
+        composable<DeparturesSearchScreenRoute>(
             enterTransition = {
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,
@@ -52,7 +52,7 @@ fun Navigation(
                 factory = viewModelFactory {
                     SearchScreenViewModel(
                         onStopClicked = { stop: Stop, queriedTime: PickableDateTime ->
-                            navController.navigate(DeparturesRoute(
+                            navController.navigate(DeparturesScreenRoute(
                                 stop = stop,
                                 queriedTime = queriedTime
                             ))
@@ -67,7 +67,7 @@ fun Navigation(
             )
         }
 
-        composable<DeparturesRoute>(
+        composable<DeparturesScreenRoute>(
             typeMap = mapOf(
                 typeOf<Stop>() to CustomNavType.StopType,
                 typeOf<PickableDateTime>() to CustomNavType.PickableDateTimeType
@@ -85,7 +85,7 @@ fun Navigation(
                 )
             }
         ) {
-            val args = it.toRoute<DeparturesRoute>()
+            val args = it.toRoute<DeparturesScreenRoute>()
 
             val departuresViewModel = viewModel<DeparturesViewModel>(
                 factory = viewModelFactory {

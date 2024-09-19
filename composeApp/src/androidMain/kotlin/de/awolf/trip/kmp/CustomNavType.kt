@@ -7,6 +7,7 @@ import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import de.awolf.trip.kmp.core.domain.models.Stop
+import de.awolf.trip.kmp.trips.domain.models.TripQuery
 
 object CustomNavType {
 
@@ -46,6 +47,26 @@ object CustomNavType {
         }
 
         override fun put(bundle: Bundle, key: String, value: PickableDateTime) {
+            bundle.putString(key, Json.encodeToString(value))
+        }
+    }
+
+    val TripQueryType = object : NavType<TripQuery>(
+        isNullableAllowed = true
+    ) {
+        override fun get(bundle: Bundle, key: String): TripQuery? {
+            return Json.decodeFromString(bundle.getString(key) ?: return null)
+        }
+
+        override fun parseValue(value: String): TripQuery {
+            return Json.decodeFromString(Uri.decode(value))
+        }
+
+        override fun serializeAsValue(value: TripQuery): String {
+            return Uri.encode(Json.encodeToString(value))
+        }
+
+        override fun put(bundle: Bundle, key: String, value: TripQuery) {
             bundle.putString(key, Json.encodeToString(value))
         }
     }

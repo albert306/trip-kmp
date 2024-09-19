@@ -5,10 +5,10 @@ import de.awolf.trip.kmp.core.domain.models.Stop
 import kotlinx.serialization.Serializable
 
 @Serializable
-object DeparturesSearchRoute
+object DeparturesSearchScreenRoute
 
 @Serializable
-data class DeparturesRoute(
+data class DeparturesScreenRoute(
     val stop: Stop,
     val queriedTime: PickableDateTime
 )

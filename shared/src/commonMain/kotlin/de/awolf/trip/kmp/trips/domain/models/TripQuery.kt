@@ -2,8 +2,10 @@ package de.awolf.trip.kmp.trips.domain.models
 
 import de.awolf.trip.kmp.core.domain.models.Mode
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
+@Serializable
 data class TripQuery(
     val origin: String,
     val via: String? = null,
@@ -14,6 +16,7 @@ data class TripQuery(
     val shorttermchanges: Boolean = true,
     val settings: Settings? = Settings(),
 ) {
+    @Serializable
     data class Settings(
         val footpathToStop: Int = 5,
         val walkingSpeed: WalkingSpeed = WalkingSpeed.NORMAL,
