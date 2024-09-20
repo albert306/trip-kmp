@@ -12,12 +12,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.core.helper.viewModelFactory
-import de.awolf.trip.kmp.departures.search_screen.HomeScreen
-import de.awolf.trip.kmp.departures.departures_screen.StopMonitorScreen
+import de.awolf.trip.kmp.departures.departures_entry_screen.DeparturesEntryScreen
+import de.awolf.trip.kmp.departures.departures_screen.DeparturesScreen
 import de.awolf.trip.kmp.core.domain.models.Stop
 import de.awolf.trip.kmp.departures.DeparturesScreenRoute
-import de.awolf.trip.kmp.departures.DeparturesSearchScreenRoute
-import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
+import de.awolf.trip.kmp.departures.DeparturesEntryScreenRoute
+import de.awolf.trip.kmp.departures.presentation.departures_entry_screen.DeparturesEntryScreenViewModel
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel
 import kotlin.reflect.typeOf
 
@@ -31,10 +31,10 @@ fun Navigation(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = DeparturesSearchScreenRoute,
+        startDestination = DeparturesEntryScreenRoute,
         modifier = modifier
     ) {
-        composable<DeparturesSearchScreenRoute>(
+        composable<DeparturesEntryScreenRoute>(
             enterTransition = {
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,
@@ -48,9 +48,9 @@ fun Navigation(
                 )
             }
         ) {
-            val searchScreenViewModel = viewModel<SearchScreenViewModel>(
+            val departuresEntryScreenViewModel = viewModel<DeparturesEntryScreenViewModel>(
                 factory = viewModelFactory {
-                    SearchScreenViewModel(
+                    DeparturesEntryScreenViewModel(
                         onStopClicked = { stop: Stop, queriedTime: PickableDateTime ->
                             navController.navigate(DeparturesScreenRoute(
                                 stop = stop,
@@ -61,8 +61,8 @@ fun Navigation(
                 }
             )
 
-            HomeScreen(
-                viewModel = searchScreenViewModel,
+            DeparturesEntryScreen(
+                viewModel = departuresEntryScreenViewModel,
                 snackbarHostState = snackbarHostState
             )
         }
@@ -97,7 +97,7 @@ fun Navigation(
                 }
             )
 
-            StopMonitorScreen(
+            DeparturesScreen(
                 viewModel = departuresViewModel,
                 snackbarHostState = snackbarHostState
             )

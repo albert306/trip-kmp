@@ -5,7 +5,7 @@ import de.awolf.trip.kmp.core.domain.models.Stop
 import kotlinx.serialization.Serializable
 
 @Serializable
-object DeparturesSearchScreenRoute
+object DeparturesEntryScreenRoute
 
 @Serializable
 data class DeparturesScreenRoute(

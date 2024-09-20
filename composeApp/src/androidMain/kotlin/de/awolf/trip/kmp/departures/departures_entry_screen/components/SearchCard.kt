@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.departures.search_screen.components
+package de.awolf.trip.kmp.departures.departures_entry_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.core.helper.dateText
 import de.awolf.trip.kmp.core.helper.timeText
 import de.awolf.trip.kmp.theme.AppTheme
-import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenState
+import de.awolf.trip.kmp.departures.presentation.departures_entry_screen.DeparturesEntryScreenState
 
 @Preview(showBackground = true)
 @Composable
@@ -48,7 +48,7 @@ private fun SearchCardPreview() {
         ) {
             Column() {
                 SearchCard(
-                    searchScreenState = SearchScreenState(),
+                    departuresEntryScreenState = DeparturesEntryScreenState(),
                     onSearchTextChange = {},
                     onSearchButtonClick = {},
                     modifier = Modifier
@@ -63,7 +63,7 @@ private fun SearchCardPreview() {
 
 @Composable
 fun SearchCard(
-    searchScreenState: SearchScreenState,
+    departuresEntryScreenState: DeparturesEntryScreenState,
     modifier: Modifier = Modifier,
     onSearchTextChange: (newText: String) -> Unit,
     onShowDatePicker: () -> Unit = {},
@@ -81,7 +81,7 @@ fun SearchCard(
             .padding(top = 4.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
     ) {
         OutlinedTextField(
-            value = searchScreenState.searchText,
+            value = departuresEntryScreenState.searchText,
             onValueChange = { newText: String -> onSearchTextChange(newText) },
             label = {
                 Text(
@@ -120,7 +120,7 @@ fun SearchCard(
             modifier = Modifier
         ) {
             Text(
-                text = searchScreenState.selectedDateTime.timeText(),
+                text = departuresEntryScreenState.selectedDateTime.timeText(),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
@@ -138,7 +138,7 @@ fun SearchCard(
             )
 
             Text(
-                text = searchScreenState.selectedDateTime.dateText(),
+                text = departuresEntryScreenState.selectedDateTime.dateText(),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
@@ -147,7 +147,7 @@ fun SearchCard(
                     }
             )
 
-            if (searchScreenState.selectedDateTime.hasDate() || searchScreenState.selectedDateTime.hasTime()) {
+            if (departuresEntryScreenState.selectedDateTime.hasDate() || departuresEntryScreenState.selectedDateTime.hasTime()) {
                 Button(
                     onClick = { onResetDateTime() },
                     contentPadding = PaddingValues(0.dp),

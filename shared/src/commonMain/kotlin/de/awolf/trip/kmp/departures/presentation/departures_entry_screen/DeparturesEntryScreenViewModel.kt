@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.departures.presentation.search_screen
+package de.awolf.trip.kmp.departures.presentation.departures_entry_screen
 
 import de.awolf.trip.kmp.core.domain.models.Stop
 import de.awolf.trip.kmp.core.domain.models.StopListSource
@@ -22,16 +22,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 
 @OptIn(FlowPreview::class)
-class SearchScreenViewModel(
+class DeparturesEntryScreenViewModel(
     private val onStopClicked: (Stop, PickableDateTime) -> Unit,
 ) : CoroutineViewModel(), KoinComponent {
 
     private val useCases: CoreUseCases by inject()
 
-    private val _state = MutableStateFlow(SearchScreenState())
+    private val _state = MutableStateFlow(DeparturesEntryScreenState())
     val state = _state.asStateFlow()
 
-    private val _sideEffect = Channel<SearchScreenSideEffect>(Channel.BUFFERED)
+    private val _sideEffect = Channel<DeparturesEntryScreenSideEffect>(Channel.BUFFERED)
     val sideEffect = _sideEffect.receiveAsFlow()
 
     init {
@@ -53,25 +53,25 @@ class SearchScreenViewModel(
             )
     }
 
-    fun onEvent(event: SearchScreenEvent) {
+    fun onEvent(event: DeparturesEntryScreenEvent) {
         when (event) {
 
-            is SearchScreenEvent.Search -> {
+            is DeparturesEntryScreenEvent.DeparturesEntry -> {
                 _state.value = state.value.copy(searchText = event.text)
             }
 
-            is SearchScreenEvent.StartStopMonitor -> {
+            is DeparturesEntryScreenEvent.StartStopMonitor -> {
                 val stop = event.stop ?: state.value.stopList.firstOrNull()
                 if (stop == null) {
                     coroutineScope.launch {
-                        _sideEffect.send(SearchScreenSideEffect.ShowNoStopFoundMsg)
+                        _sideEffect.send(DeparturesEntryScreenSideEffect.ShowNoStopFoundMsg)
                     }
                     return
                 }
 
                 if (!state.value.selectedDateTime.dateTimeIsValid()) {
                     coroutineScope.launch {
-                        _sideEffect.send(SearchScreenSideEffect.ShowInvalidDateTimeMsg)
+                        _sideEffect.send(DeparturesEntryScreenSideEffect.ShowInvalidDateTimeMsg)
                     }
                     return
                 }
@@ -79,23 +79,23 @@ class SearchScreenViewModel(
                 onStopClicked(stop, state.value.selectedDateTime)
             }
 
-            is SearchScreenEvent.ToggleFavorite -> toggleFavoriteStop(event.stop)
+            is DeparturesEntryScreenEvent.ToggleFavorite -> toggleFavoriteStop(event.stop)
 
-            is SearchScreenEvent.ReorderFavoriteStop -> reorderFavoriteStop(event.stopId, event.from, event.to)
+            is DeparturesEntryScreenEvent.ReorderFavoriteStop -> reorderFavoriteStop(event.stopId, event.from, event.to)
 
-            is SearchScreenEvent.ChangeSelectedDate -> {
+            is DeparturesEntryScreenEvent.ChangeSelectedDate -> {
                 _state.value = state.value.copy(
                     selectedDateTime = state.value.selectedDateTime.copy(date = event.date)
                 )
             }
 
-            is SearchScreenEvent.ChangeSelectedTime -> {
+            is DeparturesEntryScreenEvent.ChangeSelectedTime -> {
                 _state.value = state.value.copy(
                     selectedDateTime = state.value.selectedDateTime.copy(time = event.time)
                 )
             }
 
-            is SearchScreenEvent.ResetSelectedDateTime -> {
+            is DeparturesEntryScreenEvent.ResetSelectedDateTime -> {
                 _state.value = _state.value.copy(
                     selectedDateTime = PickableDateTime()
                 )
@@ -142,7 +142,7 @@ class SearchScreenViewModel(
     private suspend fun setStopsByQuery(query: String) {
         val resultList = when (val recommendedStopsResult = useCases.findStopByQuery(query)) {
             is Result.Error -> {
-                _sideEffect.send(SearchScreenSideEffect.ShowError(recommendedStopsResult.error))
+                _sideEffect.send(DeparturesEntryScreenSideEffect.ShowError(recommendedStopsResult.error))
                 emptyList()
             }
 
@@ -159,7 +159,7 @@ class SearchScreenViewModel(
     private suspend fun setFavoriteStops() {
         val resultList = when (val favoriteStopsResult = useCases.getFavoriteStops()) {
             is Result.Error -> {
-                _sideEffect.send(SearchScreenSideEffect.ShowError(favoriteStopsResult.error))
+                _sideEffect.send(DeparturesEntryScreenSideEffect.ShowError(favoriteStopsResult.error))
                 emptyList()
             }
             is Result.Success -> {

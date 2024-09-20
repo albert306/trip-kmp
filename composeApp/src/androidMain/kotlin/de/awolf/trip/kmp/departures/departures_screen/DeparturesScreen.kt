@@ -43,7 +43,7 @@ import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesVie
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun StopMonitorScreen(
+fun DeparturesScreen(
     viewModel: DeparturesViewModel,
     snackbarHostState: SnackbarHostState,
 ) {

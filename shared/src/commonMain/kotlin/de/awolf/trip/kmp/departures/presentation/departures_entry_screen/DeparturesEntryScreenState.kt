@@ -1,10 +1,10 @@
-package de.awolf.trip.kmp.departures.presentation.search_screen
+package de.awolf.trip.kmp.departures.presentation.departures_entry_screen
 
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.core.domain.models.Stop
 import de.awolf.trip.kmp.core.domain.models.StopListSource
 
-data class SearchScreenState(
+data class DeparturesEntryScreenState(
     val searchText: String = "",
     val selectedDateTime: PickableDateTime = PickableDateTime(),
     val stopList: List<Stop> = emptyList(),

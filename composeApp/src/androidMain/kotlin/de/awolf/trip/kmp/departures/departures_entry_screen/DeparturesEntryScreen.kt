@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.departures.search_screen
+package de.awolf.trip.kmp.departures.departures_entry_screen
 
 import android.os.Build
 import android.view.HapticFeedbackConstants
@@ -31,9 +31,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.core.helper.SideEffectListener
-import de.awolf.trip.kmp.departures.search_screen.components.SearchCard
-import de.awolf.trip.kmp.departures.search_screen.components.StopView
-import de.awolf.trip.kmp.departures.search_screen.components.TimePickerDialog
+import de.awolf.trip.kmp.departures.departures_entry_screen.components.SearchCard
+import de.awolf.trip.kmp.departures.departures_entry_screen.components.StopView
+import de.awolf.trip.kmp.departures.departures_entry_screen.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import de.awolf.trip.kmp.core.domain.models.StopListSource
@@ -45,14 +45,14 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenEvent
-import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenSideEffect
-import de.awolf.trip.kmp.departures.presentation.search_screen.SearchScreenViewModel
+import de.awolf.trip.kmp.departures.presentation.departures_entry_screen.DeparturesEntryScreenEvent
+import de.awolf.trip.kmp.departures.presentation.departures_entry_screen.DeparturesEntryScreenSideEffect
+import de.awolf.trip.kmp.departures.presentation.departures_entry_screen.DeparturesEntryScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(
-    viewModel: SearchScreenViewModel,
+fun DeparturesEntryScreen(
+    viewModel: DeparturesEntryScreenViewModel,
     snackbarHostState: SnackbarHostState
 ) {
     val state by viewModel.state.collectAsState()
@@ -78,7 +78,7 @@ fun HomeScreen(
         scrollThresholdPadding = PaddingValues(top = 100.dp)
     ) { from, to ->
         viewModel.onEvent(
-            SearchScreenEvent
+            DeparturesEntryScreenEvent
                 .ReorderFavoriteStop(from.key.toString(), from.index - 1, to.index - 1)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -88,9 +88,9 @@ fun HomeScreen(
 
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
         val toastMsg = when (sideEffect) {
-            is SearchScreenSideEffect.ShowNoStopFoundMsg -> "No stop selected"
-            is SearchScreenSideEffect.ShowInvalidDateTimeMsg -> "Selected date and time is in the past"
-            is SearchScreenSideEffect.ShowError -> sideEffect.error.message()
+            is DeparturesEntryScreenSideEffect.ShowNoStopFoundMsg -> "No stop selected"
+            is DeparturesEntryScreenSideEffect.ShowInvalidDateTimeMsg -> "Selected date and time is in the past"
+            is DeparturesEntryScreenSideEffect.ShowError -> sideEffect.error.message()
         }
 
         scope.launch {
@@ -107,8 +107,8 @@ fun HomeScreen(
         datePickerState = datePickerState,
         showTimePicker = showTimePicker,
         timePickerState = timePickerState,
-        onDateConfirm = { viewModel.onEvent(SearchScreenEvent.ChangeSelectedDate(it)) },
-        onTimeConfirm = { viewModel.onEvent(SearchScreenEvent.ChangeSelectedTime(it)) }
+        onDateConfirm = { viewModel.onEvent(DeparturesEntryScreenEvent.ChangeSelectedDate(it)) },
+        onTimeConfirm = { viewModel.onEvent(DeparturesEntryScreenEvent.ChangeSelectedTime(it)) }
     )
 
     Column(
@@ -117,13 +117,13 @@ fun HomeScreen(
             .fillMaxSize()
     ) {
         SearchCard(
-            searchScreenState = state,
-            onSearchTextChange = { viewModel.onEvent(SearchScreenEvent.Search(it)) },
+            departuresEntryScreenState = state,
+            onSearchTextChange = { viewModel.onEvent(DeparturesEntryScreenEvent.DeparturesEntry(it)) },
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
-            onResetDateTime = { viewModel.onEvent(SearchScreenEvent.ResetSelectedDateTime) },
+            onResetDateTime = { viewModel.onEvent(DeparturesEntryScreenEvent.ResetSelectedDateTime) },
             onSearchButtonClick = {
-                viewModel.onEvent(SearchScreenEvent.StartStopMonitor(null))
+                viewModel.onEvent(DeparturesEntryScreenEvent.StartStopMonitor(null))
             },
             modifier = Modifier
                 .zIndex(1f)
@@ -152,9 +152,9 @@ fun HomeScreen(
                             StopView(
                                 stop = stop,
                                 onFavoriteStarClick = {
-                                    viewModel.onEvent(SearchScreenEvent.ToggleFavorite(stop))
+                                    viewModel.onEvent(DeparturesEntryScreenEvent.ToggleFavorite(stop))
                                 },
-                                onNameClick = { viewModel.onEvent(SearchScreenEvent.StartStopMonitor(stop)) },
+                                onNameClick = { viewModel.onEvent(DeparturesEntryScreenEvent.StartStopMonitor(stop)) },
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .fillMaxWidth(fraction = 0.9f)
@@ -177,9 +177,9 @@ fun HomeScreen(
                     StopView(
                         stop = stop,
                         onFavoriteStarClick = {
-                            viewModel.onEvent(SearchScreenEvent.ToggleFavorite(stop))
+                            viewModel.onEvent(DeparturesEntryScreenEvent.ToggleFavorite(stop))
                         },
-                        onNameClick = { viewModel.onEvent(SearchScreenEvent.StartStopMonitor(stop)) },
+                        onNameClick = { viewModel.onEvent(DeparturesEntryScreenEvent.StartStopMonitor(stop)) },
                         modifier = Modifier
                             .animateItem(fadeInSpec = null, fadeOutSpec = null)
                             .fillMaxWidth()

@@ -4,7 +4,7 @@ import de.awolf.trip.kmp.trips.domain.models.TripQuery
 import kotlinx.serialization.Serializable
 
 @Serializable
-object TripsSearchScreenRoute
+object TripsEntryScreenRoute
 
 @Serializable
 data class TripsScreenRoute(
