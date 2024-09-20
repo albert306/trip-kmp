@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import de.awolf.trip.kmp.CustomNavType
-import de.awolf.trip.kmp.NavBarRoute
+import de.awolf.trip.kmp.RootNavigationRoute
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
 import de.awolf.trip.kmp.core.domain.models.Stop
 import de.awolf.trip.kmp.core.helper.viewModelFactory
@@ -24,7 +24,7 @@ fun NavGraphBuilder.DeparturesNavigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
 ) {
-    navigation<NavBarRoute.Departures>(
+    navigation<RootNavigationRoute.Departures>(
         startDestination = DeparturesEntryScreenRoute,
     ) {
         composable<DeparturesEntryScreenRoute>(

@@ -29,7 +29,7 @@ data class BottomNavigationItem(
     val title: String,
     val selectedIcon: Painter,
     val unselectedIcon: Painter,
-    val route: NavBarRoute,
+    val route: RootNavigationRoute,
 )
 
 @Composable
@@ -39,13 +39,13 @@ fun RootNavigation() {
             title = "Departures",
             selectedIcon = painterResource(id = R.drawable.baseline_departure_board_24),
             unselectedIcon = painterResource(id = R.drawable.outline_departure_board_24),
-            route = NavBarRoute.Departures
+            route = RootNavigationRoute.Departures
         ),
         BottomNavigationItem(
             title = "Trips",
             selectedIcon = painterResource(id = R.drawable.baseline_route_24),
             unselectedIcon = painterResource(id = R.drawable.outline_route_24),
-            route = NavBarRoute.Trips
+            route = RootNavigationRoute.Trips
         ),
         // Future navigation items:
         // Settings
@@ -101,7 +101,7 @@ fun RootNavigation() {
 
         NavHost(
             navController = navController,
-            startDestination = NavBarRoute.Departures,
+            startDestination = RootNavigationRoute.Departures,
             modifier = Modifier.padding(innerPadding)
         ) {
             DeparturesNavigation(

@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import de.awolf.trip.kmp.CustomNavType
-import de.awolf.trip.kmp.NavBarRoute
+import de.awolf.trip.kmp.RootNavigationRoute
 import de.awolf.trip.kmp.core.helper.viewModelFactory
 import de.awolf.trip.kmp.trips.domain.models.TripQuery
 import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.TripsEntryScreenViewModel
@@ -23,7 +23,7 @@ fun NavGraphBuilder.TripsNavigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
 ) {
-    navigation<NavBarRoute.Trips>(
+    navigation<RootNavigationRoute.Trips>(
         startDestination = TripsEntryScreenRoute,
     ) {
         composable<TripsEntryScreenRoute>(
