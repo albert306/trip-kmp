@@ -1,6 +1,5 @@
 package de.awolf.trip.kmp.trips.trips_entry_screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,7 +10,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -37,7 +35,7 @@ fun TripsEntryScreenPreview() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripsEntryScreen(
     viewModel: TripsEntryScreenViewModel,
@@ -45,7 +43,6 @@ fun TripsEntryScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    val view = LocalView.current
     val scope = rememberCoroutineScope()
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())

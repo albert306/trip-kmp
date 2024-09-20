@@ -1,106 +1,116 @@
 package de.awolf.trip.kmp
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import de.awolf.trip.kmp.core.domain.models.PickableDateTime
-import de.awolf.trip.kmp.core.helper.viewModelFactory
-import de.awolf.trip.kmp.departures.departures_entry_screen.DeparturesEntryScreen
-import de.awolf.trip.kmp.departures.departures_screen.DeparturesScreen
-import de.awolf.trip.kmp.core.domain.models.Stop
-import de.awolf.trip.kmp.departures.DeparturesScreenRoute
-import de.awolf.trip.kmp.departures.DeparturesEntryScreenRoute
-import de.awolf.trip.kmp.departures.presentation.departures_entry_screen.DeparturesEntryScreenViewModel
-import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel
-import kotlin.reflect.typeOf
+import de.awolf.trip.kmp.departures.DeparturesNavigation
+import de.awolf.trip.kmp.trips.TripsNavigation
 
+data class BottomNavigationItem(
+    val title: String,
+    val selectedIcon: Painter,
+    val unselectedIcon: Painter,
+    val route: NavBarRoute,
+)
 
 @Composable
 fun Navigation(
-    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
+    val navigationItems = listOf(
+        BottomNavigationItem(
+            title = "Departures",
+            selectedIcon = painterResource(id = R.drawable.baseline_departure_board_24),
+            unselectedIcon = painterResource(id = R.drawable.outline_departure_board_24),
+            route = NavBarRoute.Departures
+        ),
+        BottomNavigationItem(
+            title = "Trips",
+            selectedIcon = painterResource(id = R.drawable.baseline_route_24),
+            unselectedIcon = painterResource(id = R.drawable.outline_route_24),
+            route = NavBarRoute.Trips
+        ),
+        // Future navigation items:
+        // Settings
+        // Route changes
+    )
+
+    var selectedIconIndex by rememberSaveable {
+        mutableIntStateOf(0)
+    }
 
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = DeparturesEntryScreenRoute,
-        modifier = modifier
-    ) {
-        composable<DeparturesEntryScreenRoute>(
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(200)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(200)
-                )
-            }
-        ) {
-            val departuresEntryScreenViewModel = viewModel<DeparturesEntryScreenViewModel>(
-                factory = viewModelFactory {
-                    DeparturesEntryScreenViewModel(
-                        onStopClicked = { stop: Stop, queriedTime: PickableDateTime ->
-                            navController.navigate(DeparturesScreenRoute(
-                                stop = stop,
-                                queriedTime = queriedTime
-                            ))
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .imePadding()
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        bottomBar = {
+            NavigationBar {
+                navigationItems.forEachIndexed { index, item ->
+                    NavigationBarItem(
+                        label = { Text(item.title) },
+                        selected = selectedIconIndex == index,
+                        icon = {
+                            Icon(
+                                painter = if (selectedIconIndex == index) item.selectedIcon else item.unselectedIcon,
+                                contentDescription = item.title
+                            )
+                        },
+                        onClick = {
+                            selectedIconIndex = index
+                            navController.navigate(item.route)
                         }
                     )
                 }
-            )
+            }
+        },
+        modifier = Modifier
+            .fillMaxSize()
+    ) { innerPadding ->
 
-            DeparturesEntryScreen(
-                viewModel = departuresEntryScreenViewModel,
-                snackbarHostState = snackbarHostState
-            )
-        }
-
-        composable<DeparturesScreenRoute>(
-            typeMap = mapOf(
-                typeOf<Stop>() to CustomNavType.StopType,
-                typeOf<PickableDateTime>() to CustomNavType.PickableDateTimeType
-            ),
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(200)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(200)
+        NavHost(
+            navController = navController,
+            startDestination = NavBarRoute.Departures,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable<NavBarRoute.Departures> {
+                DeparturesNavigation(
+                    snackbarHostState = snackbarHostState,
                 )
             }
-        ) {
-            val args = it.toRoute<DeparturesScreenRoute>()
-
-            val departuresViewModel = viewModel<DeparturesViewModel>(
-                factory = viewModelFactory {
-                    DeparturesViewModel(
-                        stop = args.stop,
-                        queriedTime = args.queriedTime,
-                        onCloseClicked = navController::navigateUp
-                    )
-                }
-            )
-
-            DeparturesScreen(
-                viewModel = departuresViewModel,
-                snackbarHostState = snackbarHostState
-            )
+            composable<NavBarRoute.Trips> {
+                TripsNavigation(
+                    snackbarHostState = snackbarHostState,
+                )
+            }
         }
     }
 }
