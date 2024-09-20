@@ -1,4 +1,4 @@
-package de.awolf.trip.kmp.departures.departures_entry_screen.components
+package de.awolf.trip.kmp.core.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.awolf.trip.kmp.core.domain.models.DepartureState
 import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
 import de.awolf.trip.kmp.departures.domain.models.Departure
@@ -40,7 +41,7 @@ fun StopScheduleListPreview() {
                 mode = Mode.CITYBUS,
                 scheduledTime = Clock.System.now(),
                 realTime = Clock.System.now(),
-                departureState = Departure.DepartureState.INTIME,
+                departureState = DepartureState.INTIME,
                 routeChanges = emptyList(),
                 diva = null,
                 stopSchedule = listOf(

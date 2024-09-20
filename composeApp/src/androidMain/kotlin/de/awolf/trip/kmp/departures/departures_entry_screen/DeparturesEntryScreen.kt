@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import de.awolf.trip.kmp.core.helper.SideEffectListener
 import de.awolf.trip.kmp.departures.departures_entry_screen.components.SearchCard
-import de.awolf.trip.kmp.departures.departures_entry_screen.components.StopView
-import de.awolf.trip.kmp.departures.departures_entry_screen.components.TimePickerDialog
+import de.awolf.trip.kmp.core.components.StopView
+import de.awolf.trip.kmp.core.components.TimePickerDialog
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import de.awolf.trip.kmp.core.domain.models.StopListSource
