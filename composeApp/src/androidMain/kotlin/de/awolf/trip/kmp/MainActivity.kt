@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 KoinContext {
-                    Navigation()
+                    RootNavigation()
                 }
             }
         }

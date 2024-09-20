@@ -3,14 +3,14 @@ package de.awolf.trip.kmp.trips
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import de.awolf.trip.kmp.CustomNavType
+import de.awolf.trip.kmp.NavBarRoute
 import de.awolf.trip.kmp.core.helper.viewModelFactory
 import de.awolf.trip.kmp.trips.domain.models.TripQuery
 import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.TripsEntryScreenViewModel
@@ -19,16 +19,12 @@ import de.awolf.trip.kmp.trips.trips_entry_screen.TripsEntryScreen
 import kotlin.reflect.typeOf
 
 
-@Composable
-fun TripsNavigation(
+fun NavGraphBuilder.TripsNavigation(
+    navController: NavHostController,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
 ) {
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
+    navigation<NavBarRoute.Trips>(
         startDestination = TripsEntryScreenRoute,
-        modifier = modifier
     ) {
         composable<TripsEntryScreenRoute>(
             enterTransition = {

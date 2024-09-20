@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import de.awolf.trip.kmp.departures.DeparturesNavigation
 import de.awolf.trip.kmp.trips.TripsNavigation
@@ -34,9 +33,7 @@ data class BottomNavigationItem(
 )
 
 @Composable
-fun Navigation(
-    modifier: Modifier = Modifier
-) {
+fun RootNavigation() {
     val navigationItems = listOf(
         BottomNavigationItem(
             title = "Departures",
@@ -86,7 +83,13 @@ fun Navigation(
                         },
                         onClick = {
                             selectedIconIndex = index
-                            navController.navigate(item.route)
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
@@ -101,16 +104,14 @@ fun Navigation(
             startDestination = NavBarRoute.Departures,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable<NavBarRoute.Departures> {
-                DeparturesNavigation(
-                    snackbarHostState = snackbarHostState,
-                )
-            }
-            composable<NavBarRoute.Trips> {
-                TripsNavigation(
-                    snackbarHostState = snackbarHostState,
-                )
-            }
+            DeparturesNavigation(
+                navController = navController,
+                snackbarHostState = snackbarHostState
+            )
+            TripsNavigation(
+                navController = navController,
+                snackbarHostState = snackbarHostState
+            )
         }
     }
 }
