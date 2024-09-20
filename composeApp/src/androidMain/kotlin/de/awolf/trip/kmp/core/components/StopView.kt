@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,13 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import de.awolf.trip.kmp.R
 import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.theme.AppTheme
 import de.awolf.trip.kmp.core.domain.models.Stop
@@ -44,16 +45,6 @@ fun StopView(
     onNameClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Default: no favorite
-    var icon = painterResource(id = R.drawable.baseline_star_outline_24)
-    var description = "outlined star"
-
-    if (stop.isFavorite) {
-        // if favorite
-        icon = painterResource(id = R.drawable.baseline_star_24)
-        description = "filled star"
-    }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -66,8 +57,8 @@ fun StopView(
                 .width(46.dp)
         ) {
             Icon(
-                painter = icon,
-                contentDescription = description,
+                imageVector = if (stop.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
+                contentDescription = if (stop.isFavorite) "filled star" else "outlined star",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .size(26.dp)
