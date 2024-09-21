@@ -19,7 +19,7 @@ import de.awolf.trip.kmp.trips.presentation.trips_screen.TripsViewModel
 import de.awolf.trip.kmp.trips.trips_entry_screen.TripsEntryScreen
 import kotlin.reflect.typeOf
 
-fun NavGraphBuilder.TripsNavigation(
+fun NavGraphBuilder.tripsNavigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
 ) {

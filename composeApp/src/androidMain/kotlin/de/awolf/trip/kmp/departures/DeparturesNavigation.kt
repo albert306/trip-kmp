@@ -21,7 +21,7 @@ import de.awolf.trip.kmp.departures.presentation.departures_entry_screen.Departu
 import de.awolf.trip.kmp.departures.presentation.departures_screen.DeparturesViewModel
 import kotlin.reflect.typeOf
 
-fun NavGraphBuilder.DeparturesNavigation(
+fun NavGraphBuilder.departuresNavigation(
     navController: NavHostController,
     snackbarHostState: SnackbarHostState,
 ) {

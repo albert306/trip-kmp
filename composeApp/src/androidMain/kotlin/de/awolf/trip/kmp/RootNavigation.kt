@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import de.awolf.trip.kmp.departures.DeparturesNavigation
-import de.awolf.trip.kmp.trips.TripsNavigation
+import de.awolf.trip.kmp.departures.departuresNavigation
+import de.awolf.trip.kmp.trips.tripsNavigation
 
 data class BottomNavigationItem(
     val title: String,
@@ -104,11 +104,11 @@ fun RootNavigation() {
             startDestination = RootNavigationRoute.Departures,
             modifier = Modifier.padding(innerPadding)
         ) {
-            DeparturesNavigation(
+            departuresNavigation(
                 navController = navController,
                 snackbarHostState = snackbarHostState
             )
-            TripsNavigation(
+            tripsNavigation(
                 navController = navController,
                 snackbarHostState = snackbarHostState
             )
