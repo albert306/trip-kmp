@@ -35,13 +35,13 @@ class TripsEntryScreenViewModel(
 
     init {
         searchText
-            .debounce(100L)
             .onEach {
                 if (it.length < 3) {
                     setFavoriteStops()
                 }
             }
             .filter { it.length >= 3 } // Vvo api only returns results for 3 or more characters
+            .debounce(100L)
             .onEach { text ->
                 setStopsByQuery(text)
             }
@@ -53,34 +53,34 @@ class TripsEntryScreenViewModel(
     fun onEvent(event: TripsEntryScreenEvent) {
         coroutineScope.launch {
             when (event) {
-                is TripsEntryScreenEvent.OriginTextChange -> {
+                is TripsEntryScreenEvent.FocusChange -> {
+                    _state.value = state.value.copy(focusedField = event.field)
+                    searchText.value = when (event.field) {
+                        SearchField.ORIGIN -> state.value.originText
+                        SearchField.VIA -> state.value.viaText
+                        SearchField.DESTINATION -> state.value.destinationText
+                        SearchField.NONE -> return@launch
+                    }
+                }
+
+                is TripsEntryScreenEvent.TextChange -> {
+                    when (state.value.focusedField) {
+                        SearchField.ORIGIN -> _state.value = state.value.copy(originText = event.text)
+                        SearchField.VIA -> _state.value = state.value.copy(viaText = event.text)
+                        SearchField.DESTINATION -> _state.value = state.value.copy(destinationText = event.text)
+                        SearchField.NONE -> return@launch
+                    }
                     searchText.value = event.text
                 }
 
-                is TripsEntryScreenEvent.ViaTextChange -> {
-                    searchText.value = event.text
-                }
-
-                is TripsEntryScreenEvent.DestinationTextChange -> {
-                    searchText.value = event.text
-                }
-
-                is TripsEntryScreenEvent.SetAsOrigin -> {
-                    _state.value = state.value.copy(
-                        tripQuery = state.value.tripQuery.copy(origin = event.stop.id),
-                    )
-                }
-
-                is TripsEntryScreenEvent.SetAsVia ->  {
-                    _state.value = state.value.copy(
-                        tripQuery = state.value.tripQuery.copy(via = event.stop.id),
-                    )
-                }
-
-                is TripsEntryScreenEvent.SetAsDestination -> {
-                    _state.value = state.value.copy(
-                        tripQuery = state.value.tripQuery.copy(destination = event.stop.id),
-                    )
+                is TripsEntryScreenEvent.SetStop -> {
+                    val newQuery = when (event.field ?: state.value.focusedField) {
+                        SearchField.ORIGIN -> state.value.tripQuery.copy(origin = event.stop.id)
+                        SearchField.VIA -> state.value.tripQuery.copy(via = event.stop.id)
+                        SearchField.DESTINATION -> state.value.tripQuery.copy(destination = event.stop.id)
+                        SearchField.NONE -> return@launch
+                    }
+                    _state.value = state.value.copy(tripQuery = newQuery)
                 }
 
                 is TripsEntryScreenEvent.ChangeSelectedDate -> {

@@ -7,6 +7,7 @@ data class TripsEntryScreenState(
     val originText: String = "",
     val destinationText: String = "",
     val viaText: String = "",
+    val focusedField: SearchField = SearchField.NONE,
     val tripQuery: TripQuery = TripQuery(
         origin = "",
         destination = ""

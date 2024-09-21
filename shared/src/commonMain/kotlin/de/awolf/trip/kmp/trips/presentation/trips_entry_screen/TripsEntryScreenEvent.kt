@@ -6,13 +6,11 @@ import kotlinx.datetime.LocalTime
 import kotlin.time.Duration
 
 sealed class TripsEntryScreenEvent {
-    data class OriginTextChange(val text: String) : TripsEntryScreenEvent()
-    data class ViaTextChange(val text: String) : TripsEntryScreenEvent()
-    data class DestinationTextChange(val text: String) : TripsEntryScreenEvent()
+    data class FocusChange(val field: SearchField) : TripsEntryScreenEvent()
 
-    data class SetAsOrigin(val stop: Stop) : TripsEntryScreenEvent()
-    data class SetAsVia(val stop: Stop) : TripsEntryScreenEvent()
-    data class SetAsDestination(val stop: Stop) : TripsEntryScreenEvent()
+    data class TextChange(val text: String) : TripsEntryScreenEvent()
+
+    data class SetStop(val stop: Stop, val field: SearchField?) : TripsEntryScreenEvent()
 
     data class ChangeSelectedDate(val date: LocalDate) : TripsEntryScreenEvent()
     data class ChangeSelectedTime(val time: LocalTime) : TripsEntryScreenEvent()

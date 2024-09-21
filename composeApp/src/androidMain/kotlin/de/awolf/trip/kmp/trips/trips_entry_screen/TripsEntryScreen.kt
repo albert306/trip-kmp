@@ -25,6 +25,7 @@ import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.TripsEntryScreenS
 import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.TripsEntryScreenViewModel
 import de.awolf.trip.kmp.trips.trips_entry_screen.components.SearchCard
 import de.awolf.trip.kmp.core.components.DateAndTimePickers
+import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.SearchField
 
 @Preview
 @Composable
@@ -89,9 +90,10 @@ fun TripsEntryScreen(
     ) {
         SearchCard(
             tripsEntryScreenState = state,
-            onOriginTextChange = { viewModel.onEvent(TripsEntryScreenEvent.OriginTextChange(it)) },
-            onViaTextChange = { viewModel.onEvent(TripsEntryScreenEvent.ViaTextChange(it)) },
-            onDestinationTextChange = { viewModel.onEvent(TripsEntryScreenEvent.DestinationTextChange(it)) },
+            onTextChange = { text, _ -> viewModel.onEvent(TripsEntryScreenEvent.TextChange(text)) },
+            onFocusChange = {
+                viewModel.onEvent(TripsEntryScreenEvent.FocusChange(it))
+            },
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
             onResetDateTime = { viewModel.onEvent(TripsEntryScreenEvent.ResetSelectedDateTime) },
@@ -115,7 +117,7 @@ fun TripsEntryScreen(
                     onFavoriteStarClick = {
                         viewModel.onEvent(TripsEntryScreenEvent.ToggleFavoriteStop(stop))
                     },
-                    onNameClick = { viewModel.onEvent(TripsEntryScreenEvent.ToggleFavoriteStop(stop)) },
+                    onNameClick = { viewModel.onEvent(TripsEntryScreenEvent.SetStop(stop, null)) },
                     modifier = Modifier
                         .animateItem(fadeInSpec = null, fadeOutSpec = null)
                         .fillMaxWidth()

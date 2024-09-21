@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -39,6 +40,7 @@ import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.core.helper.dateText
 import de.awolf.trip.kmp.core.helper.timeText
 import de.awolf.trip.kmp.theme.AppTheme
+import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.SearchField
 import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.TripsEntryScreenState
 
 @Preview(showBackground = true)
@@ -52,16 +54,13 @@ private fun SearchCardPreview() {
             Column() {
                 SearchCard(
                     tripsEntryScreenState = TripsEntryScreenState(),
-                    onOriginTextChange = {},
-                    onViaTextChange = {},
-                    onDestinationTextChange = {},
+                    onTextChange = { _, _ -> },
                     onSubmitButtonClick = {},
                     modifier = Modifier
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
-
         }
     }
 }
@@ -70,9 +69,8 @@ private fun SearchCardPreview() {
 fun SearchCard(
     tripsEntryScreenState: TripsEntryScreenState,
     modifier: Modifier = Modifier,
-    onOriginTextChange: (newText: String) -> Unit,
-    onViaTextChange: (newText: String) -> Unit,
-    onDestinationTextChange: (newText: String) -> Unit,
+    onFocusChange: (SearchField) -> Unit = {},
+    onTextChange: (newText: String, field: SearchField) -> Unit,
     onShowDatePicker: () -> Unit = {},
     onShowTimePicker: () -> Unit = {},
     onResetDateTime: () -> Unit = {},
@@ -93,7 +91,7 @@ fun SearchCard(
     ) {
         OutlinedTextField(
             value = tripsEntryScreenState.originText,
-            onValueChange = { newText: String -> onOriginTextChange(newText) },
+            onValueChange = { newText: String -> onTextChange(newText, SearchField.ORIGIN) },
             label = {
                 Text(
                     text = "Origin",
@@ -109,7 +107,7 @@ fun SearchCard(
                     modifier = Modifier
                         .size(26.dp)
                         .clickableWithoutRipple {
-                            onOriginTextChange("")
+                            onTextChange("", SearchField.ORIGIN)
                         }
                 )
             },
@@ -124,12 +122,15 @@ fun SearchCard(
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                .onFocusChanged {
+                    onFocusChange(if (it.isFocused) SearchField.ORIGIN else SearchField.NONE)
+                }
         )
 
         AnimatedVisibility(visible = showVia.value) {
             OutlinedTextField(
                 value = tripsEntryScreenState.viaText,
-                onValueChange = { newText: String -> onViaTextChange(newText) },
+                onValueChange = { newText: String -> onTextChange(newText, SearchField.VIA) },
                 label = {
                     Text(
                         text = "Via",
@@ -145,7 +146,7 @@ fun SearchCard(
                         modifier = Modifier
                             .size(26.dp)
                             .clickableWithoutRipple {
-                                onViaTextChange("")
+                                onTextChange("", SearchField.VIA)
                             }
                     )
                 },
@@ -160,12 +161,15 @@ fun SearchCard(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .onFocusChanged {
+                        onFocusChange(if (it.isFocused) SearchField.VIA else SearchField.NONE)
+                    }
             )
         }
 
         OutlinedTextField(
             value = tripsEntryScreenState.destinationText,
-            onValueChange = { newText: String -> onDestinationTextChange(newText) },
+            onValueChange = { newText: String -> onTextChange(newText, SearchField.DESTINATION) },
             label = {
                 Text(
                     text = "Destination",
@@ -181,7 +185,7 @@ fun SearchCard(
                     modifier = Modifier
                         .size(26.dp)
                         .clickableWithoutRipple {
-                            onDestinationTextChange("")
+                            onTextChange("", SearchField.DESTINATION)
                         }
                 )
             },
@@ -196,6 +200,9 @@ fun SearchCard(
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                .onFocusChanged {
+                    onFocusChange(if (it.isFocused) SearchField.DESTINATION else SearchField.NONE)
+                }
         )
 
         Row(
