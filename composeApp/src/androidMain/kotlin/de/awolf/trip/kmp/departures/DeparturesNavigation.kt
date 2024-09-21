@@ -1,7 +1,8 @@
 package de.awolf.trip.kmp.departures
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
@@ -26,21 +27,14 @@ fun NavGraphBuilder.DeparturesNavigation(
 ) {
     navigation<RootNavigationRoute.Departures>(
         startDestination = DeparturesEntryScreenRoute,
+        enterTransition = {
+            fadeIn(tween(0))
+        },
+        exitTransition = {
+            fadeOut(tween(0))
+        }
     ) {
-        composable<DeparturesEntryScreenRoute>(
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(200)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(200)
-                )
-            }
-        ) {
+        composable<DeparturesEntryScreenRoute> {
             val departuresEntryScreenViewModel = viewModel<DeparturesEntryScreenViewModel>(
                 factory = viewModelFactory {
                     DeparturesEntryScreenViewModel(
@@ -67,18 +61,6 @@ fun NavGraphBuilder.DeparturesNavigation(
                 typeOf<Stop>() to CustomNavType.StopType,
                 typeOf<PickableDateTime>() to CustomNavType.PickableDateTimeType
             ),
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(200)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(200)
-                )
-            }
         ) {
             val args = it.toRoute<DeparturesScreenRoute>()
 
