@@ -2,15 +2,16 @@ package de.awolf.trip.kmp.trips.domain.models
 
 import de.awolf.trip.kmp.core.domain.models.Mode
 import de.awolf.trip.kmp.core.domain.models.PickableDateTime
+import de.awolf.trip.kmp.core.domain.models.Stop
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
 @Serializable
 data class TripQuery(
-    val origin: String,
-    val via: String? = null,
+    val origin: Stop?,
+    val via: Stop? = null,
     val stayDuration: Duration? = null,
-    val destination: String,
+    val destination: Stop?,
     val time: PickableDateTime = PickableDateTime(),
     val isArrivalTime: Boolean = false,
     val shorttermchanges: Boolean = true,

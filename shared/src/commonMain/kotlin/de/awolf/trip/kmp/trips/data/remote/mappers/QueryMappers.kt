@@ -5,10 +5,10 @@ import de.awolf.trip.kmp.trips.domain.models.TripQuery
 
 fun TripQuery.toTripQueryDto(): TripQueryDto {
     return TripQueryDto(
-        origin = origin,
-        via = via,
+        origin = origin?.id ?: throw IllegalArgumentException("Origin must not be null"),
+        via = via?.id,
         stayDuration = "${stayDuration?.inWholeHours ?: 0}:${stayDuration?.inWholeMinutes ?: 0}",
-        destination = destination,
+        destination = destination?.id ?: throw IllegalArgumentException("Destination must not be null"),
         time = time.toInstant(),
         isArrivalTime = isArrivalTime,
         shorttermchanges = shorttermchanges,

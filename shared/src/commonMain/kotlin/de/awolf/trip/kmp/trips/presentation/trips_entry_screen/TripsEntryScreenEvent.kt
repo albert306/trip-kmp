@@ -8,9 +8,9 @@ import kotlin.time.Duration
 sealed class TripsEntryScreenEvent {
     data class FocusChange(val field: SearchField) : TripsEntryScreenEvent()
 
-    data class TextChange(val text: String) : TripsEntryScreenEvent()
+    data class TextChange(val text: String, val field: SearchField? = null) : TripsEntryScreenEvent()
 
-    data class SetStop(val stop: Stop, val field: SearchField?) : TripsEntryScreenEvent()
+    data class SetStop(val stop: Stop, val field: SearchField? = null) : TripsEntryScreenEvent()
 
     data class ChangeSelectedDate(val date: LocalDate) : TripsEntryScreenEvent()
     data class ChangeSelectedTime(val time: LocalTime) : TripsEntryScreenEvent()

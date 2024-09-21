@@ -25,7 +25,6 @@ import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.TripsEntryScreenS
 import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.TripsEntryScreenViewModel
 import de.awolf.trip.kmp.trips.trips_entry_screen.components.SearchCard
 import de.awolf.trip.kmp.core.components.DateAndTimePickers
-import de.awolf.trip.kmp.trips.presentation.trips_entry_screen.SearchField
 
 @Preview
 @Composable
@@ -59,8 +58,8 @@ fun TripsEntryScreen(
 
     SideEffectListener(flow = viewModel.sideEffect) { sideEffect ->
         val toastMsg = when (sideEffect) {
-            is TripsEntryScreenSideEffect.ShowNoOriginSelectedMsg -> "Please select an origin"
-            is TripsEntryScreenSideEffect.ShowNoDestinationSelectedMsg -> "Please select a destination"
+            is TripsEntryScreenSideEffect.ShowNoOriginSelectedMsg -> "Please select a valid origin"
+            is TripsEntryScreenSideEffect.ShowNoDestinationSelectedMsg -> "Please select a valid destination"
             is TripsEntryScreenSideEffect.ShowInvalidDateTimeMsg -> "Selected date and time is in the past"
             is TripsEntryScreenSideEffect.ShowError -> sideEffect.error.message()
         }
@@ -89,11 +88,11 @@ fun TripsEntryScreen(
             .fillMaxSize()
     ) {
         SearchCard(
-            tripsEntryScreenState = state,
-            onTextChange = { text, _ -> viewModel.onEvent(TripsEntryScreenEvent.TextChange(text)) },
-            onFocusChange = {
-                viewModel.onEvent(TripsEntryScreenEvent.FocusChange(it))
+            state = state,
+            onTextChange = { text, field ->
+                viewModel.onEvent(TripsEntryScreenEvent.TextChange(text, field))
             },
+            onFocusChange = { viewModel.onEvent(TripsEntryScreenEvent.FocusChange(it)) },
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
             onResetDateTime = { viewModel.onEvent(TripsEntryScreenEvent.ResetSelectedDateTime) },
@@ -117,7 +116,7 @@ fun TripsEntryScreen(
                     onFavoriteStarClick = {
                         viewModel.onEvent(TripsEntryScreenEvent.ToggleFavoriteStop(stop))
                     },
-                    onNameClick = { viewModel.onEvent(TripsEntryScreenEvent.SetStop(stop, null)) },
+                    onNameClick = { viewModel.onEvent(TripsEntryScreenEvent.SetStop(stop)) },
                     modifier = Modifier
                         .animateItem(fadeInSpec = null, fadeOutSpec = null)
                         .fillMaxWidth()

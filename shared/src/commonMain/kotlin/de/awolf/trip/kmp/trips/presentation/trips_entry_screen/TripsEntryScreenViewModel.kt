@@ -64,20 +64,31 @@ class TripsEntryScreenViewModel(
                 }
 
                 is TripsEntryScreenEvent.TextChange -> {
-                    when (state.value.focusedField) {
-                        SearchField.ORIGIN -> _state.value = state.value.copy(originText = event.text)
-                        SearchField.VIA -> _state.value = state.value.copy(viaText = event.text)
-                        SearchField.DESTINATION -> _state.value = state.value.copy(destinationText = event.text)
+                    val newTripQuery: TripQuery
+                    when (event.field ?: state.value.focusedField) {
+                        SearchField.ORIGIN -> {
+                            _state.value = state.value.copy(originText = event.text)
+                            newTripQuery = state.value.tripQuery.copy(origin = null)
+                        }
+                        SearchField.VIA -> {
+                            _state.value = state.value.copy(viaText = event.text)
+                            newTripQuery = state.value.tripQuery.copy(via = null)
+                        }
+                        SearchField.DESTINATION -> {
+                            _state.value = state.value.copy(destinationText = event.text)
+                            newTripQuery = state.value.tripQuery.copy(destination = null)
+                        }
                         SearchField.NONE -> return@launch
                     }
+                    _state.value = state.value.copy(tripQuery = newTripQuery)
                     searchText.value = event.text
                 }
 
                 is TripsEntryScreenEvent.SetStop -> {
                     val newQuery = when (event.field ?: state.value.focusedField) {
-                        SearchField.ORIGIN -> state.value.tripQuery.copy(origin = event.stop.id)
-                        SearchField.VIA -> state.value.tripQuery.copy(via = event.stop.id)
-                        SearchField.DESTINATION -> state.value.tripQuery.copy(destination = event.stop.id)
+                        SearchField.ORIGIN -> state.value.tripQuery.copy(origin = event.stop)
+                        SearchField.VIA -> state.value.tripQuery.copy(via = event.stop)
+                        SearchField.DESTINATION -> state.value.tripQuery.copy(destination = event.stop)
                         SearchField.NONE -> return@launch
                     }
                     _state.value = state.value.copy(tripQuery = newQuery)
@@ -139,11 +150,11 @@ class TripsEntryScreenViewModel(
     }
 
     private suspend fun submit() {
-        if (state.value.tripQuery.origin.isEmpty()) {
+        if (state.value.tripQuery.origin == null) {
             _sideEffect.send(TripsEntryScreenSideEffect.ShowNoOriginSelectedMsg)
             return
         }
-        if (state.value.tripQuery.destination.isEmpty()) {
+        if (state.value.tripQuery.destination == null) {
             _sideEffect.send(TripsEntryScreenSideEffect.ShowNoDestinationSelectedMsg)
             return
         }

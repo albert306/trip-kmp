@@ -53,7 +53,7 @@ private fun SearchCardPreview() {
         ) {
             Column() {
                 SearchCard(
-                    tripsEntryScreenState = TripsEntryScreenState(),
+                    state = TripsEntryScreenState(),
                     onTextChange = { _, _ -> },
                     onSubmitButtonClick = {},
                     modifier = Modifier
@@ -67,7 +67,7 @@ private fun SearchCardPreview() {
 
 @Composable
 fun SearchCard(
-    tripsEntryScreenState: TripsEntryScreenState,
+    state: TripsEntryScreenState,
     modifier: Modifier = Modifier,
     onFocusChange: (SearchField) -> Unit = {},
     onTextChange: (newText: String, field: SearchField) -> Unit,
@@ -90,7 +90,9 @@ fun SearchCard(
             .padding(top = 4.dp, bottom = 12.dp, start = 12.dp, end = 12.dp)
     ) {
         OutlinedTextField(
-            value = tripsEntryScreenState.originText,
+            value = state.tripQuery.origin?.let {
+                "${it.name}, ${it.region}"
+            } ?: state.originText,
             onValueChange = { newText: String -> onTextChange(newText, SearchField.ORIGIN) },
             label = {
                 Text(
@@ -129,7 +131,9 @@ fun SearchCard(
 
         AnimatedVisibility(visible = showVia.value) {
             OutlinedTextField(
-                value = tripsEntryScreenState.viaText,
+                value = state.tripQuery.via?.let {
+                    "${it.name}, ${it.region}"
+                } ?: state.viaText,
                 onValueChange = { newText: String -> onTextChange(newText, SearchField.VIA) },
                 label = {
                     Text(
@@ -168,7 +172,9 @@ fun SearchCard(
         }
 
         OutlinedTextField(
-            value = tripsEntryScreenState.destinationText,
+            value = state.tripQuery.destination?.let {
+                "${it.name}, ${it.region}"
+            } ?: state.destinationText,
             onValueChange = { newText: String -> onTextChange(newText, SearchField.DESTINATION) },
             label = {
                 Text(
@@ -210,7 +216,7 @@ fun SearchCard(
             modifier = Modifier
         ) {
             Text(
-                text = tripsEntryScreenState.tripQuery.time.timeText(),
+                text = state.tripQuery.time.timeText(),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
@@ -228,7 +234,7 @@ fun SearchCard(
             )
 
             Text(
-                text = tripsEntryScreenState.tripQuery.time.dateText(),
+                text = state.tripQuery.time.dateText(),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
@@ -237,7 +243,7 @@ fun SearchCard(
                     }
             )
 
-            if (tripsEntryScreenState.tripQuery.time.hasDate() || tripsEntryScreenState.tripQuery.time.hasTime()) {
+            if (state.tripQuery.time.hasDate() || state.tripQuery.time.hasTime()) {
                 Button(
                     onClick = { onResetDateTime() },
                     contentPadding = PaddingValues(0.dp),

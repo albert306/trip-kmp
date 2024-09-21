@@ -9,8 +9,8 @@ data class TripsEntryScreenState(
     val viaText: String = "",
     val focusedField: SearchField = SearchField.NONE,
     val tripQuery: TripQuery = TripQuery(
-        origin = "",
-        destination = ""
+        origin = null,
+        destination = null,
     ),
     val searchResultList: List<Stop> = emptyList(),
     val favoriteStops: List<Stop> = emptyList(),
