@@ -12,6 +12,9 @@ sealed class TripsEntryScreenEvent {
 
     data class SetStop(val stop: Stop, val field: SearchField? = null) : TripsEntryScreenEvent()
 
+    data object ToggleShowVia : TripsEntryScreenEvent()
+    data object SwapOriginAndDestination : TripsEntryScreenEvent()
+
     data class ChangeSelectedDate(val date: LocalDate) : TripsEntryScreenEvent()
     data class ChangeSelectedTime(val time: LocalTime) : TripsEntryScreenEvent()
     data object ResetSelectedDateTime : TripsEntryScreenEvent()

@@ -93,6 +93,8 @@ fun TripsEntryScreen(
                 viewModel.onEvent(TripsEntryScreenEvent.TextChange(text, field))
             },
             onFocusChange = { viewModel.onEvent(TripsEntryScreenEvent.FocusChange(it)) },
+            onSwap = { viewModel.onEvent(TripsEntryScreenEvent.SwapOriginAndDestination) },
+            onToggleShowVia = { viewModel.onEvent(TripsEntryScreenEvent.ToggleShowVia) },
             onShowDatePicker = { showDatePicker.value = true },
             onShowTimePicker = { showTimePicker.value = true },
             onResetDateTime = { viewModel.onEvent(TripsEntryScreenEvent.ResetSelectedDateTime) },

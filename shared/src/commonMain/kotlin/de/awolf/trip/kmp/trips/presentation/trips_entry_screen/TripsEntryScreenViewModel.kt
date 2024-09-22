@@ -94,6 +94,22 @@ class TripsEntryScreenViewModel(
                     _state.value = state.value.copy(tripQuery = newQuery)
                 }
 
+                is TripsEntryScreenEvent.SwapOriginAndDestination -> {
+                    val newQuery = state.value.tripQuery.copy(
+                        origin = state.value.tripQuery.destination,
+                        destination = state.value.tripQuery.origin
+                    )
+                    _state.value = state.value.copy(
+                        originText = state.value.destinationText,
+                        destinationText = state.value.originText,
+                        tripQuery = newQuery
+                    )
+                }
+
+                is TripsEntryScreenEvent.ToggleShowVia -> {
+                    _state.value = state.value.copy(showVia = !state.value.showVia)
+                }
+
                 is TripsEntryScreenEvent.ChangeSelectedDate -> {
                     _state.value = state.value.copy(
                         tripQuery = state.value.tripQuery.copy(
@@ -162,8 +178,11 @@ class TripsEntryScreenViewModel(
             _sideEffect.send(TripsEntryScreenSideEffect.ShowInvalidDateTimeMsg)
             return
         }
-
-        onSubmitClicked(state.value.tripQuery)
+        if (!state.value.showVia) {
+            onSubmitClicked(state.value.tripQuery.copy(via = null))
+        } else {
+            onSubmitClicked(state.value.tripQuery)
+        }
     }
 
     private suspend fun setStopsByQuery(query: String) {

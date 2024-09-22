@@ -1,6 +1,5 @@
 package de.awolf.trip.kmp.trips.trips_entry_screen.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,21 +20,25 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
+import de.awolf.trip.kmp.R
 import de.awolf.trip.kmp.core.helper.clickableWithoutRipple
 import de.awolf.trip.kmp.core.helper.dateText
 import de.awolf.trip.kmp.core.helper.timeText
@@ -71,18 +74,17 @@ fun SearchCard(
     modifier: Modifier = Modifier,
     onFocusChange: (SearchField) -> Unit = {},
     onTextChange: (newText: String, field: SearchField) -> Unit,
+    onSwap: () -> Unit = {},
+    onToggleShowVia: () -> Unit = {},
     onShowDatePicker: () -> Unit = {},
     onShowTimePicker: () -> Unit = {},
     onResetDateTime: () -> Unit = {},
     onSubmitButtonClick: () -> Unit,
 ) {
-    val showVia = remember {
-        mutableStateOf(false)
-    }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ConstraintLayout(
+        constraintSet = constraints(state.showVia),
         modifier = modifier
+            .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp)
@@ -113,7 +115,7 @@ fun SearchCard(
                         }
                 )
             },
-            singleLine = true,
+            maxLines = 1,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
                 imeAction = ImeAction.Done
@@ -123,13 +125,13 @@ fun SearchCard(
                 fontSize = 20.sp,
             ),
             modifier = Modifier
-                .fillMaxWidth()
+                .layoutId("origin")
                 .onFocusChanged {
-                    onFocusChange(if (it.isFocused) SearchField.ORIGIN else SearchField.NONE)
+                    if (it.isFocused) onFocusChange(SearchField.ORIGIN)
                 }
         )
 
-        AnimatedVisibility(visible = showVia.value) {
+        if (state.showVia) {
             OutlinedTextField(
                 value = state.tripQuery.via?.let {
                     "${it.name}, ${it.region}"
@@ -154,7 +156,7 @@ fun SearchCard(
                             }
                     )
                 },
-                singleLine = true,
+                maxLines = 1,
                 keyboardOptions = KeyboardOptions(
                     autoCorrectEnabled = false,
                     imeAction = ImeAction.Done
@@ -164,9 +166,9 @@ fun SearchCard(
                     fontSize = 20.sp,
                 ),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .layoutId("via")
                     .onFocusChanged {
-                        onFocusChange(if (it.isFocused) SearchField.VIA else SearchField.NONE)
+                        if (it.isFocused) onFocusChange(SearchField.VIA)
                     }
             )
         }
@@ -195,7 +197,7 @@ fun SearchCard(
                         }
                 )
             },
-            singleLine = true,
+            maxLines = 1,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
                 imeAction = ImeAction.Done
@@ -205,15 +207,45 @@ fun SearchCard(
                 fontSize = 20.sp,
             ),
             modifier = Modifier
-                .fillMaxWidth()
+                .layoutId("destination")
                 .onFocusChanged {
-                    onFocusChange(if (it.isFocused) SearchField.DESTINATION else SearchField.NONE)
+                    if (it.isFocused) onFocusChange(SearchField.DESTINATION)
                 }
         )
 
+        IconButton(
+            onClick = { onSwap() },
+            modifier = Modifier
+                .layoutId("swap")
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_swap_vertical_circle_24),
+                contentDescription = "switch origin and destination",
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(30.dp)
+            )
+        }
+
+        IconButton(
+            onClick = { onToggleShowVia() },
+            modifier = Modifier
+                .layoutId("toggleVia")
+        ) {
+            Icon(
+                painter = painterResource(
+                    id = if (state.showVia) R.drawable.baseline_remove_circle_24 else R.drawable.baseline_add_circle_24
+                ),
+                contentDescription = "toggle via",
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(30.dp)
+            )
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
+                .layoutId("dateTimeSelection")
         ) {
             Text(
                 text = state.tripQuery.time.timeText(),
@@ -229,8 +261,6 @@ fun SearchCard(
                 text = "•",
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp),
             )
 
             Text(
@@ -254,37 +284,114 @@ fun SearchCard(
                     ),
                     modifier = Modifier
                         .height(24.dp)
-                        .padding(start = 8.dp)
                 ) {
                     Text(
                         text = "Reset",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight(400),
                     )
                 }
             }
+        }
 
+//        IconButton(
+//            onClick = { /*TODO*/ },
+//            colors = IconButtonDefaults.iconButtonColors(
+//                containerColor = MaterialTheme.colorScheme.primary,
+//                contentColor = MaterialTheme.colorScheme.onPrimary
+//            ),
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.Search,
+//                contentDescription = "start search",
+//                tint = MaterialTheme.colorScheme.onPrimary,
+//                modifier = Modifier.size(20.dp)
+//            )
+//        }
 
-            Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = { onSubmitButtonClick() },
+            contentPadding = PaddingValues(0.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            modifier = Modifier
+                .layoutId("submit")
+                .size(width = 110.dp, height = 30.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "start search",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
 
-            Button(
-                onClick = { onSubmitButtonClick() },
-                contentPadding = PaddingValues(0.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                modifier = Modifier
-                    .size(width = 110.dp, height = 30.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "start search",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(20.dp)
-                )
+private fun constraints(showVia: Boolean): ConstraintSet {
+    return ConstraintSet {
+        val origin = createRefFor("origin")
+        val via = createRefFor("via")
+        val destination = createRefFor("destination")
+        val swap = createRefFor("swap")
+        val toggleVia = createRefFor("toggleVia")
+        val dateTimeSelection = createRefFor("dateTimeSelection")
+        val submit = createRefFor("submit")
+
+        val textBoxEndGuideline = createGuidelineFromStart(0.85f)
+
+        constrain(origin) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(textBoxEndGuideline)
+            width = Dimension.fillToConstraints
+        }
+        constrain(swap) {
+            top.linkTo(origin.top, margin = 8.dp) // 8dp is the non removable top padding of the text field
+            start.linkTo(textBoxEndGuideline, margin = 8.dp)
+            bottom.linkTo(origin.bottom)
+            end.linkTo(parent.end)
+            width = Dimension.fillToConstraints
+        }
+        if (showVia) {
+            constrain(via) {
+                top.linkTo(origin.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(textBoxEndGuideline)
+                width = Dimension.fillToConstraints
+            }
+            constrain(toggleVia) {
+                top.linkTo(via.top, margin = 8.dp) // 8dp is the non removable top padding of the text field
+                start.linkTo(swap.start)
+                bottom.linkTo(via.bottom)
+                end.linkTo(swap.end)
+            }
+        } else {
+            constrain(toggleVia) {
+                top.linkTo(destination.top, margin = 8.dp) // 8dp is the non removable top padding of the text field
+                start.linkTo(swap.start)
+                bottom.linkTo(destination.bottom)
+                end.linkTo(swap.end)
             }
         }
+
+        constrain(destination) {
+            top.linkTo(if (showVia) via.bottom else origin.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(textBoxEndGuideline)
+            width = Dimension.fillToConstraints
+        }
+        constrain(dateTimeSelection) {
+            top.linkTo(destination.bottom, margin = 8.dp)
+            start.linkTo(parent.start)
+        }
+        constrain(submit) {
+            top.linkTo(dateTimeSelection.top)
+            bottom.linkTo(dateTimeSelection.bottom)
+            end.linkTo(parent.end)
+        }
+
     }
 }
