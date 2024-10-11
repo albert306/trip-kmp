@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PartialRouteDto(
-    @SerialName("PartialRouteId") val partialRouteId: Int,
+    @SerialName("PartialRouteId") val partialRouteId: Int? = null,
     @SerialName("Duration") val duration: Int = 0,
     @SerialName("Mot") val mot: MotDto,
     @SerialName("MapDataIndex") val mapDataIndex: Int? = null,

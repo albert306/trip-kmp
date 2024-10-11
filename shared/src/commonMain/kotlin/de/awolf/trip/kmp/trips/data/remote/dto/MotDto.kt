@@ -10,7 +10,7 @@ data class MotDto(
     @SerialName("StatelessId") val lineId: String,
     @SerialName("Type") val mode: String = "Unknown",
     @SerialName("Name") val lineNumber: String,
-    @SerialName("Direction") val lineDirection: String,
+    @SerialName("Direction") val lineDirection: String? = null,
     @SerialName("TransportationCompany") val transportationCompany: String,
     @SerialName("OperatorCode") val operatorCode: String,
     @SerialName("TrainNumber") val trainNumber: String,

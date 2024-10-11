@@ -17,4 +17,10 @@ data class Route(
     val mapData: List<String>,
     val motChain: List<Mot>,
     val partialRoutes: List<PartialRoute>
-)
+) {
+    val firstStop: PartialRouteStop
+        get() = partialRoutes.first().regularStops.first()
+
+    val lastStop: PartialRouteStop
+        get() = partialRoutes.last().regularStops.last()
+}

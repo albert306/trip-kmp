@@ -8,7 +8,7 @@ data class Mot(
     val lineId: String,
     val mode: Mode,
     val lineNumber: String,
-    val lineDirection: String,
+    val lineDirection: String?,
     val transportationCompany: String,
     val operatorCode: String,
     val trainNumber: String,

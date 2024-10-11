@@ -1,8 +1,9 @@
 package de.awolf.trip.kmp.trips.domain.models
 
+import kotlinx.datetime.Instant
 
 data class PartialRoute(
-    val partialRouteId: Int,
+    val partialRouteId: Int?,
     val duration: Int,
     val mot: Mot,
     val mapDataIndex: Int?,
@@ -11,4 +12,10 @@ data class PartialRoute(
     val changeoverEndangered: Boolean,
     val nextDepartureTimes: List<String>,
     val previousDepartureTimes: List<String>
-)
+) {
+    val startTime: Instant
+        get() = regularStops.first().departureRealTime
+
+    val endTime: Instant
+        get() = regularStops.last().arrivalRealTime
+}
