@@ -6,14 +6,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MotDto(
-    @SerialName("DlId") val dlId: String,
-    @SerialName("StatelessId") val lineId: String,
+    @SerialName("DlId") val dlId: String? = null,
+    @SerialName("StatelessId") val lineId: String? = null,
     @SerialName("Type") val mode: String = "Unknown",
-    @SerialName("Name") val lineNumber: String,
+    @SerialName("Name") val lineNumber: String? = null,
     @SerialName("Direction") val lineDirection: String? = null,
-    @SerialName("TransportationCompany") val transportationCompany: String,
-    @SerialName("OperatorCode") val operatorCode: String,
-    @SerialName("TrainNumber") val trainNumber: String,
+    @SerialName("TransportationCompany") val transportationCompany: String? = null,
+    @SerialName("OperatorCode") val operatorCode: String? = null,
+    @SerialName("TrainNumber") val trainNumber: String? = null,
     @SerialName("ProductName") val productName: String? = null,
     @SerialName("Changes") val changes: List<String> = listOf(),
     @SerialName("Diva") val diva: DivaDto? = null,

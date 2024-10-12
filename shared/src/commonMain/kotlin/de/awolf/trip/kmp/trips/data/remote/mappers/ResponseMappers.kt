@@ -47,11 +47,15 @@ fun RouteDto.toRoute(): Route {
 }
 
 fun MotDto.toMot(): Mot {
-    return Mot(
-        dlId = dlId,
-        lineId = lineId,
+    if (Mode.fromString(mode) == Mode.FOOTPATH) {
+        return Mot.Footpath
+    }
+
+    return Mot.Line(
+        dlId = dlId!!,
+        lineId = lineId!!,
         mode = Mode.fromString(mode),
-        lineNumber = lineNumber,
+        lineNumber = lineNumber!!,
         lineDirection = lineDirection,
         transportationCompany = transportationCompany,
         operatorCode = operatorCode,

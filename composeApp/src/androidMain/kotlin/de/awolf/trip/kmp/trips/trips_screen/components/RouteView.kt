@@ -40,7 +40,7 @@ fun RouteViewPreview() {
             routeIndex = 1,
             mapData = listOf(),
             motChain = listOf(
-                Mot(
+                Mot.Line(
                     dlId = "id",
                     lineId = "id",
                     mode = Mode.CITYBUS,
@@ -53,7 +53,7 @@ fun RouteViewPreview() {
                     changes = listOf(),
                     diva = null
                 ),
-                Mot(
+                Mot.Line(
                     dlId = "id",
                     lineId = "id",
                     mode = Mode.TRAM,
